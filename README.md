@@ -40,7 +40,7 @@ npm test
 
 ## Documentación
 
-- Diagramas: [`docs/diagramaClases.png`](docs/diagramaClases.png)
+- Diagramas: [`docs/diagramas.pdf`](docs/diagramas.pdf)
 - Wireframes: [`docs/`](docs/)
 - Acuerdos de trabajo y convenciones: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - Riesgos: [`docs/riesgos.md`](docs/riesgos.md)
@@ -51,10 +51,5 @@ Registrar aquí qué herramientas se usaron, para qué tareas y qué se adoptó 
 
 | Fecha | Herramienta | Tarea | Qué se adoptó y por qué |
 | ----- | ----------- | ----- | ----------------------- |
-|Semana1| Antigravity |       |                         |
-|       |             |       |                         |
-|       |             |       |                         |
-|       |             |       |                         |
-|       |             |       |                         |
-|       |             |       |                         |
-|       |             |       |                         |
+|Semana1| Antigravity | Creacion de historias de usuario extras | Las ultimas 2 historias de usuarios son creadas por la ia,tenes mas pero no sabemos si las vamos a implementar |
+| 19/10/26 | Figma IA | Crear los wireFrame | Se maqueto los wire me registro, login y vista admin, para acelerar el maquetado |
