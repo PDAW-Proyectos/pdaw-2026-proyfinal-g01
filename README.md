@@ -20,8 +20,8 @@ Proyecto del equipo **[Grupo-01]** para *7513 · Proyecto de Desarrollo de Aplic
 | Integrante | Usuario de GitHub | Rol en el sprint     |
 | ---------- | ----------------- | -------------------- |
 | Franco     | fran7k            | Referente de producto |
-| Facundo    | FacundoVarela-N   | Facilitación         |
-| Joaquin    | joacopompi        | Repositorio          |
+| Joaquin    | joacopompi        | Facilitación         |
+| Facundo    | FacundoVarela-N   | Repositorio          |
 | Facundo    | FacundoVarela-N   | Calidad              |
 
 ## Cómo ejecutar el proyecto
