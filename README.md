@@ -40,7 +40,8 @@ npm test
 
 ## Documentación
 
-- Diagramas y wireframes: [`docs/`](docs/)
+- Diagramas: [`docs/diagramas.pdf`](docs/diagramas.pdf)
+- Wireframes: [`docs/`](docs/)
 - Acuerdos de trabajo y convenciones: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - Riesgos: [`docs/riesgos.md`](docs/riesgos.md)
 
