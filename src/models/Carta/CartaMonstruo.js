@@ -1,5 +1,8 @@
 import { Carta } from "./Carta"
 
+/** Clase hijo de Carta, agrega los atributos (ark, def. level) necesario para las cartas pendulo
+ * y adapta el metodo toJSON() para usarlo.
+ */
 export class CartaMonstruo extends Carta {
   /** @type {Number} */
   #atk
@@ -10,6 +13,9 @@ export class CartaMonstruo extends Carta {
   /** @type {string} */
   #attribute
 
+  /** Constructor para una carta monstruo necesita los datos de la clase padre (Carta), linkval y linkmarkers.
+   * @param {Object} data
+   */
   constructor(data) {
     super(data)
 
