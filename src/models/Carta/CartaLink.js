@@ -1,4 +1,4 @@
-import { CartaMonstruo } from "./CartaMonstruo";
+import { CartaMonstruo } from "./CartaMonstruo"
 
 /** Clase hijo de CartaMonstruo, agrega los atributos (linkval y linkmarkers) necesarios
  * para las cartas link y adapta el metodo toJSON() para usarlos.
@@ -9,8 +9,8 @@ export class CartaLink extends CartaMonstruo {
   /** @type {Array <string>} */
   #linkmarkers
 
-  /** Constructor para una carta link necesita los datos de la clase padre (CartaMonstruo, menos level y def),
-   * linkval y linkmarkers.
+  /** Una CartaLink necesita los datos id, name, type, frameType, race, desc, card_images, card_prices,
+   * atk, linkval y linkmarkers, los atributos def y level son asignados null.
    * @param {Object} data
    */
   constructor(data) {

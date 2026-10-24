@@ -13,7 +13,8 @@ export class CartaMonstruo extends Carta {
   /** @type {string} */
   #attribute
 
-  /** Constructor para una carta monstruo necesita los datos de la clase padre (Carta), linkval y linkmarkers.
+  /** Una CartaMonstruo necesita los datos id, name, type, frameType, race, desc, card_images, card_prices,
+   * atk, def, level y attribute.
    * @param {Object} data
    */
   constructor(data) {
@@ -26,12 +27,16 @@ export class CartaMonstruo extends Carta {
   }
 
   // Getters
+  /** Ataque de la carta */
   get atk() { return this.#atk }
 
+  /** Defensa de la carta */
   get def() { return this.#def }
 
+  /** Cantidad de estrellas de la carta */
   get level() { return this.#level }
 
+  /** Atributo elemental de la carta */
   get attribute() { return this.#attribute }
 
   // Methods

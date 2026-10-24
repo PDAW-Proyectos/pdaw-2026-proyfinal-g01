@@ -1,4 +1,4 @@
-import { CartaMonstruo } from "./CartaMonstruo";
+import { CartaMonstruo } from "./CartaMonstruo"
 
 /** Clase hijo de CartaMonstruo, agrega un atributo (scale) necesario para las cartas pendulo
  * y adapta el metodo toJSON() para usarlo.
@@ -7,7 +7,8 @@ export class CartaPendulo extends CartaMonstruo {
   /** @type {Number} */
   #scale
 
-  /** Constructor para una carta pendulo necesita los datos de la clase padre (CartaMonstruo) y scale.
+  /** Una carta pendulo necesita los datos id, name, type, frameType, race, desc, card_images, card_prices,
+   * atk, def, level, attribute y scale.
    * @param {Object} data
    */
   constructor(data) {
