@@ -6,13 +6,13 @@ export class Usuario {
   /** @type {string} */
   #contraseña
   /** @type {Array <Object>} */
-  #mazos = []
+  #mazos
 
-  constructor({ nombre, username, contraseña, mazos }) {
+  constructor({ nombre, username, contraseña, mazos = [] }) {
     this.#nombre = nombre
     this.#username = username
     this.#contraseña = contraseña
-    this.#mazos = mazos
+    this.#mazos = [...mazos]
   }
 
   // Getters
@@ -34,13 +34,7 @@ export class Usuario {
    * @returns {Usuario}
    */
   static fromJSON(data) {
-    const datos = JSON.parse(data)
-    return new Usuario(
-      datos.nombre,
-      datos.username,
-      datos.contraseña,
-      datos.mazos
-    )
+    return new Usuario(JSON.parse(data))
   }
 
   /** Comvierte el usuario en un objeto JSON para almacenarlo.
@@ -59,7 +53,7 @@ export class Usuario {
    * @returns {Array <number>}
    */
   obtenerMazo(){
-    return this.#mazos
+    return [...this.#mazos]
   }
   
   /** Agrega el identificador de un Mazo a la lista del usuario.
