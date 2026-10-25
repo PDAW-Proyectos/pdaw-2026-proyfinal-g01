@@ -48,12 +48,12 @@ export class Usuario {
       mazos: this.#mazos
     }
   }
-  /** Devuelve el array con los identificadores de los mazos del usuario.
-   * 
-   * @returns {Array <number>}
+  /** Obtiene el identificador de un mazo especifico.
+   * @param {Number} idMazo 
+   * @returns {Number | undefined}
    */
-  obtenerMazo(){
-    return [...this.#mazos]
+  obtenerMazo(idMazo){
+    return this.#mazos.find(id => id === idMazo)
   }
   
   /** Agrega el identificador de un Mazo a la lista del usuario.
