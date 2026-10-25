@@ -17,12 +17,26 @@ Proyecto del equipo **[Grupo-01]** para *7513 · Proyecto de Desarrollo de Aplic
 
 ## Equipo y roles del sprint actual
 
-| Integrante | Usuario de GitHub | Rol en el sprint     |
-| ---------- | ----------------- | -------------------- |
+| Integrante | Usuario de GitHub | Rol en el sprint      |
+| ---------- | ----------------- | --------------------- |
 | Franco     | fran7k            | Referente de producto |
-| Joaquin    | joacopompi        | Facilitación         |
-| Facundo    | FacundoVarela-N   | Repositorio          |
-| Facundo    | FacundoVarela-N   | Calidad              |
+| Joaquin    | joacopompi        | Facilitación          |
+| Facundo    | FacundoVarela-N   | Repositorio           |
+| Facundo    | FacundoVarela-N   | Calidad               |
+
+## Endpoints de la API
+| Operación | Método | Endpoint | Entrada | Éxito | Errores | Requisitos / Notas |
+| --------- | :----: | -------- | ------- | :---: | :-----: | ------------------ |
+| **Registrar usuario** | POST | `/api/register` | JSON: username, email, contraseña | 201 | 400 | Contraseña encriptada en el servidor |
+| **Iniciar sesión** | POST | `/api/login` | JSON: username/email, contraseña | 200 | 400, 401 | Retorna token de sesión / autenticación |
+| **Cerrar sesión** | POST | `/api/logout` | Ninguna | 200 | 401 | Requiere autenticación (`requiereAuth`) |
+| **Buscar cartas por nombre** | GET | `/api/cartas/:name` | params: name | 200 | 404 | Consulta filtrada por nombre |
+| **Listar/Filtrar cartas** | GET | `/api/cartas` | query: filtros (tipo, atributo, etc.) | 200 | 400 | Busca en nuestra base de cartas |
+| **Obtener mazos de un usuario** | GET | `/api/mazos/userId` | params: userId | 200 | 401, 404 | Requiere autenticación (`requiereAuth`) |
+| **Crear mazo** | POST | `/api/mazos` | JSON: nombre, cartas (ids y cantidades) | 201 | 400, 401 | Requiere autenticación (`requiereAuth`) |
+| **Modificar mazo** | PATCH | `/api/mazos/:id` | params: id<br>JSON: campos a actualizar | 200 | 400, 401, 403, 404 | Requiere autenticación (`requiereAuth`) |
+| **Eliminar mazo propio** | DELETE | `/api/mazos/:id` | params: id | 204 sin cuerpo | 401, 404 | Requiere autenticación (`requiereAuth`) |
+| **Eliminar usuario (Admin)** | DELETE | `/api/admin/userID` | params: userID | 204 sin cuerpo | 401, 403, 404 | Requiere rol de admin (`requiereRole`) |
 
 ## Cómo ejecutar el proyecto
 
