@@ -20,9 +20,11 @@ export class Mazo {
         this.#id = id;
         this.#userId = userId;
         this.#nombre = nombre;
+        //se tendria que hacer una consulta a la base de datos y con eso inicializar mainDeck y extraDeck
         this.#mainDeck = [];
         this.#extraDeck = [];
         this.#precioTotal = 0;
+
     }
 
     /**
@@ -64,8 +66,8 @@ export class Mazo {
             id: this.#id,
             userId: this.#userId,
             nombre: this.#nombre,
-            mainDeck: this.#mainDeck,
-            extraDeck: this.#extraDeck,
+            mainDeck: [...this.#mainDeck],
+            extraDeck: [...this.#extraDeck],
             precioTotal: this.#precioTotal
         };
     }
@@ -88,25 +90,38 @@ export class Mazo {
         return nuevoMazo;
     }
 
-    /**
-     * Agrega el ID de una carta al mazo.
-     * @param {number} idCarta
+   /**
+     * Agrega una carta al mazo correspondiente.
+     * @param {number} idCarta 
+     * @param {('main'|'extra')} [destino='main'] - Mazo de destino (es main por defecto)
      * @returns {boolean}
      */
-    agregarCarta(idCarta) {
-        this.#mainDeck.push(idCarta);
-        return true;
+    agregarCarta(idCarta, destino = 'main') {
+        if (destino === 'extra') {
+            this.#extraDeck.push(idCarta);
+            return true;
+        }
+
+        if (destino === 'main') {
+            this.#mainDeck.push(idCarta);
+            return true;
+        }
+
+        return false;
     }
 
     /**
-     * Elimina una copia del ID de la carta especificada.
-     * @param {number} idCarta
+     * Elimina una carta del mazo ya sea mainDeck o extraDeck.
+     * @param {number} idCarta 
+     * @param {('main'|'extra')} [destino='main']
      * @returns {boolean}
      */
-    eliminarCarta(idCarta) {
-        const indice = this.#mainDeck.indexOf(idCarta);
+    eliminarCarta(idCarta, destino = 'main') {
+        const deck = destino === 'extra' ? this.#extraDeck : this.#mainDeck;
+        const indice = deck.indexOf(idCarta);
+        
         if (indice !== -1) {
-            this.#mainDeck.splice(indice, 1);
+            deck.splice(indice, 1);
             return true;
         }
         return false;
