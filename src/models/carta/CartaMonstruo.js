@@ -1,4 +1,4 @@
-import { Carta } from "./Carta"
+import { Carta } from "./Carta.js"
 
 /** Clase hijo de Carta, agrega los atributos (ark, def. level) necesario para las cartas pendulo
  * y adapta el metodo toJSON() para usarlo.
