@@ -1,4 +1,4 @@
-import { CartaMonstruo } from "./CartaMonstruo"
+import { CartaMonstruo } from "./CartaMonstruo.js"
 
 /** Clase hijo de CartaMonstruo, agrega un atributo (scale) necesario para las cartas pendulo
  * y adapta el metodo toJSON() para usarlo.
