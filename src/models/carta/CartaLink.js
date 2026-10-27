@@ -1,4 +1,4 @@
-import { CartaMonstruo } from "./CartaMonstruo"
+import { CartaMonstruo } from "./CartaMonstruo.js"
 
 /** Clase hijo de CartaMonstruo, agrega los atributos (linkval y linkmarkers) necesarios
  * para las cartas link y adapta el metodo toJSON() para usarlos.

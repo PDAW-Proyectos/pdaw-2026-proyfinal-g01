@@ -1,23 +1,3 @@
-/** Analiza que tipo de carta es y devuelve el string correspondiente
- * a la clase que se necesita crear
- * @param {string} type
- * @returns {string}
- */
-function getCardClass(type) {
-  let toReturn = "CartaMonstruo"
-
-  if (type.includes("pendulum")) {
-    toReturn = "CartaPendulo"
-  }
-  if (type === 'link') {
-    toReturn = "CartaLink"
-  }
-  if (['spell', 'trap', 'skill'].includes(type)) {
-    toReturn = "Carta"
-  }
-  return toReturn
-}
-
 export class Carta {
   // Capaz id no sea necesario y se pueda eliminar.
   /** @type {Number} */
@@ -32,21 +12,26 @@ export class Carta {
   #race
   /** @type {string} */
   #desc
+  /** @type {Object} */
+  #banlist_info = {}
   /** @type {Array <Object>} */
   #card_images = []
-  /** @type {Array <string>} */
+  /** @type {Object} */
   #card_prices
 
   /** Una Carta necesita los datos id, name, type, frameType, race, desc, card_images, card_prices.
    * @param {Object} data
    */
-  constructor({ id, name, type, frameType, race, desc, card_images, card_prices }) {
+  constructor({ id, name, type, frameType, race, desc, banlist_info, card_images, card_prices }) {
     this.#id = id
     this.#name = name
     this.#type = type
     this.#frameType = frameType
     this.#race = race
     this.#desc = desc
+    if (banlist_info) {
+      this.#banlist_info = { ...banlist_info }
+    }
     for (const url of card_images) {
       this.#card_images.push({
         image_url: url.image_url,
@@ -78,36 +63,33 @@ export class Carta {
   /** Descripcion de la carta. */
   get descripcion() { return this.#desc }
 
+  /** Descripcion de la carta. */
+  get banlist_info() { return {...this.#banlist_info} }
+
   /** Array de Object con los valores image_url y image_url_small */
   get card_images() { return [...this.#card_images] }
 
   /** Object con los valores ebay_price y amazon_price */
-  get card_prices() { return [...this.#card_prices] }
+  get card_prices() { return {...this.#card_prices} }
 
-  // Methods}
-  /** Tomando el type del Object decide que clase se tiene que crear y devuelve
-   * una instancia de esa clase en base a los datos.
-   * @param {Object} data
-   * @returns {Carta}
-   */
-  static fromJSON(data) {
-    const ClaseCarta = getCardClass(this.frameType)
-    return new ClaseCarta(data)
-  }
-
+  // Methods
   /** Transforma los atributos de la carta en un Object generico para poder guardarlo en un archivo JSON.
    * @returns {Object}
    */
   toJSON() {
-    return {
+    const obj =  {
       id: this.#id,
       name: this.#name,
       type: this.#type,
       frameType: this.#frameType,
       race: this.#race,
       desc: this.#desc,
-      card_images: this.#card_images,
-      card_prices: this.#card_prices,
+      card_images: this.card_images,
+      card_prices: this.card_prices,
     }
+    if (Object.keys(this.#banlist_info).length > 0) {
+      obj.banlist_info = this.banlist_info
+    }
+    return obj
   }
 }

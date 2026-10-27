@@ -126,16 +126,5 @@ export class Mazo {
         }
         return false;
     }
-
-    /**
-     * @param {number} idMazo 
-     */
-    eliminarMazo(idMazo) {
-        //logica para eliminar de la base de datos
-    }
-
-    /**
-     * 
-     */
     
 }

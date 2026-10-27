@@ -5,7 +5,7 @@ export class Usuario {
   #username
   /** @type {string} */
   #contraseña
-  /** @type {Array <Object>} */
+  /** @type {Array <Number>} */
   #mazos
 
   constructor({ nombre, username, contraseña, mazos = [] }) {
