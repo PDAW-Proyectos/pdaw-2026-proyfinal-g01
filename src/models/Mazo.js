@@ -75,7 +75,7 @@ export class Mazo {
      * @param {Object} data
      * @returns {Mazo}
      */
-    static fromJSON(data) { 
+    static fromJSON(data) {
         const nuevoMazo = new Mazo({
             id: data.id,
             userId: data.userId,
@@ -111,5 +111,5 @@ export class Mazo {
         }
         return false;
     }
-    
+
 }
