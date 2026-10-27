@@ -15,16 +15,17 @@ export class Mazo {
      * @param {number|string} datos.id
      * @param {string|number} datos.userId
      * @param {string} datos.nombre
+     * @param {Array<number>} [datos.mainDeck=[]] 
+     * @param {Array<number>} [datos.extraDeck=[]] 
+     * @param {number} [datos.precioTotal=0]
      */
-    constructor({ id, userId, nombre }) {
+    constructor({ id, userId, nombre, mainDeck = [], extraDeck = [], precioTotal = 0 }) {
         this.#id = id;
         this.#userId = userId;
         this.#nombre = nombre;
-        //se tendria que hacer una consulta a la base de datos y con eso inicializar mainDeck y extraDeck
-        this.#mainDeck = [];
-        this.#extraDeck = [];
-        this.#precioTotal = 0;
-
+        this.#mainDeck = [...mainDeck];
+        this.#extraDeck = [...extraDeck];
+        this.#precioTotal = precioTotal;
     }
 
     /**
@@ -45,12 +46,12 @@ export class Mazo {
     /**
      * @returns {Array<number>}
      */
-    get mainDeck() { return this.#mainDeck; }
+    get mainDeck() { return [...this.#mainDeck] }
 
     /**
      * @returns {Array<number>}
      */
-    get extraDeck() { return this.#extraDeck; }
+    get extraDeck() { return [...this.#extraDeck] }
 
     /**
      * @returns {number}
@@ -73,21 +74,19 @@ export class Mazo {
     }
 
     /**
-     * Crea una instancia de Mazo a partir de un string JSON.
+     * Crea una instancia de Mazo a partir de un objeto deserializado.
      * @param {Object} data
      * @returns {Mazo}
      */
     static fromJSON(data) { 
-        const nuevoMazo = new Mazo({
+        return new Mazo({
             id: data.id,
             userId: data.userId,
-            nombre: data.nombre
+            nombre: data.nombre,
+            mainDeck: data.mainDeck,
+            extraDeck: data.extraDeck,
+            precioTotal: data.precioTotal
         });
-        nuevoMazo.#mainDeck = data.mainDeck || [];
-        nuevoMazo.#extraDeck = data.extraDeck || [];
-        nuevoMazo.#precioTotal = data.precioTotal || 0;
-
-        return nuevoMazo;
     }
 
    /**
@@ -101,27 +100,28 @@ export class Mazo {
             this.#extraDeck.push(idCarta);
             return true;
         }
-
         if (destino === 'main') {
             this.#mainDeck.push(idCarta);
             return true;
         }
-
         return false;
     }
 
     /**
-     * Elimina una carta del mazo ya sea mainDeck o extraDeck.
+     * Elimina una carta del mazo. Busca primero en mainDeck y si no esta, en extraDeck.
      * @param {number} idCarta 
-     * @param {('main'|'extra')} [destino='main']
-     * @returns {boolean}
+     * @returns {boolean} True si la carta fue encontrada y eliminada, false si no
      */
-    eliminarCarta(idCarta, destino = 'main') {
-        const deck = destino === 'extra' ? this.#extraDeck : this.#mainDeck;
-        const indice = deck.indexOf(idCarta);
-        
+    eliminarCarta(idCarta) {
+        let indice = this.#mainDeck.indexOf(idCarta);
         if (indice !== -1) {
-            deck.splice(indice, 1);
+            this.#mainDeck.splice(indice, 1);
+            return true;
+        }
+
+        indice = this.#extraDeck.indexOf(idCarta);
+        if (indice !== -1) {
+            this.#extraDeck.splice(indice, 1);
             return true;
         }
         return false;
