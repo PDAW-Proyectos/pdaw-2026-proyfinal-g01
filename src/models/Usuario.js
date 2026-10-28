@@ -5,13 +5,16 @@ export class Usuario {
   #username
   /** @type {string} */
   #contraseña
+  /** @type {string} */
+  #rol
   /** @type {Array <Number>} */
   #mazos
 
-  constructor({ nombre, username, contraseña, mazos = [] }) {
+  constructor({ nombre, username, contraseña, rol = "usuario", mazos = [] }) {
     this.#nombre = nombre
     this.#username = username
     this.#contraseña = contraseña
+    this.rol = rol
     this.#mazos = [...mazos]
   }
 
@@ -25,8 +28,12 @@ export class Usuario {
   /** Contraseña del usuario. */
   get contraseña() { return this.#contraseña }
 
+  /** Rol del usuario */
+  get rol() { return this.#rol}
+
   /** Mazos del usuario. */
   get mazos() { return [...this.#mazos] }
+
 
   // Methods}
   /** Crea una instancia de Usuario a partir de un objeto JSON.
@@ -45,6 +52,7 @@ export class Usuario {
       nombre: this.#nombre,
       username: this.#username,
       contraseña: this.#contraseña,
+      rol: this.#rol,
       mazos: this.#mazos
     }
   }

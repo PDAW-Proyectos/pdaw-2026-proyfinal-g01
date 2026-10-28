@@ -1,0 +1,42 @@
+[
+  {
+    "id": 46986414,
+    "name": "Dark Magician",
+    "type": "Normal Monster",
+    "frameType": "normal",
+    "race": "Spellcaster",
+    "desc": "The ultimate wizard in terms of attack and defense.",
+    "card_images": [
+      {
+        "image_url": "https://example.com/dark-magician.jpg",
+        "image_url_small": "https://example.com/dark-magician-small.jpg"
+      }
+    ],
+    "card_prices": [
+      {
+        "ebay_price": "5.00",
+        "amazon_price": "4.50"
+      }
+    ]
+  },
+  {
+    "id": 89631139,
+    "name": "Blue-Eyes White Dragon",
+    "type": "Normal Monster",
+    "frameType": "normal",
+    "race": "Dragon",
+    "desc": "This legendary dragon is a powerful engine of destruction.",
+    "card_images": [
+      {
+        "image_url": "https://example.com/blue-eyes.jpg",
+        "image_url_small": "https://example.com/blue-eyes-small.jpg"
+      }
+    ],
+    "card_prices": [
+      {
+        "ebay_price": "10.00",
+        "amazon_price": "9.00"
+      }
+    ]
+  }
+]
