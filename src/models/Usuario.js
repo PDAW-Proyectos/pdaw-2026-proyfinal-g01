@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 export class Usuario {
   /** @type {string} */
   #nombre
@@ -22,31 +23,45 @@ export class Usuario {
   /** Username del usuario. */
   get username() { return this.#username }
 
-  /** Contraseña del usuario. */
-  get contraseña() { return this.#contraseña }
-
   /** Mazos del usuario. */
   get mazos() { return [...this.#mazos] }
 
   // Methods}
+  /* USAR ESTE METODO CUANDO TENGAMOS LA BASE DE DATOS 
   /** Crea una instancia de Usuario a partir de un objeto JSON.
    * @param {Object} data
    * @returns {Usuario}
-   */
+   
   static fromJSON(data) {
     return new Usuario(JSON.parse(data))
+  }  */
+
+  //para la base de datos
+  /** Crea una instancia de Usuario a partir de un objeto JSON o de un objeto JavaScript plano.
+   * @param {Object|string} data  //para cuando hago las consultas a mi base de datos, que guarda los datos en js
+   * @returns {Usuario}
+   */
+  static fromJSON(data) {
+    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+    return new Usuario(parsed);
   }
 
-  /** Comvierte el usuario en un objeto JSON para almacenarlo.
-   * @returns {Object}
-   */
+
   toJSON() {
     return {
       nombre: this.#nombre,
       username: this.#username,
       contraseña: this.#contraseña,
-      mazos: this.#mazos
-    }
+      mazos: [...this.#mazos]
+    };
+  }
+  //para la api
+  toPublicJSON() {
+    return {
+      nombre: this.#nombre,
+      username: this.#username,
+      mazos: [...this.#mazos]
+    };
   }
   /** Obtiene el identificador de un mazo especifico.
    * @param {Number} idMazo 
@@ -61,6 +76,15 @@ export class Usuario {
    */
   agregarMazo(idMazo){
     this.#mazos.push(idMazo)
+  }
+
+  /**
+   * Encapsula la comparación de contraseñas dentro de la propia clase.
+   * @param {string} contraseñaPlana 
+   * @returns {Promise<boolean>}
+   */
+  async verificarContraseña(contraseñaPlana) {
+    return await bcrypt.compare(contraseñaPlana, this.#contraseña);
   }
 
   /** Elimina un mazo de la lista del usuario segun su ID.
