@@ -4,7 +4,6 @@
 export class Mazo {
     /** @type {number|string} */
     #id;
-    #username;
     #nombre;
     #mainDeck;
     #extraDeck;
@@ -12,14 +11,12 @@ export class Mazo {
     /**
      * @param {Object} datos //es el objeto que se recibe para crear el mazo
      * @param {number|string} datos.id
-     * @param {string|number} datos.username
      * @param {string} datos.nombre
      * @param {Array<number>} [datos.mainDeck=[]]
      * @param {Array<number>} [datos.extraDeck=[]]
      */
-    constructor({ id, username, nombre, mainDeck = [], extraDeck = [] }) {
+    constructor({ id, nombre, mainDeck = [], extraDeck = [] }) {
         this.#id = id;
-        this.#username = username;
         this.#nombre = nombre;
         this.#mainDeck = [...mainDeck];
         this.#extraDeck = [...extraDeck];
@@ -29,11 +26,6 @@ export class Mazo {
      * @returns {number|string}
      */
     get id() { return this.#id; }
-
-    /**
-     * @returns {string|number}
-     */
-    get username() { return this.#username; }
 
     /**
      * @returns {string}
@@ -57,7 +49,6 @@ export class Mazo {
     toJSON() {
         return {
             id: this.#id,
-            username: this.#username,
             nombre: this.#nombre,
             mainDeck: [...this.#mainDeck],
             extraDeck: [...this.#extraDeck]
@@ -72,7 +63,6 @@ export class Mazo {
     static fromJSON(data) {
         return new Mazo({
             id: data.id,
-            username: data.username,
             nombre: data.nombre,
             mainDeck: data.mainDeck,
             extraDeck: data.extraDeck

@@ -4,7 +4,7 @@ export class ConflictError extends Error {
    * @param {string} key
    * @param {*} value
    */
-  constructor(nombreClase, key, value) {
+  constructor(nombreClase, key) {
     super(`El ${nombreClase} asociado a la llave "${key}" ya existe.`)
     this.name = "ConflictError"
     this.statusCode = 409

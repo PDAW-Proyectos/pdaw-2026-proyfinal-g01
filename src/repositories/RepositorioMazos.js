@@ -7,7 +7,7 @@ import { Mazo } from "../models/Mazo.js"
 export class RepositorioMazos {
   /** @type {} */
   #ruta
-  /** @type {Map <id, Array <Mazo>>} */
+  /** @type {Map <id, Mazo>} */
   #mazos
   /** @type {Number} */
   #proximoId = 1
@@ -21,27 +21,21 @@ export class RepositorioMazos {
   }
 
   // Getters
-  /** Mapa de mazos con claves de username para rapido acceso */
+  /** Mapa de mazos con claves de id para rapido acceso */
   get mazos() {
-    return new Map(
-      [...this.#mazos.entries()].map(([username, arrayMazos]) => [
-        username,
-        arrayMazos.map((mazo) => Mazo.fromJSON(mazo.toJSON())),
-      ])
-    )
+    const copia = new Map()
+    for (const [id, mazo] of this.#mazos) {
+      copia.set(id, Mazo.fromJSON(mazo))
+    }
+    return copia
   }
-
 
   // Methods
   /** Calcula el total de mazos en el repositorio
    * @returns {Number}
    */
   cantidadTotal() {
-    let total = 0
-    this.#mazos.forEach(array => {
-      total += array.length
-    })
-    return total
+    return this.#mazos.size
   }
 
   /** Busca un mazo especifico asignado al id dado, retorna null si no encuentra nada.
@@ -49,24 +43,8 @@ export class RepositorioMazos {
    * @returns {Mazo | null}
    */
   buscar(id) {
-    for (const arrayMazos of this.#mazos.values()) {
-      const mazoEncontrado = arrayMazos.find(mazo => mazo.id === id)
-      if (mazoEncontrado) {
-        return Mazo.fromJSON(mazoEncontrado.toJSON())
-      }
-    }
-    return null
-  }
-
-  /** Busca el array de mazos asignado al username dado, retorna null si no encuentra nada.
-   * @param {string} username
-   * @returns {Array <Mazo> | null}
-   */
-  buscarMazos(username) {
-    const arrayMazos = this.#mazos.get(username)
-    if (!arrayMazos) return null
-
-    return arrayMazos.map(mazo => Mazo.fromJSON(mazo.toJSON()))
+    const mazo = this.#mazos.get(id)
+    return mazo ? Mazo.fromJSON(mazo) : null
   }
 
   /** Guarda todos los Mazos a la base de datos, ordenados por username y como objeto JSON */
@@ -83,16 +61,12 @@ export class RepositorioMazos {
     try {
       const contenido = await readFile(this.#ruta, "utf8")
       const data = JSON.parse(contenido)
-      Object.entries(data).map(([username, arrayObjects]) => {
-        const arrayMazos = []
-        arrayObjects.forEach(data => {
-          arrayMazos.push(Mazo.fromJSON(data))
-          if (data.id >= this.#proximoId) {
-            this.#proximoId = data.id + 1
-          }
-        })
+      Object.entries(data).map(([id, dataMazo]) => {
+        if (dataMazo.id >= this.#proximoId) {
+          this.#proximoId = dataMazo.id + 1
+        }
 
-        this.#mazos.set(username, arrayMazos)
+        this.#mazos.set(dataMazo.id, Mazo.fromJSON(dataMazo))
       })
     } catch (error) {
       if (error.code === "ENOENT") {
@@ -109,33 +83,41 @@ export class RepositorioMazos {
    * @param {Object} data
    */
   async agregar(data) {
-    data.id = this.#proximoId++
-    const mazo = Mazo.fromJSON(data)
-    const { username } = data
-    if (this.#mazos.get(username)) {
-      this.#mazos.get(username).push(mazo)
-    } else {
-      this.#mazos.set(username, [mazo])
-    }
+    const id = this.#proximoId++
+    const mazo = Mazo.fromJSON({ ...data, id: id })
+    this.#mazos.set(id, mazo)
 
     await this.guardar()
     return mazo
   }
 
-  /** Elimina el mazo asignado a los datos dados, si existe la lista de Mazos asociada al username
-   *  y el mazo asociado al id, y guarda los mazos en la base de datos
+  /** Toma los datos dados y los combina con los del Mazo asociado al id dado, crea
+   * un Mazo y lo actualiza en el repositorio, despues guarda los mazos.
    * @param {Object} data
-   * @throws NotFoundError
+   * @returns {Mazo}
+   * @throws NotFoundError si no encuentra el Mazo.
    */
-  async eliminar({ username, id }) {
-    const arrayMazos = this.#mazos.get(username)
-    if (!arrayMazos) { throw new NotFoundError("Array<Mazo>", username) }
+  async actualizar(data) {
+    const anterior = this.buscar(data.id)
+    if (!anterior) { throw new NotFoundError("Mazo", data.id) }
 
-    const indice = arrayMazos.findIndex((mazo) => mazo.id === id)
-    if (indice === -1) { throw new NotFoundError("Mazo", id) }
+    const actualizada = Mazo.fromJSON({ ...anterior.toJSON(), ...data })
 
-    arrayMazos.splice(indice, 1)
+    this.#mazos.set(data.id, actualizada)
+    await this.guardar();
+    return actualizada;
+  }
+
+  /** Elimina el mazo asignado a los datos dados, si existe el mazo asociado al id,
+   *  y guarda los mazos en la base de datos.
+   * @param {Object} data
+   * @throws NotFoundError si no encuentra el Mazo.
+   */
+  async eliminar(id) {
+    const elimino = this.#mazos.delete(id)
+    if (!elimino) { throw new NotFoundError("Mazo", id) }
+
     await this.guardar()
-    return true
+    return elimino
   }
 }
