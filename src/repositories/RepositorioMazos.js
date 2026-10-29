@@ -99,7 +99,7 @@ export class RepositorioMazos {
    */
   async actualizar(data) {
     const anterior = this.buscar(data.id)
-    if (!anterior) { throw new NotFoundError("Mazo", data.id) }
+    if (!anterior) { throw new NotFoundError(`El Mazo asociado a la llave "${data.id}" no se encontro.`) }
 
     const actualizada = Mazo.fromJSON({ ...anterior.toJSON(), ...data })
 
@@ -115,7 +115,7 @@ export class RepositorioMazos {
    */
   async eliminar(id) {
     const elimino = this.#mazos.delete(id)
-    if (!elimino) { throw new NotFoundError("Mazo", id) }
+    if (!elimino) { throw new NotFoundError(`El Mazo asociado a la llave "${id}" no se encontro.`) }
 
     await this.guardar()
     return elimino

@@ -3,7 +3,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { RepositorioMazos } from "../src/repositories/RepositorioMazos.js"
 import { Mazo } from "../src/models/Mazo.js"
-import { NotFoundError } from "../src/errors.js"
+import { NotFoundError, ValidationError } from "../src/errors.js"
 
 // ---------------------------------------------------------------------------
 // Configuración de la base de datos provisoria
@@ -108,7 +108,7 @@ describe("RepositorioMazos", () => {
       await repo.cargar()
 
       const copia = repo.mazos
-      copia.get(1).agregarCarta(999, "main")
+      copia.get(1).agregarCarta(999, "none", "main")
       copia.set(99, new Mazo(crearDatosMazo(99)))
       copia.delete(2)
 
@@ -274,7 +274,7 @@ describe("RepositorioMazos", () => {
       await repo.cargar()
 
       const copia = repo.buscar(1)
-      copia.agregarCarta(999, "main")
+      copia.agregarCarta(999, "none", "main")
 
       expect(repo.buscar(1).toJSON()).toEqual(mazo1)
     })
@@ -459,18 +459,12 @@ describe("RepositorioMazos", () => {
       expect(await leerDb()).toEqual({ 1: mazo1, 3: mazo3 })
     })
 
-    test("permite eliminar un mazo cuyo id es 0", async () => {
+    test("rechaza con ValidationError al cargar un mazo cuyo id es 0 o inválido", async () => {
       const mazo0 = crearDatosMazo(0)
-      const mazo1 = crearDatosMazo(1)
-      await sembrarDb({ 0: mazo0, 1: mazo1 })
+      await sembrarDb({ 0: mazo0 })
       const repo = new RepositorioMazos(rutaDb)
-      await repo.cargar()
 
-      const resultado = await repo.eliminar(0)
-
-      expect(resultado).toBe(true)
-      expect(repo.buscar(0)).toBeNull()
-      expect(await leerDb()).toEqual({ 1: mazo1 })
+      await expect(repo.cargar()).rejects.toThrow(ValidationError)
     })
 
     test("lanza NotFoundError si el id no existe y no modifica el archivo", async () => {
