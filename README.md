@@ -58,6 +58,7 @@ npm test
 - Wireframes: [`docs/wireframes.pdf`](docs/wireframes.pdf)
 - Acuerdos de trabajo y convenciones: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - Riesgos: [`docs/riesgos.md`](docs/riesgos.md)
+- Documentacion de la API (ygoprodeck.com): [`docs/YGOPRODeckAPIGuide.pdf`](docs/YGOPRODeckAPIGuide.pdf)
 
 ## Uso de herramientas de IA
 
