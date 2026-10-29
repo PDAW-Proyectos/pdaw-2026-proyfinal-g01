@@ -10,10 +10,23 @@ export class Usuario {
   #mazos;
 
   constructor({ nombre, username, contraseña, mazos = [] }) {
-    this.#nombre = nombre;
-    this.#username = username;
-    this.#contraseña = contraseña;
-    this.#mazos = [...mazos];
+  if (typeof nombre !== 'string' || nombre.trim() === '') {
+    throw new ValidationError('El nombre es obligatorio y debe ser texto.');
+  }
+  if (typeof username !== 'string' || username.trim() === '') {
+    throw new ValidationError('El username es obligatorio.');
+  }
+  if (typeof contraseña !== 'string' || contraseña.trim() === '') {
+    throw new ValidationError('La contraseña es obligatoria.');
+  }
+  if (!Array.isArray(mazos)) {
+    throw new ValidationError('Los mazos deben ser una lista.');
+  }
+
+  this.#nombre = nombre.trim();
+  this.#username = username.trim();
+  this.#contraseña = contraseña;
+  this.#mazos = [...mazos];
   }
 
   // Getters
@@ -34,11 +47,11 @@ export class Usuario {
 
   // Methods
   static fromJSON(data) {
-  if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-    throw new TypeError('fromJSON espera un objeto plano válido');
+    if (typeof data !== 'object' || data === null || Array.isArray(data)) {
+      throw new ValidationError('fromJSON espera un objeto plano vlido.');
+    }
+    return new Usuario(data);
   }
-  return new Usuario(data);
-}
 
   /**
    * Serializa la entidad para respuestas o almacenamiento público (sin la contraseña).
@@ -76,7 +89,13 @@ export class Usuario {
    * @param {Number} idMazo
    */
   agregarMazo(idMazo) {
-    this.#mazos.push(idMazo);
+  if (typeof idMazo !== 'number' || isNaN(idMazo)) {
+    throw new ValidationError('El ID del mazo debe ser un número válido.');
+  }
+  if (this.#mazos.includes(idMazo)) {
+    throw new ConflictError(`El usuario ya tiene asignado el mazo con ID ${idMazo}.`);
+  }
+  this.#mazos.push(idMazo);
   }
 
   /**
@@ -93,6 +112,9 @@ export class Usuario {
    * @param {Number} idMazo
    */
   eliminarMazo(idMazo) {
-    this.#mazos = this.#mazos.filter((id) => id !== idMazo);
+  if (!this.#mazos.includes(idMazo)) {
+    throw new NotFoundError(`El mazo con ID ${idMazo} no pertenece a este usuario.`);
   }
+  this.#mazos = this.#mazos.filter((id) => id !== idMazo);
+}
 }
