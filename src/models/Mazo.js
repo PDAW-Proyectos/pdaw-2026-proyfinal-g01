@@ -99,7 +99,8 @@ export class Mazo {
 
   /** Agrega una carta al mazo correspondiente.
    * @param {number} idCarta
-   * @param {('main'|'extra')} [destino='main'] - Mazo de destino (es main por defecto)
+   * @param {string} [banInfo="none"]
+   * @param {'main'|'extra'} [destino='main'] - Mazo de destino (es main por defecto)
    * @returns {boolean}
    */
   agregarCarta(idCarta, banInfo = "none", destino = "main") {

@@ -21,7 +21,9 @@ export class RepositorioMazos {
   }
 
   // Getters
-  /** Mapa de mazos con claves de id para rapido acceso */
+  /** Mapa de mazos con claves de id para rapido acceso
+   * @returns {Map <Number, Mazo>}
+   */
   get mazos() {
     const copia = new Map()
     for (const [id, mazo] of this.#mazos) {
@@ -81,6 +83,7 @@ export class RepositorioMazos {
 
   /** Crea y agrega un mazo con los datos dados y guarda los mazos en la base de datos
    * @param {Object} data
+   * @returns {Mazo} El Mazo si fue creado correctamente
    */
   async agregar(data) {
     const id = this.#proximoId++
@@ -94,7 +97,7 @@ export class RepositorioMazos {
   /** Toma los datos dados y los combina con los del Mazo asociado al id dado, crea
    * un Mazo y lo actualiza en el repositorio, despues guarda los mazos.
    * @param {Object} data
-   * @returns {Mazo}
+   * @returns {Promise <Mazo>}
    * @throws NotFoundError si no encuentra el Mazo.
    */
   async actualizar(data) {
@@ -111,6 +114,7 @@ export class RepositorioMazos {
   /** Elimina el mazo asignado a los datos dados, si existe el mazo asociado al id,
    *  y guarda los mazos en la base de datos.
    * @param {Object} data
+   * @returns {true} Si el mazo fue eliminado
    * @throws NotFoundError si no encuentra el Mazo.
    */
   async eliminar(id) {
