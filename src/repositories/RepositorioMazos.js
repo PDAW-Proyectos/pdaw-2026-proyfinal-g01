@@ -47,7 +47,7 @@ export class RepositorioMazos {
     return mazo ? Mazo.fromJSON(mazo) : null
   }
 
-  /** Guarda todos los Mazos a la base de datos, ordenados por username y como objeto JSON */
+  /** Guarda todos los Mazos a la base de datos, como objeto JSON */
   async guardar() {
     await writeFile(
       this.#ruta,
