@@ -1,4 +1,6 @@
 import bcrypt from "bcryptjs";
+import { ValidationError } from "../errors.js"
+
 export class Usuario {
   /** @type {string} */
   #nombre;
@@ -48,7 +50,7 @@ export class Usuario {
   // Methods
   static fromJSON(data) {
     if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-      throw new ValidationError('fromJSON espera un objeto plano vlido.');
+      throw new ValidationError('fromJSON espera un objeto plano válido.');
     }
     return new Usuario(data);
   }
