@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import * as userModel from '../models/userModel.js';
+import * as userModel from '../repositories/userModel.js';
 import { Usuario } from '../models/Usuario.js';
 
 export async function register({ nombre, username, contraseña }) {
@@ -9,7 +9,8 @@ export async function register({ nombre, username, contraseña }) {
     throw error;
   }
 
-  if (userModel.findByUsername(username)) {
+  const usuarioExistente = await userModel.findByUsername(username);
+  if (usuarioExistente) {
     const error = new Error('El nombre de usuario ya está en uso');
     error.name = 'BusinessRuleError';
     throw error;
@@ -24,9 +25,10 @@ export async function register({ nombre, username, contraseña }) {
     mazos: []
   });
 
-  userModel.save(nuevoUsuario);
+  await userModel.guardar(nuevoUsuario);
 
-  return nuevoUsuario.toPublicJSON();
+  // Usamos toJSON() directamente
+  return nuevoUsuario.toJSON();
 }
 
 export async function login({ username, contraseña }) {
@@ -36,7 +38,7 @@ export async function login({ username, contraseña }) {
     throw error;
   }
 
-  const user = userModel.findByUsername(username);
+  const user = await userModel.findByUsername(username);
   const isValidPassword = user && (await user.verificarContraseña(contraseña));
   
   if (!isValidPassword) {
@@ -45,5 +47,6 @@ export async function login({ username, contraseña }) {
     throw error;
   }
 
-  return user.toPublicJSON();
+  // Usamos toJSON() directamente
+  return user.toJSON();
 }
