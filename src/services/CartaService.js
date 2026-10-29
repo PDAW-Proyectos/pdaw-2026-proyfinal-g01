@@ -1,18 +1,15 @@
-import { readFile } from "node:fs/promises"
 import { Carta } from "../models/Carta/Carta.js"
 import { CartaMonstruo } from "../models/Carta/CartaMonstruo.js"
 import { CartaPendulo } from "../models/Carta/CartaPendulo.js"
 import { CartaLink } from "../models/Carta/CartaLink.js"
+import { CartaRepository } from "../repositories/CartaRepository.js"
 
 export class CartaService {
-    // Lee el archivo JSON y devuelve los datos de las cartas.
-    async leerCartas() {
-        const ruta = new URL("../../data/cartas.json", import.meta.url)
-        const contenido = await readFile(ruta, "utf8")
-
-        return JSON.parse(contenido)
+    constructor(){
+        this.cartaRepository = new CartaRepository()
     }
-    
+
+    // Crea una instancia de la clase correspondiente según frameType.
     crearCarta(data) {
         switch (data.frameType) {
             case "link":
@@ -37,9 +34,9 @@ export class CartaService {
         }
     }
 
-    // Obtiene todas las cartas como instancias de sus clases.
+    // Obtiene todas las cartas y las convierte en instancias de sus clases.
     async obtenerTodas() {
-        const datos = await this.leerCartas()
+        const datos = await this.cartaRepository.obtenerTodas()
 
         return datos.map(data => this.crearCarta(data))
     }
