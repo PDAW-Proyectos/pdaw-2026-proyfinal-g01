@@ -36,15 +36,9 @@ export class RepositorioUsuarios {
       await writeFile(this.#ruta, JSON.stringify(this.#usuarios),"utf-8")
   }
 
-  #crearUsuario(datos) {
-      let user = new Usuario(datos.nombre, datos.username, datos.contraseña)
-      user.mazos = datos.mazos ?? user.mazos
-      return user;
-  }
-
   async agregar(datos){
-      if (this.buscarPorNombre(datos.username)) {
-        throw new Error("El username ya está registrado");
+      if (this.buscar(datos.username)) {
+        throw new Error("El username ya está registrado")
       }
       const usuario = Usuario.fromJSON(datos)
       this.#usuarios.push(usuario)
@@ -53,16 +47,17 @@ export class RepositorioUsuarios {
   }
 
   async eliminar(username) {
-    const usuario = this.buscarPorNombre(username);
-    if (!usuario) return false;
+    const usuario = this.buscar(username)
+    if (!usuario) return false
 
-    this.#usuarios.splice(this.#usuarios.indexOf(usuario), 1);
-    await this.guardar();
-    return true;
+    this.#usuarios.splice(this.#usuarios.indexOf(usuario), 1)
+    await this.guardar()
+    return true
   }
 
-  async buscarPorNombre(username) {
+  async buscar(username) {
+    await this.cargar()
     const buscado = String(username ?? "").trim().toLowerCase()
-    return (await this.cargar()).find((u) => String(u.username ?? "").trim().toLowerCase() === buscado)
+    return this.#usuarios.find((u) => String(u.username ?? "").trim().toLowerCase() === buscado) ?? null
   }
 }
