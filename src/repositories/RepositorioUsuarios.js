@@ -1,7 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises"
 import { Usuario } from '../models/Usuario.js'
 
-export class UsuariosRepositorio {
+export class RepositorioUsuarios {
   #ruta
   #usuarios
   /**
@@ -46,7 +46,7 @@ export class UsuariosRepositorio {
       if (this.buscarPorNombre(datos.username)) {
         throw new Error("El username ya está registrado");
       }
-      const usuario = this.#crearUsuario(datos)
+      const usuario = Usuario.fromJSON(datos)
       this.#usuarios.push(usuario)
       await this.guardar()
       return usuario
