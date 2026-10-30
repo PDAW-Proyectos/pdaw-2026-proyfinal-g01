@@ -1,7 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises"
 import { Usuario } from '../models/Usuario.js'
 
-export class UsuariosRepository {
+export class UsuariosRepositorio {
   #ruta
   #usuarios
   /**
@@ -36,7 +36,7 @@ export class UsuariosRepository {
       await writeFile(this.#ruta, JSON.stringify(this.#usuarios),"utf-8")
   }
 
-  crearUsuario(datos) {
+  #crearUsuario(datos) {
       let user = new Usuario(datos.nombre, datos.username, datos.contraseña)
       user.mazos = datos.mazos ?? user.mazos
       return user;
@@ -46,10 +46,19 @@ export class UsuariosRepository {
       if (this.buscarPorNombre(datos.username)) {
         throw new Error("El username ya está registrado");
       }
-      const usuario = this.crearUsuario(datos)
+      const usuario = this.#crearUsuario(datos)
       this.#usuarios.push(usuario)
       await this.guardar()
       return usuario
+  }
+
+  async eliminar(username) {
+    const usuario = this.buscarPorNombre(username);
+    if (!usuario) return false;
+
+    this.#usuarios.splice(this.#usuarios.indexOf(usuario), 1);
+    await this.guardar();
+    return true;
   }
 
   async buscarPorNombre(username) {
