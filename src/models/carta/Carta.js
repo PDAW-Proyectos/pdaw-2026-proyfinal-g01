@@ -39,8 +39,8 @@ export class Carta {
       })
     }
     this.#card_prices = {
-      ebay_price: card_prices[0].ebay_price,
-      amazon_price: card_prices[0].amazon_price
+      ebay_price: card_prices.ebay_price ?? 0,
+      amazon_price: card_prices.amazon_price ?? 0
     }
   }
 
