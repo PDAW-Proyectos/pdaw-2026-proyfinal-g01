@@ -1,5 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises"
-import { NotFoundError } from "../errors.js"
+import { NotFoundError } from "../utils/errors.js"
 import { Mazo } from "../models/Mazo.js"
 
 /** Clase que almacena los mazos ordenandolos por username, sirve para cargar los
@@ -83,7 +83,7 @@ export class RepositorioMazos {
 
   /** Crea y agrega un mazo con los datos dados y guarda los mazos en la base de datos
    * @param {Object} data
-   * @returns {Mazo} El Mazo si fue creado correctamente
+   * @returns {Promise <Mazo>} El Mazo si fue creado correctamente
    */
   async agregar(data) {
     const id = this.#proximoId++
@@ -114,7 +114,7 @@ export class RepositorioMazos {
   /** Elimina el mazo asignado a los datos dados, si existe el mazo asociado al id,
    *  y guarda los mazos en la base de datos.
    * @param {Object} data
-   * @returns {true} Si el mazo fue eliminado
+   * @returns {Promise <true>} Si el mazo fue eliminado
    * @throws NotFoundError si no encuentra el Mazo.
    */
   async eliminar(id) {

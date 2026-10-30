@@ -1,4 +1,4 @@
-import { ValidationError } from "../errors.js"
+import { ValidationError } from "../utils/errors.js"
 
 // Reglas de negocio
 const MAX_MAIN_DECK = 60
@@ -99,11 +99,11 @@ export class Mazo {
 
   /** Agrega una carta al mazo correspondiente.
    * @param {number} idCarta
-   * @param {string} [banInfo="none"]
-   * @param {'main'|'extra'} [destino='main'] - Mazo de destino (es main por defecto)
+   * @param {string} banInfo
+   * @param {'main'|'extra'} destino - Mazo de destino (es main por defecto)
    * @returns {boolean}
    */
-  agregarCarta(idCarta, banInfo = "none", destino = "main") {
+  agregarCarta(idCarta, banInfo, destino) {
     // Validaciones
     if (!Number.isInteger(idCarta) || idCarta <= 0) {
       throw new ValidationError("El id de la carta debe ser un entero positivo.");
