@@ -5,6 +5,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import rutasMazos from "./routes/rutasMazos.js"
 import { errorHandler } from "./middlewares/errorHandler.js"
+import usuarioRouter from "./routes/usuario.routes.js"
 
 const app = express()
 
@@ -16,6 +17,7 @@ app.use(express.json())
 
 // Aca van los routes como normalmente
 app.use("/api/mazos", rutasMazos)
+app.use("/api/usuarios", usuarioRouter)
 
 // El errorHandler siempre tiene que estar al final para que express lo use bien
 app.use(errorHandler)
