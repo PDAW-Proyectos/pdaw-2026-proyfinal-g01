@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs"
-import { ValidationError, ConflictError, NotFoundError } from "../errors.js"
+import { ValidationError, ConflictError, NotFoundError } from "../utils/errors.js"
 
 export class Usuario {
   /** @type {string} */
