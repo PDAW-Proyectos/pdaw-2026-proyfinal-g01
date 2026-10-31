@@ -1,65 +1,73 @@
 import bcrypt from "bcryptjs"
 import { ValidationError, ConflictError, NotFoundError } from "../utils/errors.js"
 
+// Reglas de negocio
+const MAX_MAZOS = 10
+
+/** Representa la entidad Usuario
+ */
 export class Usuario {
-  /** @type {string} */
+  #id
   #nombre
-  /** @type {string} */
   #username
-  /** @type {string} */
   #contraseña
-  /** @type {Array<number>} */
   #mazos
 
-  constructor({ nombre, username, contraseña, mazos = [] }) {
-    if (typeof nombre !== 'string' || nombre.trim() === '') {
-      throw new ValidationError('El nombre es obligatorio y debe ser texto.')
+  /**
+   * @param {Object} datos // es el objeto que se recibe para crear el usuario
+   * @param {number} datos.id
+   * @param {string} datos.nombre
+   * @param {string} datos.username
+   * @param {string} datos.contraseña
+   * @param {Array<number>} [datos.mazos=[]]
+   */
+  constructor({ id, nombre, username, contraseña, mazos = [] }) {
+    // Validaciones
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new ValidationError("El id del usuario debe ser un entero positivo")
     }
-    if (typeof username !== 'string' || username.trim() === '') {
-      throw new ValidationError('El username es obligatorio.')
+    if (typeof nombre !== "string" || nombre.trim() === "") {
+      throw new ValidationError("El nombre no puede estar vacio")
     }
-    if (typeof contraseña !== 'string' || contraseña.trim() === '') {
-      throw new ValidationError('La contraseña es obligatoria.')
+    if (typeof username !== "string" || username.trim() === "") {
+      throw new ValidationError("El username no puede estar vacio")
     }
-    if (!Array.isArray(mazos)) {
-      throw new ValidationError('Los mazos deben ser una lista.')
+    if (typeof contraseña !== "string" || contraseña.trim() === "") {
+      throw new ValidationError("La contraseña no puede estar vacia")
+    }
+    if (mazos.length > MAX_MAZOS) {
+      throw new ValidationError(`El usuario no puede tener mas de ${MAX_MAZOS} mazos.`)
     }
 
+    this.#id = id
     this.#nombre = nombre.trim()
     this.#username = username.trim()
     this.#contraseña = contraseña
     this.#mazos = [...mazos]
   }
 
-  // Getters
-  /** Nombre del usuario. */
-  get nombre() {
-    return this.#nombre
-  }
+  /** @returns {number} */
+  get id() { return this.#id }
 
-  /** Username del usuario. */
-  get username() {
-    return this.#username
-  }
+  /** @returns {string} */
+  get nombre() { return this.#nombre }
 
-  /** Mazos del usuario. */
-  get mazos() {
-    return [...this.#mazos]
-  }
+  /** @returns {string} */
+  get username() { return this.#username }
+
+  /** @returns {string} */
+  get contraseña() { return this.#contraseña }
+
+  /** @returns {Array <number>} */
+  get mazos() { return [...this.#mazos] }
 
   // Methods
-  static fromJSON(data) {
-    if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-      throw new ValidationError('fromJSON espera un objeto plano válido.')
-    }
-    return new Usuario(data)
-  }
-
-  /**
-   * Serializa la entidad a un objeto plano (incluyendo el hash de la contraseña para persistencia).
+  /** Serializa el objeto Usuario a un objeto JSON.
+   * @returns {Object}
    */
   toJSON() {
     return {
+      id: this.#id,
       nombre: this.#nombre,
       username: this.#username,
       contraseña: this.#contraseña,
@@ -67,29 +75,22 @@ export class Usuario {
     }
   }
 
-  /** Obtiene el identificador de un mazo específico.
-   * @param {number} idMazo
-   * @returns {number | undefined}
+  /** Crea una instancia de Usuario a partir de un objeto deserializado.
+   * @param {Object} data
+   * @returns {Usuario}
    */
-  obtenerMazo(idMazo) {
-    return this.#mazos.find((id) => id === idMazo)
+  static fromJSON(data) {
+    return new Usuario({
+      id: data.id,
+      nombre: data.nombre,
+      username: data.username,
+      contraseña: data.contraseña,
+      mazos: data.mazos
+    })
   }
 
-  /** Agrega el identificador de un Mazo a la lista del usuario.
-   * @param {number} idMazo
-   */
-  agregarMazo(idMazo) {
-    if (typeof idMazo !== 'number' || isNaN(idMazo)) {
-      throw new ValidationError('El ID del mazo debe ser un número válido.')
-    }
-    if (this.#mazos.includes(idMazo)) {
-      throw new ConflictError(`El usuario ya tiene asignado el mazo con ID ${idMazo}.`)
-    }
-    this.#mazos.push(idMazo)
-  }
-
-  /**
-   * Encapsula la comparación de contraseñas dentro de la propia clase.
+  // Methods
+  /** Compara una contraseña en texto plano con el hash guardado.
    * @param {string} contraseñaPlana
    * @returns {Promise<boolean>}
    */
@@ -97,13 +98,36 @@ export class Usuario {
     return await bcrypt.compare(contraseñaPlana, this.#contraseña)
   }
 
-  /** Elimina un mazo de la lista del usuario según su ID.
+  /** Agrega el identificador de un mazo a la lista del usuario.
    * @param {number} idMazo
+   * @returns {boolean}
+   */
+  agregarMazo(idMazo) {
+    // Validaciones
+    if (!Number.isInteger(idMazo) || idMazo <= 0) {
+      throw new ValidationError("El id del mazo debe ser un entero positivo.")
+    }
+    if (this.#mazos.length >= MAX_MAZOS) {
+      throw new ValidationError(`El usuario ya alcanzo el limite de ${MAX_MAZOS} mazos.`)
+    }
+    if (this.#mazos.includes(idMazo)) {
+      throw new ConflictError("No se pueden añadir copias del mismo mazo.")
+    }
+
+    this.#mazos.push(idMazo)
+    return true
+  }
+
+  /** Elimina un mazo de la lista del usuario.
+   * @param {number} idMazo
+   * @returns {boolean} True si el mazo fue encontrado y eliminado, false si no
    */
   eliminarMazo(idMazo) {
-    if (!this.#mazos.includes(idMazo)) {
-      throw new NotFoundError(`El mazo con ID ${idMazo} no pertenece a este usuario.`)
+    const indice = this.#mazos.indexOf(idMazo)
+    if (indice !== -1) {
+      this.#mazos.splice(indice, 1)
+      return true
     }
-    this.#mazos = this.#mazos.filter((id) => id !== idMazo)
+    return false
   }
 }
