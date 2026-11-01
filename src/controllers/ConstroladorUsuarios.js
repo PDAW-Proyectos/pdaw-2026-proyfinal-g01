@@ -66,7 +66,7 @@ export class ControladorUsuarios {
             new Promise((ok, fail) => req.session.destroy((error) => error ? fail(error) : ok()))
       
       await destroy(req)
-      res.clearCookie('wiki.sid').status(204).end()
+      res.clearCookie('wiki.sid').status(200).end()
     }catch(error){
       next(error)
     }

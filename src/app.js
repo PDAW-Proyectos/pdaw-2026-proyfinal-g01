@@ -8,6 +8,7 @@ import { errorHandler } from "./middlewares/errorHandler.js"
 import usuarioRouter from "./routes/usuario.routes.js"
 
 const app = express()
+const session = require('express-session')
 
 // como en el archivo server.js de el proyecto anterior inicio los middlewares
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -21,12 +22,10 @@ app.use(session({
     saveUninitialized: false,            
     cookie: {
         httpOnly: true,
-        sameSite: 'lax',
-        secure: production,                
+        sameSite: 'lax',                
         maxAge: 60 * 60 * 1000,            
     },
 }))
-app.set('trust proxy', 1)
 
 // Aca van los routes como normalmente
 app.use("/api/mazos", rutasMazos)
