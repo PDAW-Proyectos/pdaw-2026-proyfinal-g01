@@ -14,6 +14,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 app.use(express.static(path.join(__dirname, "..", "public")))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
+app.use(session({
+    name: 'wiki.sid',
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,            
+    cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: production,                
+        maxAge: 60 * 60 * 1000,            
+    },
+}))
+app.set('trust proxy', 1)
 
 // Aca van los routes como normalmente
 app.use("/api/mazos", rutasMazos)
