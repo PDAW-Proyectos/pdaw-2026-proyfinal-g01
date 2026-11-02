@@ -63,13 +63,13 @@ export class RepositorioMazos {
     try {
       const contenido = await readFile(this.#ruta, "utf8")
       const data = JSON.parse(contenido)
-      Object.entries(data).map(([id, dataMazo]) => {
+      for (const dataMazo of  Object.values(data)) {
         if (dataMazo.id >= this.#proximoId) {
           this.#proximoId = dataMazo.id + 1
         }
 
         this.#mazos.set(dataMazo.id, Mazo.fromJSON(dataMazo))
-      })
+      }
     } catch (error) {
       if (error.code === "ENOENT") {
         this.#mazos = new Map()

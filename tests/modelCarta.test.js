@@ -21,7 +21,7 @@ const datosBase = (extra = {}) => ({
     { image_url: "https://img/1.jpg", image_url_small: "https://img/1_small.jpg" },
     { image_url: "https://img/2.jpg", image_url_small: "https://img/2_small.jpg" }
   ],
-  card_prices: [{ ebay_price: "1.50", amazon_price: "2.00", cardmarket_price: "0.50" }],
+  card_prices: { ebay_price: "1.50", amazon_price: "2.00", cardmarket_price: "0.50" },
   ...extra
 })
 

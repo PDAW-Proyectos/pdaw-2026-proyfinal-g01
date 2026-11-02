@@ -63,9 +63,9 @@ export class RepositorioCartas {
     try {
       const contenido = await readFile(this.#ruta, "utf8")
       const data = JSON.parse(contenido)
-      Object.entries(data).map(([idIgnored, dataCarta]) => {
+      for (const dataCarta of  Object.values(data)) {
         this.#cartas.set(dataCarta.id, CartaFactory.fromJSON(dataCarta))
-      })
+      }
     } catch (error) {
       if (error.code === "ENOENT") {
         this.#cartas = new Map()
