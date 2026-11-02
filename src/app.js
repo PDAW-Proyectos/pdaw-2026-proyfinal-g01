@@ -16,15 +16,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 app.use(express.static(path.join(__dirname, "..", "public")))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
+
+// Definir la cookie usada por el server
 app.use(session({
     name: 'wiki.sid',
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false,            
+    saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        sameSite: 'lax',                
-        maxAge: 60 * 60 * 1000,            
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 1000,
     },
 }))
 
