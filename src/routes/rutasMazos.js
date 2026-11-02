@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { controladorMazos } from "../container.js"
+import { controladorMazos } from "../utils/container.js"
 
 const router = Router()
 
