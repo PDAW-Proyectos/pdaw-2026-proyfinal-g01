@@ -4,10 +4,10 @@
 
 // Las rutas todavia no existen en config pero es donde las deberiamos poner
 import { RUTA_USUARIOS, RUTA_MAZOS, RUTA_CARTAS } from "./config.js"
-import { RepositorioMazos } from "./repositories/RepositorioMazos.js"
-import { RepositorioCartas } from "./repositories/RepositorioCartas.js"
-import { ServicioMazos } from "./services/ServicioMazos.js"
-import { ControladorMazos } from "./controllers/ControladorMazos.js"
+import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
+import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
+import { ServicioMazos } from "../services/ServicioMazos.js"
+import { ControladorMazos } from "../controllers/ControladorMazos.js"
 
 // Aca se inicia la carga de repositorios poner el repositorioUsuarios aca.
 // export const repositorioUsuarios = new RepositorioUsuarios(RUTA_USUARIOS)
