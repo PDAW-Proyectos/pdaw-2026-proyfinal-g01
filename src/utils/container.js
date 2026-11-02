@@ -10,7 +10,7 @@ import { RepositorioUsuarios } from "../repositories/RepositorioUsuarios.js"
 import { ServicioMazos } from "../services/ServicioMazos.js"
 import { ServicioUsuarios } from "../services/ServicioUsuarios.js"
 import { ControladorMazos } from "../controllers/ControladorMazos.js"
-import { ControladorUsuarios } from "../controllers/ConstroladorUsuarios.js"
+import { ControladorUsuarios } from "../controllers/ControladorUsuarios.js"
 
 
 // Aca se inicia la carga de repositorios poner el repositorioUsuarios aca.
