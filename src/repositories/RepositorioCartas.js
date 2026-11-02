@@ -1,5 +1,4 @@
 import { readFile, writeFile } from "node:fs/promises"
-import { Carta } from "../models/carta/Carta.js"
 import { CartaFactory } from "../models/carta/CartaFactory.js"
 
 export class RepositorioCartas {
@@ -64,7 +63,7 @@ export class RepositorioCartas {
     try {
       const contenido = await readFile(this.#ruta, "utf8")
       const data = JSON.parse(contenido)
-      Object.entries(data).map(([id, dataCarta]) => {
+      Object.entries(data).map(([idIgnored, dataCarta]) => {
         this.#cartas.set(dataCarta.id, CartaFactory.fromJSON(dataCarta))
       })
     } catch (error) {
