@@ -1,0 +1,19 @@
+info:
+  name: Registro Fallido
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: ""
+  body:
+    type: json
+    data: "[pones un registro con mismo username]"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

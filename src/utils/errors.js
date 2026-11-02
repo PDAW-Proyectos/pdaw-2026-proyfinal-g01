@@ -30,3 +30,11 @@ export class ValidationError extends Error {
     this.statusCode = 400;
   }
 }
+
+export class AuthenticationError extends Error {
+  constructor(mensaje) {
+    super(mensaje);
+    this.name = "AuthenticationError";
+    this.status = 401; // 
+  }
+}

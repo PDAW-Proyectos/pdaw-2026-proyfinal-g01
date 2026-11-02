@@ -151,5 +151,7 @@ jsconfig.json
 # Ignora node_modules
 node_modules/
 
-# Ignora la carpeta dataTest para las puebras
+# Ignora los datos para las puebras
 dataTest/
+datatest/
+vacia
