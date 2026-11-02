@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs"
 import { RepositorioUsuarios } from "../repositories/RepositorioUsuarios.js"
-import { ValidationError, ConflictError, AuthenticationError } from "../utils/errors.js"
+import { AuthenticationError } from "../utils/errors.js"
+import { Usuario } from "../models/Usuario.js"
 
 export class ServicioUsuarios {
   #repositorioUsuarios
@@ -27,15 +28,7 @@ export class ServicioUsuarios {
    * @returns {Promise<Usuario>}
    */
   async registrar({ nombre, username, contraseña }) {
-    const existe = this.#repositorioUsuarios.buscarPorUsername(username)
-    if (existe) {
-      throw new ConflictError(`El nombre de usuario "${username}" ya esta registrado.`)
-    }
-
-    if (typeof contraseña !== "string" || contraseña.length < 6) {
-      throw new ValidationError("La contraseña debe tener al menos 6 caracteres.")
-    }
-
+    Usuario.validarContraseñaPlana(contraseña)
     const contraseñaHash = await bcrypt.hash(contraseña, 10)
 
     return await this.#repositorioUsuarios.agregar({
@@ -47,14 +40,14 @@ export class ServicioUsuarios {
   }
 
   /** Verifica las credenciales de un usuario.
-   * @param {string} username 
-   * @param {string} contraseñaPlana 
+   * @param {string} username
+   * @param {string} contraseñaPlana
    * @returns {Promise<Usuario>}
    */
   async autenticar(username, contraseñaPlana) {
-    const usuario = this.#repositorioUsuarios.buscarPorUsername(username)
+    const usuario = this.#repositorioUsuarios.buscar(username)
     const valida = usuario !== null && await usuario.verificarContraseña(contraseñaPlana)
-    
+
     if (!valida) {
       throw new AuthenticationError("Usuario o contraseña incorrectos")
     }
