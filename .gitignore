@@ -153,4 +153,5 @@ node_modules/
 
 # Ignora los datos para las puebras
 dataTest/
+datatest/
 vacia
