@@ -22,12 +22,13 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.30.0",
-    "eslint": "^9.30.0",
+    "eslint": "^4.0.0",
     "globals": "^16.3.0",
-    "jest": "^30.5.2"
+    "jest": "^25.1.0"
   },
   "allowScripts": {
     "@parcel/watcher@2.6.0": true,
-    "unrs-resolver@1.12.2": true
+    "unrs-resolver@1.12.2": true,
+    "node@22.23.3": true
   }
 }
