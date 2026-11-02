@@ -8,7 +8,8 @@ import { errorHandler } from "./middlewares/errorHandler.js"
 import usuarioRouter from "./routes/usuario.routes.js"
 
 const app = express()
-const session = require('express-session')
+import session from "express-session"
+//const session = require('express-session')
 
 // como en el archivo server.js de el proyecto anterior inicio los middlewares
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
