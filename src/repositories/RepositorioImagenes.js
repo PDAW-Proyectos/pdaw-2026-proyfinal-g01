@@ -3,37 +3,34 @@ import path from "node:path"
 
 export class RepositorioImagenes {
   /** @type {string} */
-  #rutaBase
-  /** @type {string} */
   #rutaFull
   /** @type {string} */
   #rutaSmall
-  /** @type {Set<Number>} */
+  /** @type {Set <Number>} */
   #imagenesFull
-  /** @type {Set<Number>} */
+  /** @type {Set <Number>} */
   #imagenesSmall
 
   /**
-   * @param {string} rutaBase Directorio base donde se guardaran las carpetas full y small
+   * @param {string} ruta Directorio base donde se guardaran las carpetas full y small
    */
-  constructor(rutaBase) {
-    this.#rutaBase = rutaBase
-    this.#rutaFull = path.join(rutaBase, "full")
-    this.#rutaSmall = path.join(rutaBase, "small")
+  constructor(ruta) {
+    this.#rutaFull = path.join(ruta, "full")
+    this.#rutaSmall = path.join(ruta, "small")
     this.#imagenesFull = new Set()
     this.#imagenesSmall = new Set()
   }
 
   // Getters
-  /** Copia del Set de IDs de imagenes completas descargadas
-   * @returns {Set<Number>}
+  /** Copia del Set de los ids de imagenes completas descargadas
+   * @returns {Set <Number>}
    */
   get imagenesFull() {
     return new Set(this.#imagenesFull)
   }
 
-  /** Copia del Set de IDs de imagenes pequenas descargadas
-   * @returns {Set<Number>}
+  /** Copia del Set de los ids de imagenes pequeñas descargadas
+   * @returns {Set <Number>}
    */
   get imagenesSmall() {
     return new Set(this.#imagenesSmall)
@@ -66,76 +63,46 @@ export class RepositorioImagenes {
     return idsValidos
   }
 
+  buscar(id, tipo = "full") {
+    const numId = Number(id)
+    const lista = tipo === "small" ? this.#imagenesSmall : this.#imagenesFull
+    const carpeta = tipo === "small" ? this.#rutaSmall : this.#rutaFull
+
+    if (!lista.has(numId)) return null
+    return path.join(carpeta, `${numId}.jpg`)
+  }
+
   /** Inicializa las carpetas y carga las listas de imagenes full y small existentes en disco */
   async cargar() {
     this.#imagenesFull = await this.#escanearCarpeta(this.#rutaFull)
     this.#imagenesSmall = await this.#escanearCarpeta(this.#rutaSmall)
   }
 
-  /** Verifica rapidamente en memoria si la imagen ya esta descargada
-   * @param {Number} id
-   * @param {"full" | "small"} tipo
-   * @returns {boolean}
-   */
-  tiene(id, tipo = "full") {
-    const lista = tipo === "small" ? this.#imagenesSmall : this.#imagenesFull
-    return lista.has(Number(id))
-  }
-
-  /** Busca y devuelve el Buffer de la imagen si existe en disco.
-   * Si estaba en la lista pero el archivo fue borrado o esta vacio, corrige la lista y retorna null.
-   * @param {Number} id
-   * @param {"full" | "small"} tipo
-   * @returns {Promise<Buffer | null>}
-   */
-  async buscar(id, tipo = "full") {
-    const numId = Number(id)
-    const lista = tipo === "small" ? this.#imagenesSmall : this.#imagenesFull
-    const carpeta = tipo === "small" ? this.#rutaSmall : this.#rutaFull
-
-    if (!lista.has(numId)) return null
-
-    const rutaArchivo = path.join(carpeta, `${numId}.jpg`)
-    try {
-      const buffer = await readFile(rutaArchivo)
-      if (buffer.length === 0) {
-        lista.delete(numId)
-        await unlink(rutaArchivo).catch(() => {})
-        return null
-      }
-      return buffer
-    } catch (error) {
-      if (error.code === "ENOENT") {
-        // Auto-correccion: estaba en el Set pero no en el disco
-        lista.delete(numId)
-        return null
-      }
-      throw error
-    }
-  }
-
-  /** Guarda una imagen de forma atomica en disco y registra su ID en la lista correspondiente
+  /** Guarda una imagen en disco si no estaba ya descargada y retorna su ruta.
    * @param {Number} id
    * @param {Buffer} buffer
    * @param {"full" | "small"} tipo
+   * @returns {Promise<string>} Ruta absoluta de la imagen guardada
    */
-  async guardar(id, buffer, tipo = "full") {
+  async agregar(id, buffer, tipo = "full") {
+    const numId = Number(id)
+    const lista = tipo === "small" ? this.#imagenesSmall : this.#imagenesFull
+    const carpeta = tipo === "small" ? this.#rutaSmall : this.#rutaFull
+    const rutaFinal = path.resolve(carpeta, `${numId}.jpg`)
+
+    // Si ya fue descargada previamente, no la volvemos a escribir
+    if (lista.has(numId)) return rutaFinal
+
     if (!buffer || buffer.length === 0) {
       throw new Error(`El buffer de la imagen ${id} (${tipo}) esta vacio.`)
     }
 
-    const numId = Number(id)
-    const lista = tipo === "small" ? this.#imagenesSmall : this.#imagenesFull
-    const carpeta = tipo === "small" ? this.#rutaSmall : this.#rutaFull
+    const rutaTemporal = path.resolve(carpeta, `${numId}.jpg.tmp`)
 
-    const rutaTemporal = path.join(carpeta, `${numId}.jpg.tmp`)
-    const rutaFinal = path.join(carpeta, `${numId}.jpg`)
-
-    // Escritura atomica: primero temporal, luego renombrar
     await writeFile(rutaTemporal, buffer)
     await rename(rutaTemporal, rutaFinal)
 
-    // Recien cuando el archivo completo existe en disco, se agrega a la lista
     lista.add(numId)
+    return rutaFinal
   }
 }
