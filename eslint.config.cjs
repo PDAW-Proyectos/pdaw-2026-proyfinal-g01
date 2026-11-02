@@ -1,5 +1,5 @@
-import js from '@eslint/js';
-import globals from 'globals';
+const js = require('@eslint/js');
+const globals = require('globals');
 
 module.exports = [
   { ignores: ['node_modules/', 'coverage/'] },
