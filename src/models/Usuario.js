@@ -1,13 +1,13 @@
 import bcrypt from "bcryptjs"
-import { ValidationError, ConflictError, NotFoundError } from "../utils/errors.js"
+import { ValidationError, ConflictError } from "../utils/errors.js"
 
 // Reglas de negocio
 const MAX_MAZOS = 10
+const MIN_LARGO_CONTRASEÑA = 6
 
 /** Representa la entidad Usuario
  */
 export class Usuario {
-  #id
   #nombre
   #username
   #contraseña
@@ -15,17 +15,13 @@ export class Usuario {
 
   /**
    * @param {Object} datos // es el objeto que se recibe para crear el usuario
-   * @param {number} datos.id
    * @param {string} datos.nombre
    * @param {string} datos.username
    * @param {string} datos.contraseña
    * @param {Array<number>} [datos.mazos=[]]
    */
-  constructor({ id, nombre, username, contraseña, mazos = [] }) {
+  constructor({ nombre, username, contraseña, mazos = [] }) {
     // Validaciones
-    if (!Number.isInteger(id) || id <= 0) {
-      throw new ValidationError("El id del usuario debe ser un entero positivo")
-    }
     if (typeof nombre !== "string" || nombre.trim() === "") {
       throw new ValidationError("El nombre no puede estar vacio")
     }
@@ -39,15 +35,11 @@ export class Usuario {
       throw new ValidationError(`El usuario no puede tener mas de ${MAX_MAZOS} mazos.`)
     }
 
-    this.#id = id
     this.#nombre = nombre.trim()
     this.#username = username.trim()
     this.#contraseña = contraseña
     this.#mazos = [...mazos]
   }
-
-  /** @returns {number} */
-  get id() { return this.#id }
 
   /** @returns {string} */
   get nombre() { return this.#nombre }
@@ -67,7 +59,6 @@ export class Usuario {
    */
   toJSON() {
     return {
-      id: this.#id,
       nombre: this.#nombre,
       username: this.#username,
       contraseña: this.#contraseña,
@@ -81,7 +72,6 @@ export class Usuario {
    */
   static fromJSON(data) {
     return new Usuario({
-      id: data.id,
       nombre: data.nombre,
       username: data.username,
       contraseña: data.contraseña,
@@ -89,7 +79,14 @@ export class Usuario {
     })
   }
 
-  // Methods
+  static validarContraseñaPlana(contraseña) {
+    if (typeof contraseña !== "string" || contraseña.length < MIN_LARGO_CONTRASEÑA) {
+      throw new ValidationError(
+        `La contraseña debe tener al menos ${MIN_LARGO_CONTRASEÑA} caracteres.`
+      )
+    }
+  }
+
   /** Compara una contraseña en texto plano con el hash guardado.
    * @param {string} contraseñaPlana
    * @returns {Promise<boolean>}
