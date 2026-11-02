@@ -1,0 +1,24 @@
+info:
+  name: Registro existoso
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/api/usuarios/registro
+  body:
+    type: json
+    data: |-
+      {
+        "nombre": "Joaquin",
+        "username": "joawiki",
+        "contraseña": "password123"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
