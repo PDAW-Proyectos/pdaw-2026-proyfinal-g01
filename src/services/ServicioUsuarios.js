@@ -35,6 +35,7 @@ export class ServicioUsuarios {
       nombre,
       username,
       contraseña: contraseñaHash,
+      rol: 'usuario',
       mazos: []
     })
   }
