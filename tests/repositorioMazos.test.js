@@ -3,7 +3,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { RepositorioMazos } from "../src/repositories/RepositorioMazos.js"
 import { Mazo } from "../src/models/Mazo.js"
-import { NotFoundError, ValidationError } from "../src/errors.js"
+import { NotFoundError, ValidationError } from "../src/utils/errors.js"
 
 // ---------------------------------------------------------------------------
 // Configuración de la base de datos provisoria
