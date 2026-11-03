@@ -1,4 +1,3 @@
-
 import { AuthenticationError, AuthorizationError } from "../utils/errors.js";
 //Middlewares universales para cualquier ruta, leen informacion de req.session
 
