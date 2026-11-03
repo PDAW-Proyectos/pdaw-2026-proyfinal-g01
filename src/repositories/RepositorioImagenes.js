@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, rename, stat, unlink, writeFile } from "node:fs/promises"
+import { mkdir ,readdir, readFile, rename, stat, unlink, writeFile } from "node:fs/promises"
 import path from "node:path"
 
 export class RepositorioImagenes {
@@ -38,38 +38,49 @@ export class RepositorioImagenes {
 
   // Methods
   /** Escanea una carpeta y devuelve un Set con los IDs cuyos archivos existen y no estan vacios */
-  async #escanearCarpeta(rutaCarpeta) {
-    await mkdir(rutaCarpeta, { recursive: true })
-    const archivos = await readdir(rutaCarpeta)
+  async #escanearCarpeta(ruta) {
+    await mkdir(ruta, { recursive: true })
+    const archivos = await readdir(ruta)
     const idsValidos = new Set()
 
     for (const archivo of archivos) {
-      if (!archivo.endsWith(".jpg")) continue
+      const rutaArchivo = path.join(ruta, archivo)
 
-      const rutaArchivo = path.join(rutaCarpeta, archivo)
+      // Elimino los archivos que no sean .jpg
+      if (!archivo.endsWith(".jpg")) {
+        this.#borrarArchivo(rutaArchivo)
+        continue
+      }
+
+      // Todavia existe algunas posibilidades de que si en tiempo de ejecucion se eliminan archivos
+      // stat(rutaArchivo) puede tirar error
       const info = await stat(rutaArchivo)
-
       if (info.size > 0) {
-        const id = Number(path.basename(archivo, ".jpg"))
-        if (!Number.isNaN(id)) {
-          idsValidos.add(id)
-        }
+        const id = Number(archivo.replace(".jpg", ""))
+        idsValidos.add(id)
       } else {
-        // Si quedo un archivo corrupto de 0 bytes, lo limpiamos
-        await unlink(rutaArchivo).catch(() => {})
+        this.#borrarArchivo(rutaArchivo)
       }
     }
 
     return idsValidos
   }
 
+  /** Intena borrar un archivo con la ruta dada y si no puede ignora el error */
+  async #borrarArchivo(ruta) {
+    await unlink(ruta).catch(() => {})
+  }
+
+  /**
+   * @param {Number} id
+   */
   buscar(id, tipo = "full") {
-    const numId = Number(id)
-    const lista = tipo === "small" ? this.#imagenesSmall : this.#imagenesFull
+    const setIds = tipo === "small" ? this.#imagenesSmall : this.#imagenesFull
     const carpeta = tipo === "small" ? this.#rutaSmall : this.#rutaFull
 
-    if (!lista.has(numId)) return null
-    return path.join(carpeta, `${numId}.jpg`)
+    if (!setIds.has(id)) return null
+
+    return path.join(carpeta, `${id}.jpg`)
   }
 
   /** Inicializa las carpetas y carga las listas de imagenes full y small existentes en disco */
