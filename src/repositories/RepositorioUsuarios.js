@@ -1,16 +1,14 @@
 import { readFile, writeFile } from "node:fs/promises"
-import { NotFoundError } from "../utils/errors.js"
+import { NotFoundError, ConflictError } from "../utils/errors.js"
 import { Usuario } from '../models/Usuario.js'
 
-/** Clase que almacena los usuarios ordenandolos por id, sirve para cargar los
+/** Clase que almacena los usuarios ordenandolos por username, sirve para cargar los
  * usuarios desde la base de data y guardarlos en la misma. */
 export class RepositorioUsuarios {
   /** @type {string} */
   #ruta
-  /** @type {Map <number, Usuario>} */
+  /** @type {Map <string, Usuario>} */
   #usuarios
-  /** @type {Number} */
-  #proximoId = 1
 
   /** Requiere una ruta a la base de data y crea el map de usuarios vacio.
    * @param {string} ruta
@@ -21,13 +19,13 @@ export class RepositorioUsuarios {
   }
 
   // Getters
-  /** Mapa de usuarios con claves de id para rapido acceso
-   * @returns {Map <Number, Usuario>}
+  /** Mapa de usuarios con claves de username para rapido acceso
+   * @returns {Map <string, Usuario>}
    */
   get usuarios() {
     const copia = new Map()
-    for (const [id, usuario] of this.#usuarios) {
-      copia.set(id, Usuario.fromJSON(usuario.toJSON()))
+    for (const [username, usuario] of this.#usuarios) {
+      copia.set(username, Usuario.fromJSON(usuario.toJSON()))
     }
     return copia
   }
@@ -40,26 +38,17 @@ export class RepositorioUsuarios {
     return this.#usuarios.size
   }
 
-  /** Busca un usuario especifico asignado al id dado, retorna null si no encuentra nada.
-   * @param {Number} id
-   * @returns {Usuario | null}
-   */
-  buscar(id) {
-    const usuario = this.#usuarios.get(id)
-    return usuario ? Usuario.fromJSON(usuario.toJSON()) : null
-  }
-
   /** Busca un usuario especifico por su username, retorna null si no encuentra nada.
    * @param {string} username
    * @returns {Usuario | null}
    */
-  buscarPorUsername(username) {
-    for (const usuario of this.#usuarios.values()) {
-      if (usuario.username.toLowerCase() === username.toLowerCase()) {
-        return Usuario.fromJSON(usuario.toJSON())
-      }
+  buscar(username) {
+    if (typeof username !== "string") {
+      return null
     }
-    return null
+    const usernameNormalizado = username.trim()
+    const usuario = this.#usuarios.get(usernameNormalizado)
+    return usuario ? Usuario.fromJSON(usuario.toJSON()) : null
   }
 
   /** Guarda todos los Usuarios a la base de datos, como objeto JSON */
@@ -76,17 +65,12 @@ export class RepositorioUsuarios {
     try {
       const contenido = await readFile(this.#ruta, "utf8")
       const data = JSON.parse(contenido)
-      Object.entries(data).map(([id, dataUsuario]) => {
-        if (dataUsuario.id >= this.#proximoId) {
-          this.#proximoId = dataUsuario.id + 1
-        }
-
-        this.#usuarios.set(dataUsuario.id, Usuario.fromJSON(dataUsuario))
+      Object.entries(data).forEach(([username, dataUsuario]) => {
+        this.#usuarios.set(username, Usuario.fromJSON(dataUsuario))
       })
     } catch (error) {
       if (error.code === "ENOENT") {
         this.#usuarios = new Map()
-        this.#proximoId = 1
         await this.guardar()
       } else {
         throw error
@@ -99,42 +83,52 @@ export class RepositorioUsuarios {
    * @returns {Promise <Usuario>} El Usuario si fue creado correctamente
    */
   async agregar(data) {
-    const id = this.#proximoId++
-    const usuario = Usuario.fromJSON({ ...data, id: id })
-    this.#usuarios.set(id, usuario)
+    // El usuario se crea antes para que se aplique la logica del username
+    const usuario = Usuario.fromJSON(data)
+    if (this.#usuarios.has(usuario.username)) {
+      throw new ConflictError(`El nombre de usuario "${usuario.username}" ya esta registrado.`)
+    }
+
+    this.#usuarios.set(usuario.username, usuario)
 
     await this.guardar()
     return usuario
   }
 
-  /** Toma los datos dados y los combina con los del Usuario asociado al id dado, crea
+  /** Toma los datos dados y los combina con los del Usuario asociado al username dado, crea
    * un Usuario y lo actualiza en el repositorio, despues guarda los usuarios.
    * @param {Object} data
    * @returns {Promise <Usuario>}
    * @throws NotFoundError si no encuentra el Usuario.
    */
   async actualizar(data) {
-    const anterior = this.buscar(data.id)
-    if (!anterior) { throw new NotFoundError(`El Usuario asociado a la llave "${data.id}" no se encontro.`) }
+    const anterior = this.buscar(data.username)
+    if (!anterior) {
+      throw new NotFoundError(`El Usuario asociado a la llave "${data.username}" no se encontro.`)
+    }
 
     const actualizada = Usuario.fromJSON({ ...anterior.toJSON(), ...data })
 
-    this.#usuarios.set(data.id, actualizada)
+    this.#usuarios.set(actualizada.username, actualizada)
     await this.guardar();
     return actualizada;
   }
 
-  /** Elimina el usuario asignado a los datos dados, si existe el usuario asociado al id,
+  /** Elimina el usuario asignado a los datos dados, si existe el usuario asociado al username,
    *  y guarda los usuarios en la base de datos.
-   * @param {Number} id
+   * @param {string} username
    * @returns {Promise <true>} Si el usuario fue eliminado
    * @throws NotFoundError si no encuentra el Usuario.
    */
-  async eliminar(id) {
-    const elimino = this.#usuarios.delete(id)
-    if (!elimino) { throw new NotFoundError(`El Usuario asociado a la llave "${id}" no se encontro.`) }
+  async eliminar(username) {
+    const existe = this.buscar(username)
+    if (!existe) {
+      throw new NotFoundError(`El Usuario asociado a la llave "${username}" no se encontro.`)
+    }
+
+    this.#usuarios.delete(existe.username)
 
     await this.guardar()
-    return elimino
+    return true
   }
 }

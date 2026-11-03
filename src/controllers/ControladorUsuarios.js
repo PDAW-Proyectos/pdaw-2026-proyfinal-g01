@@ -27,7 +27,7 @@ export class ControladorUsuarios {
   registrar = async (req, res, next) => {
     try {
       const { nombre, username, contraseña } = req.body
-      
+
       this.#validarParametro(nombre, "nombre")
       this.#validarParametro(username, "username")
       this.#validarParametro(contraseña, "contraseña")
@@ -43,7 +43,7 @@ export class ControladorUsuarios {
   login = async (req, res, next) => {
     try {
       const { username, contraseña } = req.body
-      
+
       this.#validarParametro(username, "username")
       this.#validarParametro(contraseña, "contraseña")
 
@@ -52,8 +52,8 @@ export class ControladorUsuarios {
         new Promise((ok, fail) => req.session.regenerate((e) => (e ? fail(e) : ok())))
 
       // La logica de req.session se agregara aca
-      await regenerate(req)          
-      req.session.userId = usuario.id
+      await regenerate(req)
+      req.session.username = usuario.username
       res.status(200).json(UsuarioMapper.toDTO(usuario))
     } catch (error) {
       next(error)
@@ -64,7 +64,7 @@ export class ControladorUsuarios {
     try{
       const destroy = (req) =>
             new Promise((ok, fail) => req.session.destroy((error) => error ? fail(error) : ok()))
-      
+
       await destroy(req)
       res.clearCookie('wiki.sid').status(200).end()
     }catch(error){
