@@ -1,5 +1,8 @@
-import { mkdir ,readdir, readFile, rename, stat, unlink, writeFile } from "node:fs/promises"
+import { mkdir ,readdir, rename, stat, unlink, writeFile } from "node:fs/promises"
 import path from "node:path"
+import { ValidationError } from "../utils/errors.js"
+
+const TIPOS_IMAGENES = ["full", "small"]
 
 export class RepositorioImagenes {
   /** @type {string} */
@@ -15,8 +18,9 @@ export class RepositorioImagenes {
    * @param {string} ruta Directorio base donde se guardaran las carpetas full y small
    */
   constructor(ruta) {
-    this.#rutaFull = path.join(ruta, "full")
-    this.#rutaSmall = path.join(ruta, "small")
+    // .resolve() hace que la ruta sea absoluta que es necesario para que express use .sendFile
+    this.#rutaFull = path.resolve(ruta, "full")
+    this.#rutaSmall = path.resolve(ruta, "small")
     this.#imagenesFull = new Set()
     this.#imagenesSmall = new Set()
   }
@@ -48,7 +52,7 @@ export class RepositorioImagenes {
 
       // Elimino los archivos que no sean .jpg
       if (!archivo.endsWith(".jpg")) {
-        this.#borrarArchivo(rutaArchivo)
+        await this.#borrarArchivo(rutaArchivo)
         continue
       }
 
@@ -59,7 +63,7 @@ export class RepositorioImagenes {
         const id = Number(archivo.replace(".jpg", ""))
         idsValidos.add(id)
       } else {
-        this.#borrarArchivo(rutaArchivo)
+        await this.#borrarArchivo(rutaArchivo)
       }
     }
 
@@ -71,16 +75,42 @@ export class RepositorioImagenes {
     await unlink(ruta).catch(() => {})
   }
 
-  /**
-   * @param {Number} id
-   */
-  buscar(id, tipo = "full") {
+  #validarTipo(tipo) {
+    if (!TIPOS_IMAGENES.includes(tipo)) {
+      throw new ValidationError("El tipo de imagen buscado no existe.")
+    }
+
     const setIds = tipo === "small" ? this.#imagenesSmall : this.#imagenesFull
     const carpeta = tipo === "small" ? this.#rutaSmall : this.#rutaFull
 
+    return {setIds, carpeta}
+  }
+
+  /** El buscar chequea que la imagen exista antes de devolverla porque es necesario porque
+   * la misma exista para poder ser utilizada.
+   * @param {Number} id
+   */
+  async buscar(id, tipo) {
+    const { setIds, carpeta} = this.#validarTipo(tipo)
+
     if (!setIds.has(id)) return null
 
-    return path.join(carpeta, `${id}.jpg`)
+    const rutaArchivo = path.join(carpeta, `${id}.jpg`)
+    try {
+      const info = await stat(rutaArchivo)
+      if (info.size === 0) {
+        setIds.delete(id)
+        await this.#borrarArchivo(rutaArchivo)
+        return null
+      }
+      return rutaArchivo
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        setIds.delete(id)
+        return null
+      }
+      throw error
+    }
   }
 
   /** Inicializa las carpetas y carga las listas de imagenes full y small existentes en disco */
@@ -95,25 +125,25 @@ export class RepositorioImagenes {
    * @param {"full" | "small"} tipo
    * @returns {Promise<string>} Ruta absoluta de la imagen guardada
    */
-  async agregar(id, buffer, tipo = "full") {
-    const numId = Number(id)
-    const lista = tipo === "small" ? this.#imagenesSmall : this.#imagenesFull
-    const carpeta = tipo === "small" ? this.#rutaSmall : this.#rutaFull
-    const rutaFinal = path.resolve(carpeta, `${numId}.jpg`)
+  async agregar(id, buffer, tipo) {
+    const { setIds, carpeta} = this.#validarTipo(tipo)
+    const rutaArchivo = path.join(carpeta, `${id}.jpg`)
 
     // Si ya fue descargada previamente, no la volvemos a escribir
-    if (lista.has(numId)) return rutaFinal
+    if (setIds.has(id)) return rutaArchivo
 
     if (!buffer || buffer.length === 0) {
-      throw new Error(`El buffer de la imagen ${id} (${tipo}) esta vacio.`)
+      throw new ValidationError(`El buffer de la imagen ${id} (${tipo}) esta vacio.`)
     }
 
-    const rutaTemporal = path.resolve(carpeta, `${numId}.jpg.tmp`)
-
+    // La ruta temporal es usada para asegurar que la img se termine de guardar antes de nombrarse
+    // .jpg, para que todas las imagenes .jpg sean imagenes completas aunque se corte el server en
+    // pleno guardado
+    const rutaTemporal = path.join(carpeta, `${id}.jpg.tmp`)
     await writeFile(rutaTemporal, buffer)
-    await rename(rutaTemporal, rutaFinal)
+    await rename(rutaTemporal, rutaArchivo)
 
-    lista.add(numId)
-    return rutaFinal
+    setIds.add(id)
+    return rutaArchivo
   }
 }
