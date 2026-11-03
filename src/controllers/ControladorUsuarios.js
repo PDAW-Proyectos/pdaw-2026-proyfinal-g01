@@ -54,6 +54,7 @@ export class ControladorUsuarios {
       // La logica de req.session se agregara aca
       await regenerate(req)
       req.session.username = usuario.username
+      req.session.rol = usuario.rol
       res.status(200).json(UsuarioMapper.toDTO(usuario))
     } catch (error) {
       next(error)
