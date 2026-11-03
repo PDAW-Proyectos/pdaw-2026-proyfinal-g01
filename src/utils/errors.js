@@ -38,3 +38,14 @@ export class AuthenticationError extends Error {
     this.status = 401; // 
   }
 }
+
+export class AuthorizationError extends Error {
+  /** Un error personalizado para decir que el usuario autenticado no tiene los permisos necesarios.
+   * @param {string} mensaje
+   */
+  constructor(mensaje) {
+    super(mensaje);
+    this.name = "AuthorizationError";
+    this.statusCode = 403; 
+  }
+}
