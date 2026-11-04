@@ -58,6 +58,6 @@ export class ExternalApiError extends Error {
   constructor(mensaje) {
     super(mensaje)
     this.name = "ExternalApiError"
-    this.statusCode = statusCode
+    this.statusCode = 502
   }
 }
