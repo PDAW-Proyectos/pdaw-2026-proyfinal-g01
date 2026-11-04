@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs"
 import { RepositorioUsuarios } from "../repositories/RepositorioUsuarios.js"
-import { AuthenticationError } from "../utils/errors.js"
+import { AuthenticationError, ConflictError } from "../utils/errors.js"
 import { Usuario } from "../models/Usuario.js"
 
 export class ServicioUsuarios {
@@ -54,5 +54,14 @@ export class ServicioUsuarios {
     }
 
     return usuario
+  }
+
+
+  async eliminar(usuarioAEliminar, adminLogueado) {
+    if (usuarioAEliminar === adminLogueado) {
+      throw new ConflictError("No se puede eliminar tu propia cuenta de administrador.")
+    }
+
+    return await this.#repositorioUsuarios.eliminar(usuarioAEliminar)
   }
 }

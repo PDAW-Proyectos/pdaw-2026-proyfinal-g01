@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line no-unused-vars
 export function errorHandler(err, req, res, next) {
-  const statusCode = err.statusCode ?? err.status ?? 500
+  const statusCode = err.statusCode ?? 500
   const mensaje = statusCode === 500 ? "Error interno del servidor" : err.message
 
   if (statusCode === 500) {
