@@ -72,12 +72,16 @@ export class ControladorUsuarios {
       next(error)
     }
   }
-
+  
   eliminar = async (req, res, next) => {
     try {
       const usuarioAEliminar = req.params.username
+      const usuarioSesionActual = req.session.username
       this.#validarParametro(usuarioAEliminar, "username en URL")
-      await this.#servicioUsuarios.eliminar(usuarioAEliminar)
+
+      //le paso a servicio usuarios para que verifique que no sea el mismo usuario admin de la sesion el que se quiere eliminar a si mismo
+      await this.#servicioUsuarios.eliminar(usuarioAEliminar,usuarioSesionActual)
+
       res.status(200).json({ mensaje: "Usuario eliminado con éxito" })
     } catch (error) {
       next(error)

@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { controladorUsuarios } from "../utils/container.js"
-import { requiereAutenticacion } from "../middlewares/seguridad.middleware.js";
+import { requiereAutenticacion, requiereRol } from "../middlewares/seguridad.middleware.js";
 
 const router = Router()
 
