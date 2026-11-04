@@ -38,3 +38,15 @@ export class AuthenticationError extends Error {
     this.status = 401; // 
   }
 }
+
+export class ExternalApiError extends Error {
+  /** Un error personalizado para indicar un fallo al comunicarse con la API externa.
+   * @param {string} mensaje
+   * @param {Number} [statusCode=502]
+   */
+  constructor(mensaje, statusCode = 502) {
+    super(mensaje)
+    this.name = "ExternalApiError"
+    this.statusCode = statusCode
+  }
+}
