@@ -148,15 +148,6 @@ body {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .navbar {
-        padding: 1rem;
-    }
-
-    .navbar-nav {
-        text-align: center;
-        padding: 1rem 0;
-    }
-
     .register-card {
         padding: 2rem;
     }
