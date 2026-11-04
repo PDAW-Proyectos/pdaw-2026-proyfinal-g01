@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YuGiKi</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <!-- Header con Bootstrap Navbar -->
+    <nav class="navbar navbar-expand-xl navbar-custom sticky-top">
+        <div class="container-fluid">
+            <a href="index.html" class="navbar-brand">YuGiKi</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="text-center navbar-nav me-auto mb-2 mb-lg-0 ms-3">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link nav-link-custom active">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link nav-link-custom">Cartas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="coleccion.html" class="nav-link nav-link-custom">Coleccion</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <a href="login.html" class="btn btn-main btn-main-outline">Iniciar sesion</a>
+                    <a href="registro.html" class="btn btn-main btn-main-primary">Regístrate</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container-custom">
+            <!-- Search Bar -->
+            <div class="search-bar mb-4">
+                <div class="row g-2 align-items-center">
+                    <div class="col-lg-4 col-md-12">
+                        <input type="text" class="form-control search-input" placeholder="Buscar carta por nombre...">
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <select class="form-select filter-select">
+                            <option>Todas las Cartas</option>
+                            <option>Link</option>
+                            <option>Monstruo</option>
+                            <option>Pendulo</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <select class="form-select filter-select">
+                            <option>Atributo</option>
+                            <option>LUZ</option>
+                            <option>DARK</option>
+                            <option>TIERRA</option>
+                            <option>AGUA</option>
+                            <option>FUEGO</option>
+                            <option>VIENTO</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4 col-md-12">
+                        <button class="btn btn-main btn-main-primary w-100 btn-search">Buscar</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Featured Card -->
+            <div class="featured-card">
+                <div class="row align-items-center">
+                    <div class="col-md-5 col-lg-4 d-flex justify-content-center mb-4 mb-md-0">
+                        <img src="img/30397786.jpg" alt="Blue-Eyes White Dragon" class="card-image-large">
+                    </div>
+                    <div class="col-md-7 col-lg-8">
+                        <div class="featured-info">
+                            <h1>Blue-Eyes White Dragon</h1>
+                            <p>Descripcion breve de la carta.</p>
+                            <button class="btn btn-main" style="background: white; color: var(--primary-color);">Ver Detalles</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

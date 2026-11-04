@@ -1,0 +1,179 @@
+:root {
+    --primary-color: #6d4aff;
+    --primary-dark: #5538d4;
+    --secondary-color: #2c1a9c;
+    --background-light: #f8f9fa;
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a4a6a;
+    --border-color: #e0e0e0;
+    --white: #ffffff;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+body {
+    font-family: "Orbitron", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: var(--font-weight, 400);
+    color: var(--text-primary);
+    background-color: var(--background-light);
+    line-height: 1.6;
+}
+
+/* Navbar personalizado */
+.navbar-custom {
+    background-color: var(--white);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 2rem;
+}
+
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--primary-color) !important;
+}
+
+.nav-link-custom {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-link-custom:hover {
+    color: var(--primary-color) !important;
+}
+
+.navbar-toggler {
+    border-color: var(--primary-color);
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.25rem rgba(109, 74, 255, 0.25);
+}
+
+@media (min-width: 1200px) {
+    .navbar-custom .container-fluid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items: center;
+    }
+
+    .navbar-custom .navbar-collapse {
+        display: contents !important;
+    }
+
+    .navbar-custom .navbar-nav {
+        grid-column: 2;
+        justify-self: center;
+        margin: 0 !important;
+    }
+
+    .navbar-custom .navbar-collapse > .d-flex {
+        grid-column: 3;
+        justify-self: end;
+    }
+}
+
+/* Botones personalizados */
+.btn-main {
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 0.9rem;
+    border-radius: 0px;
+}
+
+.btn-main-primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-main-primary:hover {
+    background-color: var(--primary-dark);
+    color: var(--white);
+}
+
+.btn-main-outline {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-main-outline:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+/* Hero Section */
+.hero-section {
+    padding: 2rem 0;
+    margin: 0 30px;
+}
+
+.featured-card {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    padding: 3rem;
+    color: var(--white);
+    border-radius: 0px;
+}
+
+.card-image-large {
+    width: 100%;
+    max-width: 280px;
+    height: 380px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: var(--shadow-md);
+}
+
+.featured-info h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.featured-info p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+}
+
+/* Search Section */
+.search-bar {
+    background: var(--white);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border-radius: 0;
+}
+
+.search-input {
+    font-family: 'Orbitron';
+    border: 2px solid var(--border-color);
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    border-radius: 0px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(109, 74, 255, 0.25);
+}
+.btn-search{
+    padding: 0.5rem 2rem;
+}
+
+.filter-select {
+    font-family: 'Orbitron';
+    border: 2px solid var(--border-color);
+    font-size: 0.95rem;
+    cursor: pointer;
+    min-width: 180px;
+    border-radius: 0px;
+}
+
+.filter-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(109, 74, 255, 0.25);
+}
