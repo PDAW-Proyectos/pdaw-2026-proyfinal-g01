@@ -26,6 +26,10 @@ export class RepositorioImagenes {
   }
 
   // Getters
+  get rutaFull() { return this.#rutaFull }
+
+  get rutaSmall() { return this.#rutaSmall }
+
   /** Copia del Set de los ids de imagenes completas descargadas
    * @returns {Set <Number>}
    */

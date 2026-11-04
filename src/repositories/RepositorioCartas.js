@@ -16,6 +16,8 @@ export class RepositorioCartas {
   }
 
   // Getters
+  get ruta() { return this.#ruta }
+
   /**
    * @returns {Map <Number, Carta>}
    */

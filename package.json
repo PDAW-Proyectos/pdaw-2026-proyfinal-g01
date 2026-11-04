@@ -13,6 +13,12 @@
     "lint": "eslint .",
     "verificar": "npm run lint && npm test"
   },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/testsWithApi/"
+    ]
+  },
   "dependencies": {
     "@types/jest": "^30.0.0",
     "bcryptjs": "^3.0.3",

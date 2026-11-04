@@ -19,6 +19,8 @@ export class RepositorioUsuarios {
   }
 
   // Getters
+  get ruta() { return this.#ruta }
+
   /** Mapa de usuarios con claves de username para rapido acceso
    * @returns {Map <string, Usuario>}
    */

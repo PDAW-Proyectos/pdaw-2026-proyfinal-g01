@@ -21,6 +21,8 @@ export class RepositorioMazos {
   }
 
   // Getters
+  get ruta() { return this.#ruta }
+
   /** Mapa de mazos con claves de id para rapido acceso
    * @returns {Map <Number, Mazo>}
    */
