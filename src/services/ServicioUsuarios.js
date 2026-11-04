@@ -55,4 +55,9 @@ export class ServicioUsuarios {
 
     return usuario
   }
+
+
+  async eliminar(username) {
+    return await this.#repositorioUsuarios.eliminar(username)
+  }
 }
