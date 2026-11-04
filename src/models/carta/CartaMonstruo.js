@@ -20,10 +20,10 @@ export class CartaMonstruo extends Carta {
   constructor(data) {
     super(data)
 
-    this.#atk = data.atk
+    this.#atk = data.atk?? null
     this.#def = data.def?? null
     this.#level = data.level?? null
-    this.#attribute = data.attribute
+    this.#attribute = data.attribute?? null
   }
 
   // Getters

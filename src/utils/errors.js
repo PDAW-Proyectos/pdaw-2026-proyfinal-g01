@@ -61,3 +61,14 @@ export class ExternalApiError extends Error {
     this.statusCode = 502
   }
 }
+
+export class DatabaseError extends Error {
+  /** Un error personalizado para indicar un fallo al leer o actualizar la base de datos local.
+   * @param {string} mensaje
+   */
+  constructor(mensaje) {
+    super(mensaje)
+    this.name = "DatabaseError"
+    this.statusCode = 500
+  }
+}
