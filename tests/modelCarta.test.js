@@ -21,7 +21,9 @@ const datosBase = (extra = {}) => ({
     { image_url: "https://img/1.jpg", image_url_small: "https://img/1_small.jpg" },
     { image_url: "https://img/2.jpg", image_url_small: "https://img/2_small.jpg" }
   ],
-  card_prices: { ebay_price: "1.50", amazon_price: "2.00", cardmarket_price: "0.50" },
+  card_prices: [
+    { ebay_price: "1.50", amazon_price: "2.00", cardmarket_price: "0.50" }
+  ],
   ...extra
 })
 
@@ -76,10 +78,24 @@ describe("Carta", () => {
       ])
     })
 
-    test("guarda solo ebay_price y amazon_price del primer precio", () => {
+    test("copia solo ebay_price y amazon_price de cada precio", () => {
       const carta = new Carta(datosMagia())
 
-      expect(carta.card_prices).toEqual({ ebay_price: "1.50", amazon_price: "2.00" })
+      expect(carta.card_prices).toEqual([{ ebay_price: "1.50", amazon_price: "2.00" }])
+    })
+
+    test("acepta múltiples objetos de precios en card_prices", () => {
+      const carta = new Carta(datosMagia({
+        card_prices: [
+          { ebay_price: "1.50", amazon_price: "2.00" },
+          { ebay_price: "3.50", amazon_price: "4.00" }
+        ]
+      }))
+
+      expect(carta.card_prices).toEqual([
+        { ebay_price: "1.50", amazon_price: "2.00" },
+        { ebay_price: "3.50", amazon_price: "4.00" }
+      ])
     })
 
     test("card_images devuelve una copia y no la lista interna", () => {
@@ -94,6 +110,12 @@ describe("Carta", () => {
       const carta = new Carta(datosMagia({ card_images: [] }))
 
       expect(carta.card_images).toEqual([])
+    })
+
+    test("acepta una lista de precios vacía", () => {
+      const carta = new Carta(datosMagia({ card_prices: [] }))
+
+      expect(carta.card_prices).toEqual([])
     })
 
     test("guarda la información de banlist cuando se proporciona", () => {
@@ -116,12 +138,20 @@ describe("Carta", () => {
       expect(carta.banlist_info).toEqual({ ban_tcg: "Banned" })
     })
 
-    test("card_prices devuelve una copia y no el objeto interno", () => {
+    test("card_prices devuelve una copia y no la lista interna", () => {
       const carta = new Carta(datosMagia())
       const precios = carta.card_prices
-      precios.ebay_price = "999"
+      precios.push({ ebay_price: "999", amazon_price: "999" })
 
-      expect(carta.card_prices.ebay_price).toBe("1.50")
+      expect(carta.card_prices).toHaveLength(1)
+    })
+
+    test("modificar un objeto en card_prices no modifica el objeto interno", () => {
+      const carta = new Carta(datosMagia())
+      const precios = carta.card_prices
+      precios[0].ebay_price = "999"
+
+      expect(carta.card_prices[0].ebay_price).toBe("1.50")
     })
 
     test("lanza un error si falta card_images", () => {
@@ -148,7 +178,9 @@ describe("Carta", () => {
           { image_url: "https://img/1.jpg", image_url_small: "https://img/1_small.jpg" },
           { image_url: "https://img/2.jpg", image_url_small: "https://img/2_small.jpg" }
         ],
-        card_prices: { ebay_price: "1.50", amazon_price: "2.00" }
+        card_prices: [
+          { ebay_price: "1.50", amazon_price: "2.00" }
+        ]
       })
     })
 
