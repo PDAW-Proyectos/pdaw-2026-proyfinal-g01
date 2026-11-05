@@ -29,7 +29,7 @@ async function realizarPeticion(url, tipoEsperado) {
   return respuesta
 }
 
-export async function obtenerCartas() {
+export async function descargarCartas() {
   const respuesta = await realizarPeticion(URL_CARTAS, "application/json")
   const payload = await respuesta.json()
 
