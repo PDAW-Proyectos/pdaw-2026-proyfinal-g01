@@ -1,7 +1,7 @@
-import { stat } from "node:fs/promises"
-import { obtenerCartas } from "../clients/ClienteApiYgo.js"
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
+import { descargarCartas } from "../clients/ClienteApiYgo.js"
 import { DatabaseError } from "../utils/errors.js"
+import { stat } from "node:fs/promises"
 
 const UNA_SEMANA_MS = 7 * 24 * 60 * 60 * 1000
 const MAX_REINTENTOS = 3
@@ -25,7 +25,7 @@ export class ServicioCartas {
     let intentos = 1
     while (intentos <= MAX_REINTENTOS) {
       try {
-        const datosCartas = await obtenerCartas()
+        const datosCartas = await descargarCartas()
         await this.#repositorioCartas.guardar(datosCartas)
         return
       } catch (error) {
