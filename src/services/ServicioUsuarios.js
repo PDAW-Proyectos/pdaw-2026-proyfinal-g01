@@ -1,22 +1,27 @@
 import bcrypt from "bcryptjs"
 import { RepositorioUsuarios } from "../repositories/RepositorioUsuarios.js"
-import { AuthenticationError, ConflictError } from "../utils/errors.js"
+import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
+import { AuthenticationError, ConflictError, NotFoundError } from "../utils/errors.js"
 import { Usuario } from "../models/Usuario.js"
 
 export class ServicioUsuarios {
   #repositorioUsuarios
+  #repositorioMazos
 
-  /** Inicia el servicio con el repositorio dado, maneja el RepositorioUsuarios.
+  /**
    * @param {RepositorioUsuarios} repositorioUsuarios
-   * @throws TypeError si el parametro no de la clase usada por el servicio.
+   * @param {RepositorioMazos} repositorioMazos
    */
-  constructor(repositorioUsuarios) {
+  constructor(repositorioUsuarios, repositorioMazos) {
     // Validaciones
     if (!(repositorioUsuarios instanceof RepositorioUsuarios)) {
       throw new TypeError("El servicio se tiene que crear con un RepositorioUsuarios")
     }
-
+    if (!(repositorioMazos instanceof RepositorioMazos)) {
+      throw new TypeError("El servicio se tiene que crear con un RepositorioMazos")
+    }
     this.#repositorioUsuarios = repositorioUsuarios
+    this.#repositorioMazos = repositorioMazos
   }
 
   // Methods
@@ -61,7 +66,31 @@ export class ServicioUsuarios {
     if (usuarioAEliminar === adminLogueado) {
       throw new ConflictError("No se puede eliminar tu propia cuenta de administrador.")
     }
+    const usuario = this.#repositorioUsuarios.buscar(usuarioAEliminar)
+    if (!usuario) {
+      throw new NotFoundError(`El usuario "${usuarioAEliminar}" no existe.`)
+    }
+
+    //borrado de los mazos en la base de datos
+    for (const idMazo of usuario.mazos) {
+      try {
+        await this.#repositorioMazos.eliminar(idMazo)
+      } catch (error) {
+        //ignoro si el mazo ya no existe 
+      }
+    }
 
     return await this.#repositorioUsuarios.eliminar(usuarioAEliminar)
+  }
+
+obtenerMazosDeUsuario(username) {
+    const usuario = this.#repositorioUsuarios.buscar(username)
+    if (!usuario) {
+      throw new NotFoundError(`El usuario "${username}" no existe.`)
+    }
+    //retorna un arreglo de objetos mazo completos y si no tiene nada retorna un arreglo vacio
+    return usuario.mazos
+      .map(idMazo => this.#repositorioMazos.buscar(idMazo))
+      .filter(mazo => mazo !== null)
   }
 }
