@@ -1,6 +1,7 @@
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
 import { descargarCartas } from "../clients/ClienteApiYgo.js"
-import { DatabaseError } from "../utils/errors.js"
+import { DatabaseError, NotFoundError } from "../utils/errors.js"
+import { filtrarCartas } from "../utils/filtroCartas.js"
 import { stat } from "node:fs/promises"
 
 const UNA_SEMANA_MS = 7 * 24 * 60 * 60 * 1000
@@ -64,5 +65,35 @@ export class ServicioCartas {
     } else {
       setInterval(() => { this.#descargarDesdeApi() }, UNA_SEMANA_MS).unref()
     }
+  }
+
+  /** Lista todas las cartas o las filtra segun los atributos proporcionados.
+   * @param {Object} [filtros={}]
+   * @returns {Array<import("../models/carta/Carta.js").Carta>}
+   * @throws {NotFoundError} Si no se encuentran cartas que coincidan con la busqueda.
+   */
+  listarCartas(filtros = {}) {
+    const todasLasCartas = Array.from(this.#repositorioCartas.cartas.values())
+    const resultados = filtrarCartas(todasLasCartas, filtros)
+
+    if (resultados.length === 0) {
+      throw new NotFoundError("No se encontraron cartas que coincidan con los criterios de busqueda.")
+    }
+
+    return resultados
+  }
+
+  /** Obtiene una carta especifica a partir de su ID.
+   * @param {Number} idCarta
+   * @returns {import("../models/carta/Carta.js").Carta}
+   * @throws {NotFoundError} Si la carta no existe en el repositorio.
+   */
+  obtenerCarta(idCarta) {
+    const carta = this.#repositorioCartas.buscar(Number(idCarta))
+    if (!carta) {
+      throw new NotFoundError(`La carta asociada al id "${idCarta}" no existe.`)
+    }
+
+    return carta
   }
 }

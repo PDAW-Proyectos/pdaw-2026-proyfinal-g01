@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url"
 import { jest } from "@jest/globals"
 import { RepositorioCartas } from "../src/repositories/RepositorioCartas.js"
 import { ServicioCartas } from "../src/services/ServicioCartas.js"
-import { DatabaseError } from "../src/utils/errors.js"
+import { DatabaseError, NotFoundError, ValidationError } from "../src/utils/errors.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const carpetaDataTest = path.resolve(__dirname, "..", "dataTest")
@@ -64,6 +64,57 @@ const payloadApiMock = () => ({
           amazon_price: "4.00"
         }
       ]
+    },
+    {
+      id: 16178681,
+      name: "Odd-Eyes Pendulum Dragon",
+      type: "Pendulum Effect Monster",
+      frameType: "effect_pendulum",
+      desc: "If this card battles an opponent's monster, any battle damage this card inflicts to your opponent is doubled.",
+      atk: 2500,
+      def: 2000,
+      level: 7,
+      scale: 4,
+      race: "Dragon",
+      attribute: "DARK",
+      card_images: [
+        {
+          id: 16178681,
+          image_url: "https://images.ygoprodeck.com/images/cards/16178681.jpg",
+          image_url_small: "https://images.ygoprodeck.com/images/cards_small/16178681.jpg"
+        }
+      ],
+      card_prices: [
+        {
+          ebay_price: "1.20",
+          amazon_price: "1.80"
+        }
+      ]
+    },
+    {
+      id: 1861629,
+      name: "Decode Talker",
+      type: "Link Monster",
+      frameType: "link",
+      desc: "2+ Effect Monsters. Gains 500 ATK for each monster it points to.",
+      atk: 2300,
+      race: "Cyberse",
+      attribute: "DARK",
+      linkval: 3,
+      linkmarkers: ["Top", "Bottom-Left", "Bottom-Right"],
+      card_images: [
+        {
+          id: 1861629,
+          image_url: "https://images.ygoprodeck.com/images/cards/1861629.jpg",
+          image_url_small: "https://images.ygoprodeck.com/images/cards_small/1861629.jpg"
+        }
+      ],
+      card_prices: [
+        {
+          ebay_price: "0.99",
+          amazon_price: "1.50"
+        }
+      ]
     }
   ]
 })
@@ -103,7 +154,7 @@ describe("ServicioCartas + RepositorioCartas (Test Temporal)", () => {
     await servicio.cargarCartas()
 
     // 1. Verifica que se cargaron las cartas en memoria en RepositorioCartas
-    expect(repo.cantidadTotal()).toBe(2)
+    expect(repo.cantidadTotal()).toBe(4)
     const darkMagician = repo.buscar(46986414)
     expect(darkMagician.name).toBe("Dark Magician")
     expect(darkMagician.atk).toBe(2500)
@@ -112,7 +163,7 @@ describe("ServicioCartas + RepositorioCartas (Test Temporal)", () => {
     // 2. Verifica que el archivo JSON se escribió correctamente en disco
     expect(await existe(rutaDb)).toBe(true)
     const contenidoDisco = JSON.parse(await readFile(rutaDb, "utf8"))
-    expect(Object.keys(contenidoDisco)).toHaveLength(2)
+    expect(Object.keys(contenidoDisco)).toHaveLength(4)
     expect(contenidoDisco["46986414"].name).toBe("Dark Magician")
     expect(contenidoDisco["55144522"].banlist_info).toEqual({ ban_tcg: "Banned" })
   })
@@ -174,5 +225,74 @@ describe("ServicioCartas + RepositorioCartas (Test Temporal)", () => {
 
     await expect(servicio.cargarCartas()).rejects.toThrow(DatabaseError)
     expect(fetchSpy).toHaveBeenCalledTimes(3)
+  })
+
+  describe("obtenerCarta", () => {
+    test("obtiene una carta específica por su ID", async () => {
+      const repo = new RepositorioCartas(rutaDb)
+      await repo.guardar(payloadApiMock().data)
+      const servicio = new ServicioCartas(repo)
+
+      const carta = servicio.obtenerCarta(46986414)
+      expect(carta.id).toBe(46986414)
+      expect(carta.name).toBe("Dark Magician")
+    })
+
+    test("lanza NotFoundError si la carta no existe", async () => {
+      const repo = new RepositorioCartas(rutaDb)
+      await repo.guardar(payloadApiMock().data)
+      const servicio = new ServicioCartas(repo)
+
+      expect(() => servicio.obtenerCarta(99999999)).toThrow(NotFoundError)
+    })
+  })
+
+  describe("listarCartas", () => {
+    test("lista todas las cartas cuando no se pasan filtros", async () => {
+      const repo = new RepositorioCartas(rutaDb)
+      await repo.guardar(payloadApiMock().data)
+      const servicio = new ServicioCartas(repo)
+
+      const cartas = servicio.listarCartas()
+      expect(cartas).toHaveLength(4)
+    })
+
+    test("filtra por los atributos permitidos (name, frameType, race, atk, def, level, attribute, scale, linkval)", async () => {
+      const repo = new RepositorioCartas(rutaDb)
+      await repo.guardar(payloadApiMock().data)
+      const servicio = new ServicioCartas(repo)
+
+      expect(servicio.listarCartas({ name: "magician" })[0].name).toBe("Dark Magician")
+      expect(servicio.listarCartas({ frameType: "link" })[0].name).toBe("Decode Talker")
+      expect(servicio.listarCartas({ race: "Dragon" })[0].name).toBe("Odd-Eyes Pendulum Dragon")
+      expect(servicio.listarCartas({ atk: 2500 })).toHaveLength(2)
+      expect(servicio.listarCartas({ atk: 2500, def: 2100 })[0].name).toBe("Dark Magician")
+      expect(servicio.listarCartas({ level: 7, scale: 4 })[0].name).toBe("Odd-Eyes Pendulum Dragon")
+      expect(servicio.listarCartas({ attribute: "DARK" })).toHaveLength(3)
+      expect(servicio.listarCartas({ linkval: 3 })[0].name).toBe("Decode Talker")
+    })
+
+    test("lanza ValidationError si se pasa un atributo no permitido o un número inválido", async () => {
+      const repo = new RepositorioCartas(rutaDb)
+      await repo.guardar(payloadApiMock().data)
+      const servicio = new ServicioCartas(repo)
+
+      expect(() => servicio.listarCartas({ id: 46986414 })).toThrow(ValidationError)
+      expect(() => servicio.listarCartas({ type: "Spell Card" })).toThrow(ValidationError)
+      expect(() => servicio.listarCartas({ desc: "Draw 2 cards" })).toThrow(ValidationError)
+      expect(() => servicio.listarCartas({ ban_tcg: "Banned" })).toThrow(ValidationError)
+      expect(() => servicio.listarCartas({ linkmarkers: ["Top"] })).toThrow(ValidationError)
+      expect(() => servicio.listarCartas({ atk: "no-es-numero" })).toThrow(ValidationError)
+    })
+
+    test("lanza NotFoundError cuando ninguna carta coincide con los filtros o el repositorio está vacío", async () => {
+      const repo = new RepositorioCartas(rutaDb)
+      const servicio = new ServicioCartas(repo)
+
+      expect(() => servicio.listarCartas()).toThrow(NotFoundError)
+
+      await repo.guardar(payloadApiMock().data)
+      expect(() => servicio.listarCartas({ name: "Blue-Eyes White Dragon" })).toThrow(NotFoundError)
+    })
   })
 })
