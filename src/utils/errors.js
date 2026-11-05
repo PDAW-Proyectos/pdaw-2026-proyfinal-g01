@@ -35,6 +35,40 @@ export class AuthenticationError extends Error {
   constructor(mensaje) {
     super(mensaje);
     this.name = "AuthenticationError";
-    this.status = 401; // 
+    this.statusCode = 401; //
+  }
+}
+
+export class AuthorizationError extends Error {
+  /** Un error personalizado para decir que el usuario autenticado no tiene los permisos necesarios.
+   * @param {string} mensaje
+   */
+  constructor(mensaje) {
+    super(mensaje);
+    this.name = "AuthorizationError";
+    this.statusCode = 403;
+  }
+}
+
+export class ExternalApiError extends Error {
+  /** Un error personalizado para indicar un fallo al comunicarse con la API externa.
+   * @param {string} mensaje
+   * @param {Number} [statusCode=502]
+   */
+  constructor(mensaje) {
+    super(mensaje)
+    this.name = "ExternalApiError"
+    this.statusCode = 502
+  }
+}
+
+export class DatabaseError extends Error {
+  /** Un error personalizado para indicar un fallo al leer o actualizar la base de datos local.
+   * @param {string} mensaje
+   */
+  constructor(mensaje) {
+    super(mensaje)
+    this.name = "DatabaseError"
+    this.statusCode = 500
   }
 }

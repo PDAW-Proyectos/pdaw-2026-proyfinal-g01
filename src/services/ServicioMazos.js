@@ -1,6 +1,6 @@
-import { NotFoundError, ValidationError } from "../utils/errors.js"
 import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
+import { NotFoundError, ValidationError } from "../utils/errors.js"
 
 const TIPOS_EXTRA_DECK = ["fusion", "synchro", "xyz", "link", "fusion_pendulum", "synchro_pendulum", "xyz_pendulum"]
 
@@ -65,8 +65,9 @@ export class ServicioMazos {
     let total = 0;
     [...mazo.mainDeck, ...mazo.extraDeck].forEach(id => {
       const carta = this.#repositorioCartas.buscar(id)
-      const precioEbay = Number(carta.card_prices.ebay_price)
-      const precioAmazon = Number(carta.card_prices.amazon_price)
+      const primerPrecio = carta?.card_prices?.[0]
+      const precioEbay = Number(primerPrecio?.ebay_price ?? 0)
+      const precioAmazon = Number(primerPrecio?.amazon_price ?? 0)
       total += Math.max(precioEbay, precioAmazon)
     })
     return Number(total.toFixed(2))

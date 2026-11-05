@@ -11,16 +11,19 @@ export class Usuario {
   #nombre
   #username
   #contraseña
+  #rol
   #mazos
+
 
   /**
    * @param {Object} datos // es el objeto que se recibe para crear el usuario
    * @param {string} datos.nombre
    * @param {string} datos.username
    * @param {string} datos.contraseña
+   * @param {string} [datos.rol='usuario']
    * @param {Array<number>} [datos.mazos=[]]
    */
-  constructor({ nombre, username, contraseña, mazos = [] }) {
+  constructor({ nombre, username, contraseña,rol = 'usuario', mazos = [] }) {
     // Validaciones
     if (typeof nombre !== "string" || nombre.trim() === "") {
       throw new ValidationError("El nombre no puede estar vacio")
@@ -31,6 +34,9 @@ export class Usuario {
     if (typeof contraseña !== "string" || contraseña.trim() === "") {
       throw new ValidationError("La contraseña no puede estar vacia")
     }
+    if (rol !== 'usuario' && rol !== 'admin') {
+      throw new ValidationError("Rol inválido. Debe ser 'usuario' o 'admin'.")
+    }
     if (mazos.length > MAX_MAZOS) {
       throw new ValidationError(`El usuario no puede tener mas de ${MAX_MAZOS} mazos.`)
     }
@@ -38,6 +44,7 @@ export class Usuario {
     this.#nombre = nombre.trim()
     this.#username = username.trim()
     this.#contraseña = contraseña
+    this.#rol = rol
     this.#mazos = [...mazos]
   }
 
@@ -49,6 +56,9 @@ export class Usuario {
 
   /** @returns {string} */
   get contraseña() { return this.#contraseña }
+
+  /** @returns {string} */
+  get rol() { return this.#rol }
 
   /** @returns {Array <number>} */
   get mazos() { return [...this.#mazos] }
@@ -62,6 +72,7 @@ export class Usuario {
       nombre: this.#nombre,
       username: this.#username,
       contraseña: this.#contraseña,
+      rol: this.#rol,
       mazos: [...this.#mazos]
     }
   }
@@ -75,6 +86,7 @@ export class Usuario {
       nombre: data.nombre,
       username: data.username,
       contraseña: data.contraseña,
+      rol: data.rol,
       mazos: data.mazos
     })
   }

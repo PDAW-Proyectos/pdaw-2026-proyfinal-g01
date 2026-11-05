@@ -54,6 +54,7 @@ export class ControladorUsuarios {
       // La logica de req.session se agregara aca
       await regenerate(req)
       req.session.username = usuario.username
+      req.session.rol = usuario.rol
       res.status(200).json(UsuarioMapper.toDTO(usuario))
     } catch (error) {
       next(error)
@@ -68,6 +69,32 @@ export class ControladorUsuarios {
       await destroy(req)
       res.clearCookie('wiki.sid').status(200).end()
     }catch(error){
+      next(error)
+    }
+  }
+  
+  eliminar = async (req, res, next) => {
+    try {
+      const usuarioAEliminar = req.params.username
+      const usuarioSesionActual = req.session.username
+      this.#validarParametro(usuarioAEliminar, "username en URL")
+
+      //le paso a servicio usuarios para que verifique que no sea el mismo usuario admin de la sesion el que se quiere eliminar a si mismo
+      await this.#servicioUsuarios.eliminar(usuarioAEliminar,usuarioSesionActual)
+
+      res.status(200).json({ mensaje: "Usuario eliminado con éxito" })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  obtenerMisMazos = (req, res, next) => {
+    try {
+      const username = req.session.username
+      const mazos = this.#servicioUsuarios.obtenerMazosDeUsuario(username)
+
+      res.status(200).json(mazos)
+    } catch (error) {
       next(error)
     }
   }

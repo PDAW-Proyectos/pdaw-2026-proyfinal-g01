@@ -1,4 +1,5 @@
 import { ServicioMazos } from "../services/ServicioMazos.js"
+import { ValidationError } from "../utils/errors.js"
 
 export class ControladorMazos {
   #servicioMazos

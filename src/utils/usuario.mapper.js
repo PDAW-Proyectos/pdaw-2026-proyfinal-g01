@@ -4,6 +4,7 @@ export class UsuarioMapper {
     return {
       nombre: usuario.nombre,
       username: usuario.username,
+      rol: usuario.rol,
       mazos: usuario.mazos
     }
   }

@@ -1,5 +1,6 @@
 import { Router } from "express"
 import { controladorMazos } from "../utils/container.js"
+import { requiereAutenticacion } from "../middlewares/seguridad.middleware.js"
 
 const router = Router()
 
@@ -9,11 +10,11 @@ router.get("/:id", controladorMazos.obtenerMazo)
 router.get("/:id/detallado", controladorMazos.obtenerMazoDetallado)
 router.get("/:id/precio", controladorMazos.obtenerPrecioTotal)
 
-router.post("/", controladorMazos.crearMazo)
-router.put("/:id", controladorMazos.actualizarMazo)
-router.delete("/:id", controladorMazos.eliminarMazo)
+router.post("/",requiereAutenticacion , controladorMazos.crearMazo)
+router.put("/:id",requiereAutenticacion , controladorMazos.actualizarMazo)
+router.delete("/:id",requiereAutenticacion , controladorMazos.eliminarMazo)
 
-router.post("/:id/cartas", controladorMazos.agregarCarta)
-router.delete("/:id/cartas/:idCarta", controladorMazos.eliminarCarta)
+router.post("/:id/cartas",requiereAutenticacion , controladorMazos.agregarCarta)
+router.delete("/:id/cartas/:idCarta",requiereAutenticacion , controladorMazos.eliminarCarta)
 
 export default router

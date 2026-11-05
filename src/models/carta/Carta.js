@@ -16,8 +16,8 @@ export class Carta {
   #banlist_info = {}
   /** @type {Array <Object>} */
   #card_images = []
-  /** @type {Object} */
-  #card_prices
+  /** @type {Array <Object>} */
+  #card_prices = []
 
   /** Una Carta necesita los datos id, name, type, frameType, race, desc, card_images, card_prices.
    * @param {Object} data
@@ -38,9 +38,11 @@ export class Carta {
         image_url_small: url.image_url_small
       })
     }
-    this.#card_prices = {
-      ebay_price: card_prices.ebay_price ?? 0,
-      amazon_price: card_prices.amazon_price ?? 0
+    for (const precio of card_prices) {
+      this.#card_prices.push({
+        ebay_price: precio.ebay_price ?? 0,
+        amazon_price: precio.amazon_price ?? 0
+      })
     }
   }
 
@@ -69,8 +71,8 @@ export class Carta {
   /** Array de Object con los valores image_url y image_url_small */
   get card_images() { return [...this.#card_images] }
 
-  /** Object con los valores ebay_price y amazon_price */
-  get card_prices() { return {...this.#card_prices} }
+  /** Array de Object con los valores ebay_price y amazon_price */
+  get card_prices() { return this.#card_prices.map((precio) => ({ ...precio })) }
 
   // Methods
   /** Transforma los atributos de la carta en un Object generico para poder guardarlo en un archivo JSON.

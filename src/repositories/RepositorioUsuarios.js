@@ -19,6 +19,8 @@ export class RepositorioUsuarios {
   }
 
   // Getters
+  get ruta() { return this.#ruta }
+
   /** Mapa de usuarios con claves de username para rapido acceso
    * @returns {Map <string, Usuario>}
    */
@@ -65,7 +67,7 @@ export class RepositorioUsuarios {
     try {
       const contenido = await readFile(this.#ruta, "utf8")
       const data = JSON.parse(contenido)
-      Object.entries(data).map(([username, dataUsuario]) => {
+      Object.entries(data).forEach(([username, dataUsuario]) => {
         this.#usuarios.set(username, Usuario.fromJSON(dataUsuario))
       })
     } catch (error) {

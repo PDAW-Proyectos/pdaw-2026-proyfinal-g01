@@ -21,7 +21,11 @@ export class RepositorioMazos {
   }
 
   // Getters
-  /** Mapa de mazos con claves de id para rapido acceso */
+  get ruta() { return this.#ruta }
+
+  /** Mapa de mazos con claves de id para rapido acceso
+   * @returns {Map <Number, Mazo>}
+   */
   get mazos() {
     const copia = new Map()
     for (const [id, mazo] of this.#mazos) {
@@ -61,13 +65,13 @@ export class RepositorioMazos {
     try {
       const contenido = await readFile(this.#ruta, "utf8")
       const data = JSON.parse(contenido)
-      Object.entries(data).map(([id, dataMazo]) => {
+      for (const dataMazo of  Object.values(data)) {
         if (dataMazo.id >= this.#proximoId) {
           this.#proximoId = dataMazo.id + 1
         }
 
         this.#mazos.set(dataMazo.id, Mazo.fromJSON(dataMazo))
-      })
+      }
     } catch (error) {
       if (error.code === "ENOENT") {
         this.#mazos = new Map()

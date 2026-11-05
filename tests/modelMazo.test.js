@@ -1,5 +1,5 @@
 import { Mazo } from "../src/models/Mazo.js"
-import { ValidationError } from "../src/errors.js"
+import { ValidationError } from "../src/utils/errors.js"
 
 // ---------------------------------------------------------------------------
 // Datos de prueba reutilizables
@@ -148,10 +148,10 @@ describe("Mazo", () => {
   })
 
   describe("agregarCarta()", () => {
-    test("agrega una carta a mainDeck por defecto y devuelve true", () => {
+    test("agrega una carta a mainDeck cuando destino es 'main' y devuelve true", () => {
       const mazo = new Mazo({ id: 1, nombre: "Mazo" })
 
-      const resultado = mazo.agregarCarta(500)
+      const resultado = mazo.agregarCarta(500, "none", "main")
 
       expect(resultado).toBe(true)
       expect(mazo.mainDeck).toEqual([500])
@@ -173,7 +173,7 @@ describe("Mazo", () => {
       (idCartaInvalido) => {
         const mazo = new Mazo({ id: 1, nombre: "Mazo" })
 
-        expect(() => mazo.agregarCarta(idCartaInvalido)).toThrow(ValidationError)
+        expect(() => mazo.agregarCarta(idCartaInvalido, "none", "main")).toThrow(ValidationError)
       }
     )
 
