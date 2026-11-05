@@ -73,8 +73,8 @@ export class ServicioCartas {
    * @throws {NotFoundError} Si no se encuentran cartas que coincidan con la busqueda.
    */
   listarCartas(filtros = {}) {
-    const todasLasCartas = Array.from(this.#repositorioCartas.cartas.values())
-    const resultados = filtrarCartas(todasLasCartas, filtros)
+    const arrayCartas = Array.from(this.#repositorioCartas.cartas.values())
+    const resultados = filtrarCartas(arrayCartas, filtros)
 
     if (resultados.length === 0) {
       throw new NotFoundError("No se encontraron cartas que coincidan con los criterios de busqueda.")
