@@ -75,7 +75,7 @@ export class ServicioUsuarios {
     for (const idMazo of usuario.mazos) {
       try {
         await this.#repositorioMazos.eliminar(idMazo)
-      } catch (error) {
+      } catch {
         //ignoro si el mazo ya no existe 
       }
     }
