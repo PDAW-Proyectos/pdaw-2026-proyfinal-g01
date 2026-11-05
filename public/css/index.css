@@ -123,7 +123,6 @@ body {
     width: 100%;
     max-width: 280px;
     height: 380px;
-    border-radius: 12px;
     object-fit: cover;
     box-shadow: var(--shadow-md);
 }
@@ -176,4 +175,119 @@ body {
 .filter-select:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.25rem rgba(109, 74, 255, 0.25);
+}
+
+/* Cards Grid */
+.cards-grid{
+    margin: 0 30px;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.card-item {
+    background: var(--white);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+}
+
+.card-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.card-item img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.card-item-info {
+    padding: 1rem;
+}
+
+.card-item-name {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.card-item-type {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Footer */
+.footer {
+    background-color: var(--text-primary);
+    color: var(--white);
+    padding: 3rem 0;
+    margin-top: 4rem;
+}
+
+.footer-section h3 {
+    padding-left: 32px;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section li {
+    margin-bottom: 0.8rem;
+}
+
+.footer-section a {
+    color: #ccc;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: var(--primary-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .featured-card {
+        padding: 2rem;
+    }
+
+    .featured-info h1 {
+        font-size: 1.8rem;
+    }
+
+    .card-image-large {
+        max-width: 200px;
+        height: 270px;
+    }
+
+    .search-bar {
+        padding: 1rem;
+    }
+
+    .footer {
+        padding: 2rem 0;
+    }
+}
+
+/* Utility Bootstrap overrides */
+.container-custom {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+@media (max-width: 1400px) {
+    .container-custom {
+        padding: 0 1rem;
+    }
 }
