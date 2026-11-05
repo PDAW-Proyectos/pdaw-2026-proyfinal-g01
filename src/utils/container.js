@@ -28,7 +28,7 @@ await repositorioUsuarios.cargar()
 // El servicio se carga usando los repositorios necesarios ej:
 // export const ServicioUsuarios = new ServicioUsuarios(repositorioUsuarios, repositorioMazos)
 export const servicioMazos = new ServicioMazos(repositorioMazos, repositorioCartas)
-export const servicioUsuarios = new ServicioUsuarios(repositorioUsuarios)
+export const servicioUsuarios = new ServicioUsuarios(repositorioUsuarios,repositorioMazos)
 
 // Por ultimo se los conecta a los controladores
 // export const controladorUsuarios = new ControladorMazos(servicioUsuarios)
