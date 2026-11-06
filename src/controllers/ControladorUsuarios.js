@@ -87,4 +87,15 @@ export class ControladorUsuarios {
       next(error)
     }
   }
+
+  obtenerMisMazos = (req, res, next) => {
+    try {
+      const username = req.session.username
+      const mazos = this.#servicioUsuarios.obtenerMazosDeUsuario(username)
+
+      res.status(200).json(mazos)
+    } catch (error) {
+      next(error)
+    }
+  }
 }
