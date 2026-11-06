@@ -16,6 +16,7 @@ const DESTINOS_PERMITIDOS = ["main", "extra"]
  */
 export class Mazo {
   #id
+  #username
   #nombre
   #mainDeck
   #extraDeck
@@ -23,14 +24,18 @@ export class Mazo {
   /**
    * @param {Object} datos //es el objeto que se recibe para crear el mazo
    * @param {number} datos.id
+   * @param {string} datos.username
    * @param {string} datos.nombre
    * @param {Array<number>} [datos.mainDeck=[]]
    * @param {Array<number>} [datos.extraDeck=[]]
    */
-  constructor({ id, nombre, mainDeck = [], extraDeck = [] }) {
+  constructor({ id, username, nombre, mainDeck = [], extraDeck = [] }) {
     // Validaciones
     if (!Number.isInteger(id) || id <= 0) {
       throw new ValidationError("El id de la carta debe ser un entero positivo")
+    }
+    if (typeof username !== "string" || username.trim() === "") {
+      throw new ValidationError("El username no puede estar vacio")
     }
     if (typeof nombre !== "string" || nombre.trim() === "") {
       throw new ValidationError("El nombre no puede estar vacio")
@@ -43,6 +48,7 @@ export class Mazo {
     }
 
     this.#id = id
+    this.#username = username.trim()
     this.#nombre = nombre.trim()
     this.#mainDeck = [...mainDeck]
     this.#extraDeck = [...extraDeck]
@@ -50,6 +56,9 @@ export class Mazo {
 
   /** @returns {number} */
   get id() { return this.#id }
+
+  /** @returns {string} */
+  get username() { return this.#username }
 
   /** @returns {string} */
   get nombre() { return this.#nombre }
@@ -73,6 +82,7 @@ export class Mazo {
   toJSON() {
     return {
       id: this.#id,
+      username: this.#username,
       nombre: this.#nombre,
       mainDeck: [...this.#mainDeck],
       extraDeck: [...this.#extraDeck]
@@ -86,6 +96,7 @@ export class Mazo {
   static fromJSON(data) {
     return new Mazo({
       id: data.id,
+      username: data.username,
       nombre: data.nombre,
       mainDeck: data.mainDeck,
       extraDeck: data.extraDeck

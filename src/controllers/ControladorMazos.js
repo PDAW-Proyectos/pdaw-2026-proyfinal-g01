@@ -71,7 +71,11 @@ export class ControladorMazos {
 
   crearMazo = async (req, res, next) => {
     try {
-      const nuevoMazo = await this.#servicioMazos.crearMazo(req.body)
+      const datosMazo = {
+        ...req.body,
+        username: req.session?.username ?? req.body?.username
+      }
+      const nuevoMazo = await this.#servicioMazos.crearMazo(datosMazo)
 
       res.status(201).json(nuevoMazo)
     } catch (error) {

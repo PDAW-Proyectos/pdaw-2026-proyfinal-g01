@@ -7,8 +7,6 @@ const router = Router()
 // Muchas de las rutas son nuevas tenemos que añadirlas a la tabla
 router.get("/", controladorMazos.listarMazos)
 router.get("/:id", controladorMazos.obtenerMazo)
-router.get("/:id/detallado", controladorMazos.obtenerMazoDetallado)
-router.get("/:id/precio", controladorMazos.obtenerPrecioTotal)
 
 router.post("/",requiereAutenticacion , controladorMazos.crearMazo)
 router.put("/:id",requiereAutenticacion , controladorMazos.actualizarMazo)

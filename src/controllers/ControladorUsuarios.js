@@ -72,7 +72,7 @@ export class ControladorUsuarios {
       next(error)
     }
   }
-  
+
   eliminar = async (req, res, next) => {
     try {
       const usuarioAEliminar = req.params.username
@@ -83,17 +83,6 @@ export class ControladorUsuarios {
       await this.#servicioUsuarios.eliminar(usuarioAEliminar,usuarioSesionActual)
 
       res.status(200).json({ mensaje: "Usuario eliminado con éxito" })
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  obtenerMisMazos = (req, res, next) => {
-    try {
-      const username = req.session.username
-      const mazos = this.#servicioUsuarios.obtenerMazosDeUsuario(username)
-
-      res.status(200).json(mazos)
     } catch (error) {
       next(error)
     }
