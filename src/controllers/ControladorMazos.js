@@ -71,7 +71,8 @@ export class ControladorMazos {
 
   crearMazo = async (req, res, next) => {
     try {
-      const nuevoMazo = await this.#servicioMazos.crearMazo(req.body)
+      const username = req.session.username
+      const nuevoMazo = await this.#servicioMazos.crearMazo(req.body, username)
 
       res.status(201).json(nuevoMazo)
     } catch (error) {
@@ -82,9 +83,10 @@ export class ControladorMazos {
   actualizarMazo = async (req, res, next) => {
     try {
       const { id } = req.params
+      const username = req.session.username
       this.#validarParametro(id, "id")
       this.#validarParametro(req.body, "body")
-      const mazoActualizado = await this.#servicioMazos.actualizarMazo(id, req.body)
+      const mazoActualizado = await this.#servicioMazos.actualizarMazo(id, req.body, username)
 
       res.status(200).json(mazoActualizado)
     } catch (error) {
@@ -95,8 +97,9 @@ export class ControladorMazos {
   eliminarMazo = async (req, res, next) => {
     try {
       const { id } = req.params
+      const username = req.session.username
       this.#validarParametro(id, "id")
-      await this.#servicioMazos.eliminarMazo(id)
+      await this.#servicioMazos.eliminarMazo(id, username)
 
       res.status(204).send()
     } catch (error) {
@@ -108,9 +111,10 @@ export class ControladorMazos {
     try {
       const { id } = req.params
       const idCarta = req.body?.idCarta
+      const username = req.session.username
       this.#validarParametro(id, "id")
       this.#validarParametro(idCarta, "idCarta")
-      const mazoActualizado = await this.#servicioMazos.agregarCarta(id, idCarta)
+      const mazoActualizado = await this.#servicioMazos.agregarCarta(id, idCarta, username)
 
       res.status(200).json(mazoActualizado)
     } catch (error) {
@@ -121,9 +125,10 @@ export class ControladorMazos {
   eliminarCarta = async (req, res, next) => {
     try {
       const { id, idCarta } = req.params
+      const username = req.session.username
       this.#validarParametro(id, "id")
       this.#validarParametro(idCarta, "idCarta")
-      const mazoActualizado = await this.#servicioMazos.eliminarCarta(id, idCarta)
+      const mazoActualizado = await this.#servicioMazos.eliminarCarta(id, idCarta, username)
 
       res.status(200).json(mazoActualizado)
     } catch (error) {
