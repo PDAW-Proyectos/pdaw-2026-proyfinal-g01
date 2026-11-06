@@ -1,5 +1,5 @@
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
-import { descargarCartas } from "../clients/ClienteApiYgo.js"
+import { descargarCartas } from "./ServicioApiYgo.js"
 import { DatabaseError } from "../utils/errors.js"
 import { stat } from "node:fs/promises"
 
