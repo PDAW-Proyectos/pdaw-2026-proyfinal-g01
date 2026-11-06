@@ -6,6 +6,8 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { errorHandler } from "./middlewares/errorHandler.js"
 import rutasMazos from "./routes/rutasMazos.js"
+import rutasCartas from "./routes/rutasCartas.js"
+import rutasImagenes from "./routes/rutasImagenes.js"
 import rutasUsuarios from "./routes/rutasUsuarios.js"
 
 const app = express()
@@ -31,6 +33,8 @@ app.use(session({
 
 // Aca van los routes como normalmente
 app.use("/api/mazos", rutasMazos)
+app.use("/api/cartas", rutasCartas)
+app.use("/api/imagenes", rutasImagenes)
 app.use("/api/usuarios", rutasUsuarios)
 
 // El errorHandler siempre tiene que estar al final para que express lo use bien

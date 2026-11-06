@@ -3,3 +3,4 @@
 export const RUTA_USUARIOS = "./dataTest/usuarios.json"
 export const RUTA_MAZOS = "./dataTest/mazos.json"
 export const RUTA_CARTAS = "./dataTest/cartas.json"
+export const RUTA_IMAGENES = "./dataTest/imagenes"
