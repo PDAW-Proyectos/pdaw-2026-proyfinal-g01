@@ -65,6 +65,10 @@ export class RepositorioMazos {
     try {
       const contenido = await readFile(this.#ruta, "utf8")
       const data = JSON.parse(contenido)
+
+      this.#mazos.clear()
+      this.#proximoId = 1
+      
       for (const dataMazo of  Object.values(data)) {
         if (dataMazo.id >= this.#proximoId) {
           this.#proximoId = dataMazo.id + 1

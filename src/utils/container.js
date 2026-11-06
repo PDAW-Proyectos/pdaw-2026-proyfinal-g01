@@ -34,7 +34,7 @@ await repositorioUsuarios.cargar()
 
 // El servicio se carga usando los repositorios necesarios ej:
 // export const ServicioUsuarios = new ServicioUsuarios(repositorioUsuarios, repositorioMazos)
-export const servicioMazos = new ServicioMazos(repositorioMazos, repositorioCartas)
+export const servicioMazos = new ServicioMazos(repositorioMazos, repositorioCartas,repositorioUsuarios)
 export const servicioCartas = new ServicioCartas(repositorioCartas)
 export const servicioImagenes = new ServicioImagenes(repositorioImagenes, repositorioCartas)
 export const servicioUsuarios = new ServicioUsuarios(repositorioUsuarios, repositorioMazos)
