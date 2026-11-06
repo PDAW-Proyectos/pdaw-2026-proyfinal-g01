@@ -52,6 +52,7 @@ export class ServicioMazos {
     const mazo = this.obtenerMazo(idMazo)
     return {
       id: mazo.id,
+      username: mazo.username,
       nombre: mazo.nombre,
       mainDeck: mazo.mainDeck.map(id => this.#repositorioCartas.buscar(id)),
       extraDeck: mazo.extraDeck.map(id => this.#repositorioCartas.buscar(id)),
@@ -75,6 +76,7 @@ export class ServicioMazos {
 
   async crearMazo(data) {
     return await this.#repositorioMazos.agregar({
+      username: data.username,
       nombre: data.nombre,
       mainDeck: data.mainDeck,
       extraDeck: data.extraDeck

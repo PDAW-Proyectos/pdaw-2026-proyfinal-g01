@@ -40,8 +40,7 @@ export class ServicioUsuarios {
       nombre,
       username,
       contraseña: contraseñaHash,
-      rol: 'usuario',
-      mazos: []
+      rol: 'usuario'
     })
   }
 
@@ -61,7 +60,6 @@ export class ServicioUsuarios {
     return usuario
   }
 
-
   async eliminar(usuarioAEliminar, adminLogueado) {
     if (usuarioAEliminar === adminLogueado) {
       throw new ConflictError("No se puede eliminar tu propia cuenta de administrador.")
@@ -72,7 +70,8 @@ export class ServicioUsuarios {
     }
 
     //borrado de los mazos en la base de datos
-    for (const idMazo of usuario.mazos) {
+    const idsMazos = this.#repositorioMazos.buscarPorUsuario(usuario.username)
+    for (const idMazo of idsMazos) {
       try {
         await this.#repositorioMazos.eliminar(idMazo)
       } catch {
@@ -83,13 +82,13 @@ export class ServicioUsuarios {
     return await this.#repositorioUsuarios.eliminar(usuarioAEliminar)
   }
 
-obtenerMazosDeUsuario(username) {
+  obtenerMazosDeUsuario(username) {
     const usuario = this.#repositorioUsuarios.buscar(username)
     if (!usuario) {
       throw new NotFoundError(`El usuario "${username}" no existe.`)
     }
     //retorna un arreglo de objetos mazo completos y si no tiene nada retorna un arreglo vacio
-    return usuario.mazos
+    return this.#repositorioMazos.buscarPorUsuario(usuario.username)
       .map(idMazo => this.#repositorioMazos.buscar(idMazo))
       .filter(mazo => mazo !== null)
   }
