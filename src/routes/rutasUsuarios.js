@@ -8,6 +8,8 @@ router.post("/registro", controladorUsuarios.registrar)
 router.post("/login", controladorUsuarios.login)
 router.post("/logout",requiereAutenticacion , controladorUsuarios.logout)
 
+router.get("/mis-mazos", requiereAutenticacion, controladorUsuarios.obtenerMisMazos)
+
 router.delete("/:username", requiereRol("admin"), controladorUsuarios.eliminar);
 
 export default router

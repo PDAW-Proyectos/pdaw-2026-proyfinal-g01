@@ -1,7 +1,7 @@
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
-import { descargarCartas } from "../clients/ClienteApiYgo.js"
 import { DatabaseError, NotFoundError } from "../utils/errors.js"
 import { filtrarCartas } from "../utils/filtroCartas.js"
+import { descargarCartas } from "./ServicioApiYgo.js"
 import { stat } from "node:fs/promises"
 
 const UNA_SEMANA_MS = 7 * 24 * 60 * 60 * 1000
