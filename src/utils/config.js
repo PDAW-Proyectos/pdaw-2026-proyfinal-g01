@@ -1,6 +1,5 @@
-
-// Rutas a la base de datos --- > utlima vez usado para test de login
-export const RUTA_USUARIOS = "./dataTest/usuarios.json"
-export const RUTA_MAZOS = "./dataTest/mazos.json"
-export const RUTA_CARTAS = "./dataTest/cartas.json"
-export const RUTA_IMAGENES = "./dataTest/imagenes"
+// Rutas a la base de datos
+export const RUTA_USUARIOS = "./data/usuarios.json"
+export const RUTA_MAZOS = "./data/mazos.json"
+export const RUTA_CARTAS = "./data/cartas.json"
+export const RUTA_IMAGENES = "./data/imagenes"
