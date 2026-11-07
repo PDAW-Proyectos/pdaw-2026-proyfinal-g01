@@ -1,21 +1,28 @@
 import bcrypt from "bcryptjs"
 import { RepositorioUsuarios } from "../repositories/RepositorioUsuarios.js"
+import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
 import { AuthenticationError, ConflictError } from "../utils/errors.js"
 import { Usuario } from "../models/Usuario.js"
 
 export class ServicioUsuarios {
   #repositorioUsuarios
+  #repositorioMazos
 
   /**
    * @param {RepositorioUsuarios} repositorioUsuarios
+   * @param {RepositorioMazos} repositorioMazos
    */
-  constructor(repositorioUsuarios) {
+  constructor(repositorioUsuarios, repositorioMazos) {
     // Validaciones
     if (!(repositorioUsuarios instanceof RepositorioUsuarios)) {
       throw new TypeError("El servicio se tiene que crear con un RepositorioUsuarios")
     }
+    if (!(repositorioMazos instanceof RepositorioMazos)) {
+      throw new TypeError("El servicio se tiene que crear con un RepositorioMazos")
+    }
 
     this.#repositorioUsuarios = repositorioUsuarios
+    this.#repositorioMazos = repositorioMazos
   }
 
   // Methods
@@ -55,10 +62,14 @@ export class ServicioUsuarios {
   }
 
   async eliminarUsuario(usuarioAEliminar, adminLogueado) {
-    if (usuarioAEliminar === adminLogueado) {
+    const usernameLimpio = typeof usuarioAEliminar === "string" ? usuarioAEliminar.trim() : usuarioAEliminar
+    if (usernameLimpio === adminLogueado) {
       throw new ConflictError("No se puede eliminar tu propia cuenta de administrador.")
     }
-    // El repositorio se encarga de validar si existe, lo borra, y emite el evento para que los mazos se borren en cascada.
-    return await this.#repositorioUsuarios.eliminar(usuarioAEliminar)
+
+    await this.#repositorioUsuarios.eliminar(usernameLimpio)
+    await this.#repositorioMazos.eliminarPorUsername(usernameLimpio)
+
+    return true
   }
 }

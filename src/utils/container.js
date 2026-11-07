@@ -19,39 +19,27 @@ import { ControladorUsuarios } from "../controllers/ControladorUsuarios.js"
 
 
 // Aca se inicia la carga de repositorios poner el repositorioUsuarios aca.
-// export const repositorioUsuarios = new RepositorioUsuarios(RUTA_USUARIOS)
 export const repositorioMazos = new RepositorioMazos(RUTA_MAZOS)
 export const repositorioCartas = new RepositorioCartas(RUTA_CARTAS)
 export const repositorioImagenes = new RepositorioImagenes(RUTA_IMAGENES)
 export const repositorioUsuarios = new RepositorioUsuarios(RUTA_USUARIOS)
 
 // Despues de iniciarlos se tienen que cargar
-// await repositorioUsuarios.cargar()
 await repositorioMazos.cargar()
 await repositorioCartas.cargar()
 await repositorioImagenes.cargar()
 await repositorioUsuarios.cargar()
 
-// EVENTOS: 
-repositorioUsuarios.on("usuarioEliminado", async (username) => {
-  try {
-    await repositorioMazos.eliminarPorUsername(username)
-  } catch (error) {
-    console.error(`Error eliminando mazos en cascada para el usuario ${username}:`, error)
-  }
-})
-
 // El servicio se carga usando los repositorios necesarios ej:
-// export const ServicioUsuarios = new ServicioUsuarios(repositorioUsuarios, repositorioMazos)
 export const servicioMazos = new ServicioMazos(repositorioMazos, repositorioCartas)
 export const servicioCartas = new ServicioCartas(repositorioCartas)
 export const servicioImagenes = new ServicioImagenes(repositorioImagenes, repositorioCartas)
-export const servicioUsuarios = new ServicioUsuarios(repositorioUsuarios)
+export const servicioUsuarios = new ServicioUsuarios(repositorioUsuarios, repositorioMazos)
 
+// Cargamos/descargamos las cartas a la base de datos
 await servicioCartas.cargarCartas()
 
 // Por ultimo se los conecta a los controladores
-// export const controladorUsuarios = new ControladorMazos(servicioUsuarios)
 export const controladorMazos = new ControladorMazos(servicioMazos)
 export const controladorCartas = new ControladorCartas(servicioCartas)
 export const controladorImagenes = new ControladorImagenes(servicioImagenes)

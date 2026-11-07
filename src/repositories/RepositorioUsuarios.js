@@ -1,11 +1,10 @@
-import { EventEmitter } from "node:events"
 import { readFile, writeFile } from "node:fs/promises"
 import { NotFoundError, ConflictError } from "../utils/errors.js"
 import { Usuario } from '../models/Usuario.js'
 
 /** Clase que almacena los usuarios ordenandolos por username, sirve para cargar los
  * usuarios desde la base de data y guardarlos en la misma. */
-export class RepositorioUsuarios extends EventEmitter{
+export class RepositorioUsuarios {
   /** @type {string} */
   #ruta
   /** @type {Map <string, Usuario>} */
@@ -15,7 +14,6 @@ export class RepositorioUsuarios extends EventEmitter{
    * @param {string} ruta
    */
   constructor(ruta) {
-    super() // Se inicializa eventEmitter
     this.#ruta = ruta
     this.#usuarios = new Map()
   }
@@ -137,9 +135,6 @@ export class RepositorioUsuarios extends EventEmitter{
     this.#usuarios.delete(existe.username)
 
     await this.guardar()
-
-    // eventEmitter que notifica que el usuario se acaba de borrar
-    this.emit("usuarioEliminado", existe.username)
 
     return true
   }
