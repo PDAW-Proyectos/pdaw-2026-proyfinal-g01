@@ -1,0 +1,570 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+:root {
+    --primary-color: #6d4aff;
+    --primary-dark: #5538d4;
+    --secondary-color: #2c1a9c;
+    --background-light: #f8f9fa;
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a4a6a;
+    --border-color: #e0e0e0;
+    --white: #ffffff;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+    --success-green: #4caf50;
+    --danger-red: #f44336;
+}
+
+body {
+    font-family: "Orbitron", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: var(--font-weight, 400);
+    color: var(--text-primary);
+    background-color: var(--background-light);
+    line-height: 1.6;
+}
+
+/* Navbar personalizado */
+.navbar-custom {
+    background-color: var(--white);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 2rem;
+}
+
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--primary-color) !important;
+}
+
+.nav-link-custom {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-link-custom:hover {
+    color: var(--primary-color) !important;
+}
+
+.navbar-toggler {
+    border-color: var(--primary-color);
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.25rem rgba(109, 74, 255, 0.25);
+}
+
+@media (min-width: 1200px) {
+    .navbar-custom .container-fluid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items: center;
+    }
+
+    .navbar-custom .navbar-collapse {
+        display: contents !important;
+    }
+
+    .navbar-custom .navbar-nav {
+        grid-column: 2;
+        justify-self: center;
+        margin: 0 !important;
+    }
+
+    .navbar-custom .navbar-collapse > .d-flex {
+        grid-column: 3;
+        justify-self: end;
+    }
+}
+
+/* Botones personalizados */
+.btn-main {
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 0.9rem;
+    border-radius: 0px;
+}
+
+.btn-main-primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-main-primary:hover {
+    background-color: var(--primary-dark);
+    color: var(--white);
+}
+
+.btn-main-outline {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-main-outline:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+/* Footer */
+.footer {
+    background-color: var(--text-primary);
+    color: var(--white);
+    padding: 3rem 0;
+    margin-top: 4rem;
+}
+
+.footer-section h3 {
+    padding-left: 32px;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section li {
+    margin-bottom: 0.8rem;
+}
+
+.footer-section a {
+    color: #ccc;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: var(--primary-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .featured-card {
+        padding: 2rem;
+    }
+
+    .featured-info h1 {
+        font-size: 1.8rem;
+    }
+
+    .card-image-large {
+        max-width: 200px;
+        height: 270px;
+    }
+
+    .search-bar {
+        padding: 1rem;
+    }
+
+    .footer {
+        padding: 2rem 0;
+    }
+}
+
+/* Utility Bootstrap overrides */
+.container-custom {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+@media (max-width: 1400px) {
+    .container-custom {
+        padding: 0 1rem;
+    }
+}
+
+/*========================================*/
+
+
+/* Main Layout */
+.main-layout {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 280px 1fr 400px;
+    gap: 2rem;
+    padding: 2rem;
+    min-height: calc(100vh - 70px);
+}
+
+/* Sidebar */
+.sidebar {
+    background: var(--white);
+    /* border-radius: 12px; */
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    height: fit-content;
+    position: sticky;
+    top: 90px;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.sidebar-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.deck-list {
+    padding-left: 0;
+    list-style: none;
+    margin-bottom: 2rem;
+}
+
+.deck-item {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    background: var(--background-light);
+    /* border-radius: 8px; */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.deck-item:hover {
+    background: #ebeef5;
+    transform: translateX(4px);
+}
+
+.deck-item.active {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.new-deck-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    /* border-radius: 8px; */
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+.new-deck-btn:hover {
+    background: var(--primary-dark);
+}
+
+.filters-section h4 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.filter-group {
+    margin-bottom: 1.5rem;
+}
+
+.filter-group select,
+.filter-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid var(--border-color);
+    /* border-radius: 6px; */
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Deck Editor */
+.deck-editor {
+    background: var(--white);
+    /* border-radius: 12px; */
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.deck-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.deck-title {
+    font-size: 1.8rem;
+}
+
+.deck-counters {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--background-light);
+    /* border-radius: 8px; */
+}
+
+.counter-item {
+    text-align: center;
+}
+
+.counter-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.counter-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.3rem;
+}
+
+.limit-warning {
+    color: var(--danger-red);
+    font-weight: 600;
+}
+
+.card-search-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.search-input {
+    flex: 1;
+    padding: 1rem;
+    border: 2px solid var(--border-color);
+    /* border-radius: 8px; */
+    font-size: 1rem;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.deck-card {
+    background: var(--white);
+    border: 2px solid var(--border-color);
+    /* border-radius: 8px; */
+    padding: 0.8rem;
+    cursor: move;
+    transition: all 0.3s ease;
+}
+
+.deck-card:hover {
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.deck-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    /* border-radius: 6px; */
+    margin-bottom: 0.5rem;
+}
+
+.deck-card-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.deck-card-count {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    background: var(--background-light);
+    padding: 0.3rem 0.6rem;
+    display: inline-block;
+}
+
+.deck-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+.btn-success {
+    background: var(--success-green);
+    color: var(--white);
+}
+
+.btn-danger {
+    background: var(--danger-red);
+    color: var(--white);
+}
+
+.btn-save {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+/* Detail Panel */
+.detail-panel {
+    background: var(--white);
+    /* border-radius: 12px; */
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+    height: fit-content;
+    position: sticky;
+    top: 90px;
+}
+
+.card-preview {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.card-preview img {
+    width: 100%;
+    /* border-radius: 12px; */
+    box-shadow: var(--shadow-md);
+}
+
+.card-details {
+    margin-bottom: 2rem;
+}
+
+.card-details h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.card-effect {
+    background: var(--background-light);
+    padding: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+.stat-bars {
+    margin: 1.5rem 0;
+}
+
+.stat-bar {
+    margin-bottom: 1rem;
+}
+
+.stat-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.progress-bar {
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+/* Botones personalizados */
+.btn {
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    /* border: none; */
+    font-size: 0.9rem;
+    border-radius: 0px;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    color: var(--white);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .main-layout {
+        grid-template-columns: 250px 1fr;
+    }
+
+    .detail-panel {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        height: auto;
+        padding: 1rem 0;
+    }
+
+    .nav-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .main-layout {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .sidebar {
+        position: static;
+    }
+
+    .cards-container {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
+    .deck-counters {
+        flex-wrap: wrap;
+    }
+}
