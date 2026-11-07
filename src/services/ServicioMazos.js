@@ -1,7 +1,6 @@
 import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
-
-import { NotFoundError, ValidationError, AuthorizationError } from "../utils/errors.js"
+import { NotFoundError, AuthorizationError } from "../utils/errors.js"
 
 const TIPOS_EXTRA_DECK = ["fusion", "synchro", "xyz", "link", "fusion_pendulum", "synchro_pendulum", "xyz_pendulum"]
 
@@ -31,7 +30,7 @@ export class ServicioMazos {
   // Methods
   #verificarDueñoYObtenerMazo(idMazo, username) {
     const mazo = this.#repositorioMazos.buscar(Number(idMazo))
-    
+
     if (!mazo) {
       throw new NotFoundError(`El Mazo asociado al id "${idMazo}" no se encontro.`)
     }
@@ -39,7 +38,7 @@ export class ServicioMazos {
     if (mazo.username !== username.trim()) {
       throw new AuthorizationError("No tienes permisos para modificar este mazo.")
     }
-    
+
     return mazo
   }
 
@@ -48,10 +47,14 @@ export class ServicioMazos {
    */
   listarMazos(username) {
     if (!username) {
-      return Array.from(this.#repositorioMazos.mazos.values())
+      return Array.from(this.#repositorioMazos.mazos.values()).map((id) => this.obtenerMazo(id))
     }
 
     const idsMazos = this.#repositorioMazos.buscarPorUsername(username)
+    if (!idsMazos) {
+      throw new NotFoundError(`El Usuario no tiene ningun mazo creado.`)
+    }
+
     return idsMazos.map((id) => this.obtenerMazo(id))
   }
 
@@ -61,33 +64,26 @@ export class ServicioMazos {
       throw new NotFoundError(`El Mazo asociado al id "${idMazo}" no se encontro.`)
     }
 
-    return mazo
-  }
+    const cartasMainDeck = mazo.mainDeck.map(id => this.#repositorioCartas.buscar(id))
+    const cartasExtraDeck = mazo.extraDeck.map(id => this.#repositorioCartas.buscar(id))
 
-  obtenerMazoDetallado(idMazo) {
-    const mazo = this.obtenerMazo(idMazo)
-    return {
-      id: mazo.id,
-      username: mazo.username,
-      nombre: mazo.nombre,
-      mainDeck: mazo.mainDeck.map(id => this.#repositorioCartas.buscar(id)),
-      extraDeck: mazo.extraDeck.map(id => this.#repositorioCartas.buscar(id)),
-      valido: mazo.valido(),
-      precioTotal: this.precioTotal(idMazo)
-    }
-  }
-
-  precioTotal(idMazo) {
-    const mazo = this.obtenerMazo(idMazo)
-    let total = 0;
-    [...mazo.mainDeck, ...mazo.extraDeck].forEach(id => {
-      const carta = this.#repositorioCartas.buscar(id)
+    let precioTotal = 0;
+    [...cartasMainDeck, ...cartasExtraDeck].forEach(carta => {
       const primerPrecio = carta?.card_prices?.[0]
       const precioEbay = Number(primerPrecio?.ebay_price ?? 0)
       const precioAmazon = Number(primerPrecio?.amazon_price ?? 0)
       total += Math.max(precioEbay, precioAmazon)
     })
-    return Number(total.toFixed(2))
+
+    return {
+      id: mazo.id,
+      username: mazo.username,
+      nombre: mazo.nombre,
+      mainDeck: cartasMainDeck,
+      extraDeck: cartasExtraDeck,
+      valido: mazo.valido(),
+      precioTotal: Number(precioTotal.toFixed(2))
+    }
   }
 
   async crearMazo(data) {
@@ -101,7 +97,7 @@ export class ServicioMazos {
 
 
   async actualizarMazo(idMazo, data, username) {
-     this.#verificarDueñoYObtenerMazo(idMazo, username) 
+     this.#verificarDueñoYObtenerMazo(idMazo, username)
      return await this.#repositorioMazos.actualizar({
        ...data,
        id: Number(idMazo),

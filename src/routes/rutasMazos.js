@@ -9,7 +9,7 @@ router.get("/", controladorMazos.listarMazos)
 router.get("/:id", controladorMazos.obtenerMazo)
 
 router.post("/",requiereAutenticacion , controladorMazos.crearMazo)
-router.put("/:id",requiereAutenticacion , controladorMazos.actualizarMazo)
+router.patch("/:id",requiereAutenticacion , controladorMazos.actualizarMazo)
 router.delete("/:id",requiereAutenticacion , controladorMazos.eliminarMazo)
 
 router.post("/:id/cartas",requiereAutenticacion , controladorMazos.agregarCarta)

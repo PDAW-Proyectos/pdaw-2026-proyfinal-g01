@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs"
 import { RepositorioUsuarios } from "../repositories/RepositorioUsuarios.js"
-import { AuthenticationError, ConflictError, NotFoundError } from "../utils/errors.js"
+import { AuthenticationError, ConflictError } from "../utils/errors.js"
 import { Usuario } from "../models/Usuario.js"
 
 export class ServicioUsuarios {
@@ -14,6 +14,7 @@ export class ServicioUsuarios {
     if (!(repositorioUsuarios instanceof RepositorioUsuarios)) {
       throw new TypeError("El servicio se tiene que crear con un RepositorioUsuarios")
     }
+
     this.#repositorioUsuarios = repositorioUsuarios
   }
 
@@ -25,7 +26,7 @@ export class ServicioUsuarios {
    * @param {string} datos.contraseña
    * @returns {Promise<Usuario>}
    */
-  async registrar({ nombre, username, contraseña }) {
+  async registrarUsuario({ nombre, username, contraseña }) {
     Usuario.validarContraseñaPlana(contraseña)
     const contraseñaHash = await bcrypt.hash(contraseña, 10)
 
@@ -42,7 +43,7 @@ export class ServicioUsuarios {
    * @param {string} contraseñaPlana
    * @returns {Promise<Usuario>}
    */
-  async autenticar(username, contraseñaPlana) {
+  async autenticarUsuario(username, contraseñaPlana) {
     const usuario = this.#repositorioUsuarios.buscar(username)
     const valida = usuario !== null && await usuario.verificarContraseña(contraseñaPlana)
 
@@ -53,7 +54,7 @@ export class ServicioUsuarios {
     return usuario
   }
 
-  async eliminar(usuarioAEliminar, adminLogueado) {
+  async eliminarUsuario(usuarioAEliminar, adminLogueado) {
     if (usuarioAEliminar === adminLogueado) {
       throw new ConflictError("No se puede eliminar tu propia cuenta de administrador.")
     }

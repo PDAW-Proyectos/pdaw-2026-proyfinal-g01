@@ -62,10 +62,11 @@ export class RepositorioMazos {
    */
   buscarPorUsername(username) {
     if (typeof username !== "string") {
-      return []
+      return null
     }
+
     const ids = this.#mazosPorUsername.get(username.trim())
-    return ids ? [...ids] : []
+    return ids ? [...ids] : null
   }
 
   /** Guarda todos los Mazos a la base de datos, como objeto JSON */
@@ -82,7 +83,7 @@ export class RepositorioMazos {
     try {
       const contenido = await readFile(this.#ruta, "utf8")
       const data = JSON.parse(contenido)
-      
+
       //this.#mazos.clear()
       //this.#mazosPorUsername.clear()
       //this.#proximoId = 1
