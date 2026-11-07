@@ -32,7 +32,7 @@ export class ControladorUsuarios {
       this.#validarParametro(username, "username")
       this.#validarParametro(contraseña, "contraseña")
 
-      const usuario = await this.#servicioUsuarios.registrar({ nombre, username, contraseña })
+      const usuario = await this.#servicioUsuarios.registrarUsuario({ nombre, username, contraseña })
 
       res.status(201).json(UsuarioMapper.toDTO(usuario))
     } catch (error) {
@@ -47,7 +47,7 @@ export class ControladorUsuarios {
       this.#validarParametro(username, "username")
       this.#validarParametro(contraseña, "contraseña")
 
-      const usuario = await this.#servicioUsuarios.autenticar(username, contraseña)
+      const usuario = await this.#servicioUsuarios.autenticarUsuario(username, contraseña)
       const regenerate = (req) =>
         new Promise((ok, fail) => req.session.regenerate((e) => (e ? fail(e) : ok())))
 
@@ -72,7 +72,7 @@ export class ControladorUsuarios {
       next(error)
     }
   }
-  
+
   eliminar = async (req, res, next) => {
     try {
       const usuarioAEliminar = req.params.username
@@ -80,20 +80,9 @@ export class ControladorUsuarios {
       this.#validarParametro(usuarioAEliminar, "username en URL")
 
       //le paso a servicio usuarios para que verifique que no sea el mismo usuario admin de la sesion el que se quiere eliminar a si mismo
-      await this.#servicioUsuarios.eliminar(usuarioAEliminar,usuarioSesionActual)
+      await this.#servicioUsuarios.eliminarUsuario(usuarioAEliminar,usuarioSesionActual)
 
       res.status(200).json({ mensaje: "Usuario eliminado con éxito" })
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  obtenerMisMazos = (req, res, next) => {
-    try {
-      const username = req.session.username
-      const mazos = this.#servicioUsuarios.obtenerMazosDeUsuario(username)
-
-      res.status(200).json(mazos)
     } catch (error) {
       next(error)
     }
