@@ -72,7 +72,7 @@ export class ServicioMazos {
       const primerPrecio = carta?.card_prices?.[0]
       const precioEbay = Number(primerPrecio?.ebay_price ?? 0)
       const precioAmazon = Number(primerPrecio?.amazon_price ?? 0)
-      total += Math.max(precioEbay, precioAmazon)
+      precioTotal += Math.max(precioEbay, precioAmazon)
     })
 
     return {
