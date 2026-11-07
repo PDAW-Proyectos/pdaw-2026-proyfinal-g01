@@ -32,12 +32,21 @@ await repositorioCartas.cargar()
 await repositorioImagenes.cargar()
 await repositorioUsuarios.cargar()
 
+// EVENTOS: 
+repositorioUsuarios.on("usuarioEliminado", async (username) => {
+  try {
+    await repositorioMazos.eliminarPorUsername(username)
+  } catch (error) {
+    console.error(`Error eliminando mazos en cascada para el usuario ${username}:`, error)
+  }
+})
+
 // El servicio se carga usando los repositorios necesarios ej:
 // export const ServicioUsuarios = new ServicioUsuarios(repositorioUsuarios, repositorioMazos)
-export const servicioMazos = new ServicioMazos(repositorioMazos, repositorioCartas,repositorioUsuarios)
+export const servicioMazos = new ServicioMazos(repositorioMazos, repositorioCartas)
 export const servicioCartas = new ServicioCartas(repositorioCartas)
 export const servicioImagenes = new ServicioImagenes(repositorioImagenes, repositorioCartas)
-export const servicioUsuarios = new ServicioUsuarios(repositorioUsuarios, repositorioMazos)
+export const servicioUsuarios = new ServicioUsuarios(repositorioUsuarios)
 
 await servicioCartas.cargarCartas()
 

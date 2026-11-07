@@ -7,6 +7,7 @@ import { ValidationError } from "../src/utils/errors.js"
 
 const datosMazoBase = (extra = {}) => ({
   id: 1,
+  username: "yugi",
   nombre: "Mazo Blue-Eyes",
   mainDeck: [100, 101, 102],
   extraDeck: [200, 201],
@@ -19,23 +20,27 @@ const datosMazoBase = (extra = {}) => ({
 
 describe("Mazo", () => {
   describe("constructor y getters", () => {
-    test("asigna correctamente id, nombre, mainDeck y extraDeck", () => {
+    test("asigna correctamente id, username, nombre, mainDeck y extraDeck", () => {
       const mazo = new Mazo(datosMazoBase())
 
       expect(mazo.id).toBe(1)
+      expect(mazo.username).toBe("yugi")
       expect(mazo.nombre).toBe("Mazo Blue-Eyes")
       expect(mazo.mainDeck).toEqual([100, 101, 102])
       expect(mazo.extraDeck).toEqual([200, 201])
     })
 
-    test("recorta espacios en blanco al inicio y final del nombre", () => {
-      const mazo = new Mazo(datosMazoBase({ nombre: "   Mazo Dark Magician   " }))
+    test("recorta espacios en blanco al inicio y final del username y nombre", () => {
+      const mazo = new Mazo(
+        datosMazoBase({ username: "   kaiba   ", nombre: "   Mazo Dark Magician   " })
+      )
 
+      expect(mazo.username).toBe("kaiba")
       expect(mazo.nombre).toBe("Mazo Dark Magician")
     })
 
     test("inicializa mainDeck y extraDeck como arreglos vacíos por defecto", () => {
-      const mazo = new Mazo({ id: 1, nombre: "Mazo Vacío" })
+      const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo Vacío" })
 
       expect(mazo.mainDeck).toEqual([])
       expect(mazo.extraDeck).toEqual([])
@@ -54,7 +59,7 @@ describe("Mazo", () => {
     test("modificar los arreglos pasados al constructor no afecta al mazo creado", () => {
       const main = [100, 101]
       const extra = [200]
-      const mazo = new Mazo({ id: 1, nombre: "Mazo", mainDeck: main, extraDeck: extra })
+      const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo", mainDeck: main, extraDeck: extra })
 
       main.push(999)
       extra.push(888)
@@ -67,6 +72,13 @@ describe("Mazo", () => {
       "lanza ValidationError si el id es inválido (%p)",
       (idInvalido) => {
         expect(() => new Mazo(datosMazoBase({ id: idInvalido }))).toThrow(ValidationError)
+      }
+    )
+
+    test.each(["", "   ", null, undefined, 123, {}])(
+      "lanza ValidationError si el username es inválido (%p)",
+      (usernameInvalido) => {
+        expect(() => new Mazo(datosMazoBase({ username: usernameInvalido }))).toThrow(ValidationError)
       }
     )
 
@@ -119,9 +131,10 @@ describe("Mazo", () => {
 
   describe("valido()", () => {
     test("devuelve false si mainDeck tiene menos de 40 cartas", () => {
-      const mazoVacio = new Mazo({ id: 1, nombre: "Vacío" })
+      const mazoVacio = new Mazo({ id: 1, username: "yugi", nombre: "Vacío" })
       const mazo39 = new Mazo({
         id: 2,
+        username: "yugi",
         nombre: "Casi lleno",
         mainDeck: Array.from({ length: 39 }, (_, i) => i + 1),
       })
@@ -133,11 +146,13 @@ describe("Mazo", () => {
     test("devuelve true si mainDeck tiene entre 40 y 60 cartas", () => {
       const mazo40 = new Mazo({
         id: 1,
+        username: "yugi",
         nombre: "Mazo 40",
         mainDeck: Array.from({ length: 40 }, (_, i) => i + 1),
       })
       const mazo60 = new Mazo({
         id: 2,
+        username: "yugi",
         nombre: "Mazo 60",
         mainDeck: Array.from({ length: 60 }, (_, i) => i + 1),
       })
@@ -149,7 +164,7 @@ describe("Mazo", () => {
 
   describe("agregarCarta()", () => {
     test("agrega una carta a mainDeck cuando destino es 'main' y devuelve true", () => {
-      const mazo = new Mazo({ id: 1, nombre: "Mazo" })
+      const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo" })
 
       const resultado = mazo.agregarCarta(500, "none", "main")
 
@@ -159,7 +174,7 @@ describe("Mazo", () => {
     })
 
     test("agrega una carta a extraDeck cuando destino es 'extra'", () => {
-      const mazo = new Mazo({ id: 1, nombre: "Mazo" })
+      const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo" })
 
       const resultado = mazo.agregarCarta(700, "none", "extra")
 
@@ -171,34 +186,34 @@ describe("Mazo", () => {
     test.each([0, -10, 2.5, "100", null, undefined, NaN])(
       "lanza ValidationError si idCarta no es un entero positivo (%p)",
       (idCartaInvalido) => {
-        const mazo = new Mazo({ id: 1, nombre: "Mazo" })
+        const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo" })
 
         expect(() => mazo.agregarCarta(idCartaInvalido, "none", "main")).toThrow(ValidationError)
       }
     )
 
     test("lanza ValidationError si el destino no es 'main' ni 'extra'", () => {
-      const mazo = new Mazo({ id: 1, nombre: "Mazo" })
+      const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo" })
 
       expect(() => mazo.agregarCarta(100, "none", "side")).toThrow(ValidationError)
     })
 
     test("lanza ValidationError si banInfo no es un estado válido", () => {
-      const mazo = new Mazo({ id: 1, nombre: "Mazo" })
+      const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo" })
 
       expect(() => mazo.agregarCarta(100, "EstadoInexistente", "main")).toThrow(ValidationError)
     })
 
     describe("límites de copias según banlist (MAX_COPIAS_POR_CARTA)", () => {
       test("Forbidden: no permite agregar ni siquiera 1 copia", () => {
-        const mazo = new Mazo({ id: 1, nombre: "Mazo" })
+        const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo" })
 
         expect(() => mazo.agregarCarta(100, "Forbidden", "main")).toThrow(ValidationError)
         expect(mazo.mainDeck).toEqual([])
       })
 
       test("Limited: permite hasta 1 copia y rechaza la segunda", () => {
-        const mazo = new Mazo({ id: 1, nombre: "Mazo" })
+        const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo" })
 
         expect(mazo.agregarCarta(100, "Limited", "main")).toBe(true)
         expect(() => mazo.agregarCarta(100, "Limited", "main")).toThrow(ValidationError)
@@ -206,7 +221,7 @@ describe("Mazo", () => {
       })
 
       test("Semi-Limited: permite hasta 2 copias y rechaza la tercera", () => {
-        const mazo = new Mazo({ id: 1, nombre: "Mazo" })
+        const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo" })
 
         expect(mazo.agregarCarta(100, "Semi-Limited", "main")).toBe(true)
         expect(mazo.agregarCarta(100, "Semi-Limited", "main")).toBe(true)
@@ -215,7 +230,7 @@ describe("Mazo", () => {
       })
 
       test("none: permite hasta 3 copias y rechaza la cuarta", () => {
-        const mazo = new Mazo({ id: 1, nombre: "Mazo" })
+        const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo" })
 
         expect(mazo.agregarCarta(100, "none", "main")).toBe(true)
         expect(mazo.agregarCarta(100, "none", "main")).toBe(true)
@@ -227,6 +242,7 @@ describe("Mazo", () => {
       test("cuenta las copias sumando tanto mainDeck como extraDeck", () => {
         const mazo = new Mazo({
           id: 1,
+          username: "yugi",
           nombre: "Mazo",
           mainDeck: [100, 100],
           extraDeck: [100],
@@ -239,7 +255,7 @@ describe("Mazo", () => {
     describe("límites de tamaño de mazo", () => {
       test("lanza ValidationError al intentar agregar a mainDeck cuando ya tiene 60 cartas", () => {
         const main60 = Array.from({ length: 60 }, (_, i) => i + 1)
-        const mazo = new Mazo({ id: 1, nombre: "Mazo Lleno", mainDeck: main60 })
+        const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo Lleno", mainDeck: main60 })
 
         expect(() => mazo.agregarCarta(999, "none", "main")).toThrow(ValidationError)
         expect(mazo.mainDeck).toHaveLength(60)
@@ -247,7 +263,7 @@ describe("Mazo", () => {
 
       test("lanza ValidationError al intentar agregar a extraDeck cuando ya tiene 15 cartas", () => {
         const extra15 = Array.from({ length: 15 }, (_, i) => i + 1)
-        const mazo = new Mazo({ id: 1, nombre: "Extra Lleno", extraDeck: extra15 })
+        const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Extra Lleno", extraDeck: extra15 })
 
         expect(() => mazo.agregarCarta(999, "none", "extra")).toThrow(ValidationError)
         expect(mazo.extraDeck).toHaveLength(15)

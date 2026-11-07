@@ -1,27 +1,20 @@
 import bcrypt from "bcryptjs"
 import { RepositorioUsuarios } from "../repositories/RepositorioUsuarios.js"
-import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
 import { AuthenticationError, ConflictError, NotFoundError } from "../utils/errors.js"
 import { Usuario } from "../models/Usuario.js"
 
 export class ServicioUsuarios {
   #repositorioUsuarios
-  #repositorioMazos
 
   /**
    * @param {RepositorioUsuarios} repositorioUsuarios
-   * @param {RepositorioMazos} repositorioMazos
    */
-  constructor(repositorioUsuarios, repositorioMazos) {
+  constructor(repositorioUsuarios) {
     // Validaciones
     if (!(repositorioUsuarios instanceof RepositorioUsuarios)) {
       throw new TypeError("El servicio se tiene que crear con un RepositorioUsuarios")
     }
-    if (!(repositorioMazos instanceof RepositorioMazos)) {
-      throw new TypeError("El servicio se tiene que crear con un RepositorioMazos")
-    }
     this.#repositorioUsuarios = repositorioUsuarios
-    this.#repositorioMazos = repositorioMazos
   }
 
   // Methods
@@ -40,8 +33,7 @@ export class ServicioUsuarios {
       nombre,
       username,
       contraseña: contraseñaHash,
-      rol: 'usuario',
-      mazos: []
+      rol: 'usuario'
     })
   }
 
@@ -61,36 +53,11 @@ export class ServicioUsuarios {
     return usuario
   }
 
-
   async eliminar(usuarioAEliminar, adminLogueado) {
     if (usuarioAEliminar === adminLogueado) {
       throw new ConflictError("No se puede eliminar tu propia cuenta de administrador.")
     }
-    const usuario = this.#repositorioUsuarios.buscar(usuarioAEliminar)
-    if (!usuario) {
-      throw new NotFoundError(`El usuario "${usuarioAEliminar}" no existe.`)
-    }
-
-    //borrado de los mazos en la base de datos
-    for (const idMazo of usuario.mazos) {
-      try {
-        await this.#repositorioMazos.eliminar(idMazo)
-      } catch {
-        //ignoro si el mazo ya no existe 
-      }
-    }
-
+    // El repositorio se encarga de validar si existe, lo borra, y emite el evento para que los mazos se borren en cascada.
     return await this.#repositorioUsuarios.eliminar(usuarioAEliminar)
-  }
-
-obtenerMazosDeUsuario(username) {
-    const usuario = this.#repositorioUsuarios.buscar(username)
-    if (!usuario) {
-      throw new NotFoundError(`El usuario "${username}" no existe.`)
-    }
-    //retorna un arreglo de objetos mazo completos y si no tiene nada retorna un arreglo vacio
-    return usuario.mazos
-      .map(idMazo => this.#repositorioMazos.buscar(idMazo))
-      .filter(mazo => mazo !== null)
   }
 }

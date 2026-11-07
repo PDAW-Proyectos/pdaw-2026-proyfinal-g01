@@ -25,7 +25,11 @@ export class ControladorMazos {
 
   listarMazos = (req, res, next) => {
     try {
-      const mazos = this.#servicioMazos.listarMazos()
+      const username = req.session.rol === 
+                       'admin' && req.query.all === 
+                       'true' ? undefined : req.session.username;
+                       
+      const mazos = this.#servicioMazos.listarMazos(username)
 
       res.status(200).json(mazos)
     } catch (error) {
@@ -68,11 +72,17 @@ export class ControladorMazos {
       next(error)
     }
   }
-
-  crearMazo = async (req, res, next) => {
+crearMazo = async (req, res, next) => {
     try {
-      const username = req.session.username
-      const nuevoMazo = await this.#servicioMazos.crearMazo(req.body, username)
+      // se obliga a que el dueño sea el usuario autenticado, evitando suplantacion
+      const datosMazo = {
+        ...req.body,
+        username: req.session.username
+      }
+      
+      this.#validarParametro(datosMazo.username, "sesión (usuario no autenticado)")
+      
+      const nuevoMazo = await this.#servicioMazos.crearMazo(datosMazo)
 
       res.status(201).json(nuevoMazo)
     } catch (error) {
@@ -84,8 +94,11 @@ export class ControladorMazos {
     try {
       const { id } = req.params
       const username = req.session.username
+      
       this.#validarParametro(id, "id")
       this.#validarParametro(req.body, "body")
+      this.#validarParametro(username, "sesión (usuario no autenticado)")
+      
       const mazoActualizado = await this.#servicioMazos.actualizarMazo(id, req.body, username)
 
       res.status(200).json(mazoActualizado)
@@ -98,7 +111,10 @@ export class ControladorMazos {
     try {
       const { id } = req.params
       const username = req.session.username
+      
       this.#validarParametro(id, "id")
+      this.#validarParametro(username, "sesión (usuario no autenticado)")
+      
       await this.#servicioMazos.eliminarMazo(id, username)
 
       res.status(204).send()
@@ -112,8 +128,11 @@ export class ControladorMazos {
       const { id } = req.params
       const idCarta = req.body?.idCarta
       const username = req.session.username
+      
       this.#validarParametro(id, "id")
       this.#validarParametro(idCarta, "idCarta")
+      this.#validarParametro(username, "sesión (usuario no autenticado)")
+      
       const mazoActualizado = await this.#servicioMazos.agregarCarta(id, idCarta, username)
 
       res.status(200).json(mazoActualizado)
@@ -126,8 +145,11 @@ export class ControladorMazos {
     try {
       const { id, idCarta } = req.params
       const username = req.session.username
+      
       this.#validarParametro(id, "id")
       this.#validarParametro(idCarta, "idCarta")
+      this.#validarParametro(username, "sesión (usuario no autenticado)")
+      
       const mazoActualizado = await this.#servicioMazos.eliminarCarta(id, idCarta, username)
 
       res.status(200).json(mazoActualizado)
