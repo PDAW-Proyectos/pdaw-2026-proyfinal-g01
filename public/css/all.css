@@ -1,0 +1,29 @@
+@font-face {
+    font-family: "Orbitron";
+    src: url("../fonts/Orbitron-VariableFont_wght.ttf") format("woff2");
+    font-weight: 400 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --primary-color: #6d4aff;
+    --primary-dark: #5538d4;
+    --secondary-color: #2c1a9c;
+    --background-light: #f8f9fa;
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a4a6a;
+    --border-color: #e0e0e0;
+    --white: #ffffff;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+body {
+    font-family: "Orbitron", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: var(--font-weight, 400);
+    color: var(--text-primary);
+    background-color: var(--background-light);
+    line-height: 1.6;
+}

@@ -10,15 +10,11 @@
 }
 
 body {
-    font-family: "Orbitron", sans-serif;
-    font-optical-sizing: auto;
-    color: var(--text-primary);
-    background-color: var(--background-light);
-    line-height: 1.6;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
+
 .btn-custom-primary {
     background-color: var(--primary-color);
     color: var(--white);

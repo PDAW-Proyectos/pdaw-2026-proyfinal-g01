@@ -3,6 +3,7 @@
     padding: 0;
     box-sizing: border-box;
 }
+
 :root {
     --primary-color: #6d4aff;
     --primary-dark: #5538d4;
@@ -16,15 +17,6 @@
     --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
     --success-green: #4caf50;
     --danger-red: #f44336;
-}
-
-body {
-    font-family: "Orbitron", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: var(--font-weight, 400);
-    color: var(--text-primary);
-    background-color: var(--background-light);
-    line-height: 1.6;
 }
 
 /* Navbar personalizado */
