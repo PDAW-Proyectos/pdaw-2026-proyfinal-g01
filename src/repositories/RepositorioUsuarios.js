@@ -64,9 +64,13 @@ export class RepositorioUsuarios {
 
   /** Carga los datos desde la base de datos iniciando el repositorio con objetos de clase Usuario */
   async cargar() {
+
     try {
       const contenido = await readFile(this.#ruta, "utf8")
       const data = JSON.parse(contenido)
+
+      //this.#usuarios.clear()
+
       Object.entries(data).forEach(([username, dataUsuario]) => {
         this.#usuarios.set(username, Usuario.fromJSON(dataUsuario))
       })
@@ -131,6 +135,7 @@ export class RepositorioUsuarios {
     this.#usuarios.delete(existe.username)
 
     await this.guardar()
+
     return true
   }
 }

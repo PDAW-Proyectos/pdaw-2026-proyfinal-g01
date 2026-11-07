@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs"
 import { RepositorioUsuarios } from "../repositories/RepositorioUsuarios.js"
 import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
-import { AuthenticationError, ConflictError, NotFoundError } from "../utils/errors.js"
+import { AuthenticationError, ConflictError } from "../utils/errors.js"
 import { Usuario } from "../models/Usuario.js"
 
 export class ServicioUsuarios {
@@ -20,6 +20,7 @@ export class ServicioUsuarios {
     if (!(repositorioMazos instanceof RepositorioMazos)) {
       throw new TypeError("El servicio se tiene que crear con un RepositorioMazos")
     }
+
     this.#repositorioUsuarios = repositorioUsuarios
     this.#repositorioMazos = repositorioMazos
   }
@@ -32,7 +33,7 @@ export class ServicioUsuarios {
    * @param {string} datos.contraseña
    * @returns {Promise<Usuario>}
    */
-  async registrar({ nombre, username, contraseña }) {
+  async registrarUsuario({ nombre, username, contraseña }) {
     Usuario.validarContraseñaPlana(contraseña)
     const contraseñaHash = await bcrypt.hash(contraseña, 10)
 
@@ -40,8 +41,7 @@ export class ServicioUsuarios {
       nombre,
       username,
       contraseña: contraseñaHash,
-      rol: 'usuario',
-      mazos: []
+      rol: 'usuario'
     })
   }
 
@@ -50,7 +50,7 @@ export class ServicioUsuarios {
    * @param {string} contraseñaPlana
    * @returns {Promise<Usuario>}
    */
-  async autenticar(username, contraseñaPlana) {
+  async autenticarUsuario(username, contraseñaPlana) {
     const usuario = this.#repositorioUsuarios.buscar(username)
     const valida = usuario !== null && await usuario.verificarContraseña(contraseñaPlana)
 
@@ -61,36 +61,15 @@ export class ServicioUsuarios {
     return usuario
   }
 
-
-  async eliminar(usuarioAEliminar, adminLogueado) {
-    if (usuarioAEliminar === adminLogueado) {
+  async eliminarUsuario(usuarioAEliminar, adminLogueado) {
+    const usernameLimpio = typeof usuarioAEliminar === "string" ? usuarioAEliminar.trim() : usuarioAEliminar
+    if (usernameLimpio === adminLogueado) {
       throw new ConflictError("No se puede eliminar tu propia cuenta de administrador.")
     }
-    const usuario = this.#repositorioUsuarios.buscar(usuarioAEliminar)
-    if (!usuario) {
-      throw new NotFoundError(`El usuario "${usuarioAEliminar}" no existe.`)
-    }
 
-    //borrado de los mazos en la base de datos
-    for (const idMazo of usuario.mazos) {
-      try {
-        await this.#repositorioMazos.eliminar(idMazo)
-      } catch {
-        //ignoro si el mazo ya no existe 
-      }
-    }
+    await this.#repositorioUsuarios.eliminar(usernameLimpio)
+    await this.#repositorioMazos.eliminarPorUsername(usernameLimpio)
 
-    return await this.#repositorioUsuarios.eliminar(usuarioAEliminar)
-  }
-
-obtenerMazosDeUsuario(username) {
-    const usuario = this.#repositorioUsuarios.buscar(username)
-    if (!usuario) {
-      throw new NotFoundError(`El usuario "${username}" no existe.`)
-    }
-    //retorna un arreglo de objetos mazo completos y si no tiene nada retorna un arreglo vacio
-    return usuario.mazos
-      .map(idMazo => this.#repositorioMazos.buscar(idMazo))
-      .filter(mazo => mazo !== null)
+    return true
   }
 }

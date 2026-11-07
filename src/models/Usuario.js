@@ -1,8 +1,7 @@
 import bcrypt from "bcryptjs"
-import { ValidationError, ConflictError } from "../utils/errors.js"
+import { ValidationError } from "../utils/errors.js"
 
 // Reglas de negocio
-const MAX_MAZOS = 10
 const MIN_LARGO_CONTRASEÑA = 6
 
 /** Representa la entidad Usuario
@@ -12,8 +11,6 @@ export class Usuario {
   #username
   #contraseña
   #rol
-  #mazos
-
 
   /**
    * @param {Object} datos // es el objeto que se recibe para crear el usuario
@@ -21,9 +18,8 @@ export class Usuario {
    * @param {string} datos.username
    * @param {string} datos.contraseña
    * @param {string} [datos.rol='usuario']
-   * @param {Array<number>} [datos.mazos=[]]
    */
-  constructor({ nombre, username, contraseña,rol = 'usuario', mazos = [] }) {
+  constructor({ nombre, username, contraseña, rol = 'usuario' }) {
     // Validaciones
     if (typeof nombre !== "string" || nombre.trim() === "") {
       throw new ValidationError("El nombre no puede estar vacio")
@@ -37,15 +33,11 @@ export class Usuario {
     if (rol !== 'usuario' && rol !== 'admin') {
       throw new ValidationError("Rol inválido. Debe ser 'usuario' o 'admin'.")
     }
-    if (mazos.length > MAX_MAZOS) {
-      throw new ValidationError(`El usuario no puede tener mas de ${MAX_MAZOS} mazos.`)
-    }
 
     this.#nombre = nombre.trim()
     this.#username = username.trim()
     this.#contraseña = contraseña
     this.#rol = rol
-    this.#mazos = [...mazos]
   }
 
   /** @returns {string} */
@@ -60,9 +52,6 @@ export class Usuario {
   /** @returns {string} */
   get rol() { return this.#rol }
 
-  /** @returns {Array <number>} */
-  get mazos() { return [...this.#mazos] }
-
   // Methods
   /** Serializa el objeto Usuario a un objeto JSON.
    * @returns {Object}
@@ -72,8 +61,7 @@ export class Usuario {
       nombre: this.#nombre,
       username: this.#username,
       contraseña: this.#contraseña,
-      rol: this.#rol,
-      mazos: [...this.#mazos]
+      rol: this.#rol
     }
   }
 
@@ -86,8 +74,7 @@ export class Usuario {
       nombre: data.nombre,
       username: data.username,
       contraseña: data.contraseña,
-      rol: data.rol,
-      mazos: data.mazos
+      rol: data.rol
     })
   }
 
@@ -105,38 +92,5 @@ export class Usuario {
    */
   async verificarContraseña(contraseñaPlana) {
     return await bcrypt.compare(contraseñaPlana, this.#contraseña)
-  }
-
-  /** Agrega el identificador de un mazo a la lista del usuario.
-   * @param {number} idMazo
-   * @returns {boolean}
-   */
-  agregarMazo(idMazo) {
-    // Validaciones
-    if (!Number.isInteger(idMazo) || idMazo <= 0) {
-      throw new ValidationError("El id del mazo debe ser un entero positivo.")
-    }
-    if (this.#mazos.length >= MAX_MAZOS) {
-      throw new ValidationError(`El usuario ya alcanzo el limite de ${MAX_MAZOS} mazos.`)
-    }
-    if (this.#mazos.includes(idMazo)) {
-      throw new ConflictError("No se pueden añadir copias del mismo mazo.")
-    }
-
-    this.#mazos.push(idMazo)
-    return true
-  }
-
-  /** Elimina un mazo de la lista del usuario.
-   * @param {number} idMazo
-   * @returns {boolean} True si el mazo fue encontrado y eliminado, false si no
-   */
-  eliminarMazo(idMazo) {
-    const indice = this.#mazos.indexOf(idMazo)
-    if (indice !== -1) {
-      this.#mazos.splice(indice, 1)
-      return true
-    }
-    return false
   }
 }
