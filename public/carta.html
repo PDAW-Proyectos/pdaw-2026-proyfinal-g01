@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YuGiKi - Carta</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/carta.css">
+</head>
+<body>
+    <!-- Header con Bootstrap Navbar -->
+    <nav class="navbar navbar-expand-xl navbar-custom sticky-top">
+        <div class="container-fluid">
+            <a href="index.html" class="navbar-brand">YuGiKi</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="text-center navbar-nav me-auto mb-2 mb-lg-0 ms-3">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link nav-link-custom active">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link nav-link-custom">Cartas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="coleccion.html" class="nav-link nav-link-custom">Coleccion</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <a href="login.html" class="btn btn-main btn-main-outline">Iniciar sesion</a>
+                    <a href="registro.html" class="btn btn-main btn-main-primary">Regístrate</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Detalle de la carta -->
+    <main class="detail-section">
+        <div class="container-custom">
+            <div class="detail-card-box">
+                <!-- Sección superior: imagen + nombre/descripción/precio -->
+                <div class="detail-top">
+                    <!-- Imagen -->
+                    <div class="detail-img-col">
+                        <img src="img/30397786.jpg" alt="Blue-Eyes White Dragon" class="detail-img">
+                    </div>
+
+                    <!-- Info -->
+                    <div class="detail-info-col">
+                        <!-- Nombre -->
+                        <div class="detail-name-box">
+                            <h1>Blue-Eyes White Dragon</h1>
+                            <div class="detail-subname">Dragón Blanco de Ojos Azules · Dragón / Normal</div>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="detail-desc-box">
+                            <h2>Descripción</h2>
+                            <p>Descripcion de la carta completaaaaaaaaaaaa.</p>
+                        </div>
+
+                        <!-- Precio + acciones -->
+                        <div class="detail-price-row">
+                            <a href="" class="btn btn-main btn-main-outline">Añadir a colección</a>
+                            
+                            <div class="detail-price-box">
+                                <small>PRECIO</small>
+                                $24.99 USD
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Atributos de la carta -->
+                <div class="detail-attrs-box">
+                    <h2>Atributos de la carta</h2>
+                    <div class="attr-grid">
+                        <div class="attr-item">
+                            <div class="attr-label">Nivel</div>
+                            <div class="attr-value">8</div>
+                        </div>
+                        <div class="attr-item">
+                            <div class="attr-label">ATK</div>
+                            <div class="attr-value">3000</div>
+                        </div>
+                        <div class="attr-item">
+                            <div class="attr-label">DEF</div>
+                            <div class="attr-value">2500</div>
+                        </div>
+                        <div class="attr-item">
+                            <div class="attr-label">Atributo</div>
+                            <div class="attr-value">LUZ</div>
+                        </div>
+                        <div class="attr-item">
+                            <div class="attr-label">Tipo</div>
+                            <div class="attr-value">Dragón</div>
+                        </div>
+                        <div class="attr-item">
+                            <div class="attr-label">Tipo de Carta</div>
+                            <div class="attr-value">Monstruo Normal</div>
+                        </div>
+                        <div class="attr-item">
+                            <div class="attr-label">ID de Carta</div>
+                            <div class="attr-value">89631139</div>
+                        </div>
+                        <div class="attr-item">
+                            <div class="attr-label">Rareza</div>
+                            <div class="attr-value">Ultra Rare</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container-custom">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h3>Navegación</h3>
+                    <ul>
+                        <li><a href="#">Inicio</a></li>
+                        <li><a href="#">Cartas</a></li>
+                        <li><a href="#">Coleccion</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h3>Recursos</h3>
+                    <ul>
+                        <li><a href="#">Banlist Oficial</a></li>
+                        <li><a href="#">Eventos</a></li>
+                        <li><a href="#">Torneos</a></li>
+                        <li><a href="#">Guías</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h3>Soporte</h3>
+                    <ul>
+                        <li><a href="#">Ayuda</a></li>
+                        <li><a href="#">Contacto</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Reportar Problema</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h3>Síguenos</h3>
+                    <ul>
+                        <li><a href="#">Discord</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
