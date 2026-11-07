@@ -95,12 +95,10 @@ afterAll(async () => {
 
 describe("RepositorioMazos", () => {
   describe("constructor y getters", () => {
-    test("arranca sin mazos y con mazosPorUsuario vacío", () => {
+    test("arranca sin mazos", () => {
       const repo = new RepositorioMazos(rutaDb)
       expect(repo.mazos).toBeInstanceOf(Map)
       expect(repo.mazos.size).toBe(0)
-      expect(repo.mazosPorUsuario).toBeInstanceOf(Map)
-      expect(repo.mazosPorUsuario.size).toBe(0)
       expect(repo.cantidadTotal()).toBe(0)
     })
 
@@ -120,21 +118,6 @@ describe("RepositorioMazos", () => {
       expect(repo.buscar(2).toJSON()).toEqual(mazo2)
       expect(repo.cantidadTotal()).toBe(2)
     })
-
-    test("el getter mazosPorUsuario devuelve una copia profunda de los arreglos de ids", async () => {
-      const mazo1 = crearDatosMazo(1, { username: "yugi" })
-      const mazo2 = crearDatosMazo(2, { username: "kaiba" })
-      await sembrarDb({ 1: mazo1, 2: mazo2 })
-      const repo = new RepositorioMazos(rutaDb)
-      await repo.cargar()
-
-      const copia = repo.mazosPorUsuario
-      copia.get("yugi").push(999)
-      copia.delete("kaiba")
-
-      expect(repo.buscarPorUsuario("yugi")).toEqual([1])
-      expect(repo.buscarPorUsuario("kaiba")).toEqual([2])
-    })
   })
 
   describe("guardar", () => {
@@ -153,7 +136,7 @@ describe("RepositorioMazos", () => {
   })
 
   describe("cargar", () => {
-    test("carga los mazos desde un .json existente y arma el mapa mazosPorUsuario", async () => {
+    test("carga los mazos desde un .json existente y arma el mapa mazosPorUsername", async () => {
       const mazo1 = crearDatosMazo(1, { username: "yugi" })
       const mazo2 = crearDatosMazo(2, { username: "kaiba" })
       const mazo3 = crearDatosMazo(3, { username: "yugi" })
@@ -167,8 +150,8 @@ describe("RepositorioMazos", () => {
       expect(repo.buscar(1).toJSON()).toEqual(mazo1)
       expect(repo.buscar(2).toJSON()).toEqual(mazo2)
       expect(repo.buscar(3).toJSON()).toEqual(mazo3)
-      expect(repo.buscarPorUsuario("yugi")).toEqual([1, 3])
-      expect(repo.buscarPorUsuario("kaiba")).toEqual([2])
+      expect(repo.buscarPorUsername("yugi")).toEqual([1, 3])
+      expect(repo.buscarPorUsername("kaiba")).toEqual([2])
     })
 
     test("si el archivo no existe lo crea vacío", async () => {
@@ -257,7 +240,7 @@ describe("RepositorioMazos", () => {
     })
   })
 
-  describe("buscar y buscarPorUsuario", () => {
+  describe("buscar y buscarPorUsername", () => {
     test("devuelve el mazo correspondiente al id numérico buscado", async () => {
       const mazo1 = crearDatosMazo(1)
       const mazo2 = crearDatosMazo(2)
@@ -300,17 +283,29 @@ describe("RepositorioMazos", () => {
       expect(repo.buscar(1).toJSON()).toEqual(mazo1)
     })
 
-    test("buscarPorUsuario devuelve arreglo vacío si el usuario no tiene mazos o el username no es string", async () => {
+    test("buscarPorUsername devuelve una copia del arreglo de ids que no altera el repositorio", async () => {
+      const mazo1 = crearDatosMazo(1, { username: "yugi" })
+      await sembrarDb({ 1: mazo1 })
       const repo = new RepositorioMazos(rutaDb)
       await repo.cargar()
 
-      expect(repo.buscarPorUsuario("inexistente")).toEqual([])
-      expect(repo.buscarPorUsuario(null)).toEqual([])
+      const ids = repo.buscarPorUsername("yugi")
+      ids.push(999)
+
+      expect(repo.buscarPorUsername("yugi")).toEqual([1])
+    })
+
+    test("buscarPorUsername devuelve null si el usuario no tiene mazos o el username no es string", async () => {
+      const repo = new RepositorioMazos(rutaDb)
+      await repo.cargar()
+
+      expect(repo.buscarPorUsername("inexistente")).toBeNull()
+      expect(repo.buscarPorUsername(null)).toBeNull()
     })
   })
 
   describe("agregar", () => {
-    test("asigna id 1 al primer mazo cuando el repositorio está vacío y registra el id en mazosPorUsuario", async () => {
+    test("asigna id 1 al primer mazo cuando el repositorio está vacío y registra el id por username", async () => {
       const repo = new RepositorioMazos(rutaDb)
       await repo.cargar() // crea el .json vacío
 
@@ -322,7 +317,7 @@ describe("RepositorioMazos", () => {
       expect(resultado).toBeInstanceOf(Mazo)
       expect(resultado.toJSON()).toEqual(esperado)
       expect(repo.buscar(1).toJSON()).toEqual(esperado)
-      expect(repo.buscarPorUsuario("yugi")).toEqual([1])
+      expect(repo.buscarPorUsername("yugi")).toEqual([1])
       expect(await leerDb()).toEqual({ 1: esperado })
     })
 
@@ -409,7 +404,7 @@ describe("RepositorioMazos", () => {
 
       expect(repo.cantidadTotal()).toBe(cantidadMazos + 1)
       expect(repo.buscar(cantidadMazos + 1).toJSON()).toEqual(esperadoOtroUsuario)
-      expect(repo.buscarPorUsuario("kaiba")).toEqual([cantidadMazos + 1])
+      expect(repo.buscarPorUsername("kaiba")).toEqual([cantidadMazos + 1])
     })
 
     test("no altera los demás mazos existentes al agregar uno nuevo", async () => {
@@ -478,7 +473,7 @@ describe("RepositorioMazos", () => {
   })
 
   describe("eliminar", () => {
-    test("elimina el mazo por su id, actualiza mazosPorUsuario, lo persiste y devuelve true", async () => {
+    test("elimina el mazo por su id, actualiza mazosPorUsername, lo persiste y devuelve true", async () => {
       const mazo1 = crearDatosMazo(1, { username: "yugi" })
       const mazo2 = crearDatosMazo(2, { username: "kaiba" })
       const mazo3 = crearDatosMazo(3, { username: "yugi" })
@@ -490,9 +485,8 @@ describe("RepositorioMazos", () => {
 
       expect(resultado).toBe(true)
       expect(repo.buscar(2)).toBeNull()
-      expect(repo.buscarPorUsuario("kaiba")).toEqual([])
-      expect(repo.mazosPorUsuario.has("kaiba")).toBe(false)
-      expect(repo.buscarPorUsuario("yugi")).toEqual([1, 3])
+      expect(repo.buscarPorUsername("kaiba")).toBeNull()
+      expect(repo.buscarPorUsername("yugi")).toEqual([1, 3])
       expect(repo.cantidadTotal()).toBe(2)
       expect(await leerDb()).toEqual({ 1: mazo1, 3: mazo3 })
     })
