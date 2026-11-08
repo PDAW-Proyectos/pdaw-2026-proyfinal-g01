@@ -41,6 +41,9 @@ describe("ServicioUsuarios + Repositorios (Test Temporal de Integración)", () =
     await rm(rutaDbUsuarios, { force: true })
     await rm(rutaDbMazos, { force: true })
 
+    await sembrarDb(rutaDbUsuarios, {})
+    await sembrarDb(rutaDbMazos, {})
+
     repoUsuarios = new RepositorioUsuarios(rutaDbUsuarios)
     repoMazos = new RepositorioMazos(rutaDbMazos)
     

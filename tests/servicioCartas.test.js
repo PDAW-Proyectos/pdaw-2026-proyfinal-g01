@@ -130,6 +130,8 @@ const existe = async (ruta) => {
 
 describe("ServicioCartas + RepositorioCartas (Test Temporal)", () => {
   beforeAll(async () => {
+    jest.restoreAllMocks()
+    await rm(rutaDb, { force: true })
     await mkdir(carpetaDataTest, { recursive: true })
   })
 
