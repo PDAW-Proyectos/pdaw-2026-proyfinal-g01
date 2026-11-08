@@ -47,7 +47,7 @@ export class ServicioMazos {
    */
   listarMazos(username) {
     if (!username) {
-      return Array.from(this.#repositorioMazos.mazos.values()).map((id) => this.obtenerMazo(id))
+      return Array.from(this.#repositorioMazos.mazos.keys()).map((id) => this.obtenerMazo(id))
     }
 
     const idsMazos = this.#repositorioMazos.buscarPorUsername(username)
