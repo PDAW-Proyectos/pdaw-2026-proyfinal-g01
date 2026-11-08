@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -76,15 +76,17 @@
             </div>
             
             <!-- Featured Card -->
-            <div class="featured-card">
+            <div class="featured-card" aria-busy="true">
                 <div class="row align-items-center">
                     <div class="col-md-5 col-lg-4 d-flex justify-content-center mb-4 mb-md-0">
-                        <img src="img/30397786.jpg" alt="Blue-Eyes White Dragon" class="card-image-large">
+                        <img id="featured-card-image" class="card-image-large" alt="Carta destacada">
                     </div>
                     <div class="col-md-7 col-lg-8">
                         <div class="featured-info">
-                            <h1>Blue-Eyes White Dragon</h1>
-                            <p>Descripcion breve de la carta.</p>
+                            <h1 id="featured-card-name">Cargando carta destacada...</h1>
+                            <p id="featured-card-description" aria-live="polite"></p>
+                            <p id="featured-card-price" class="featured-card-price"></p>
+                            <p id="featured-card-status" role="status" aria-live="polite"></p>
                             <button class="btn btn-main" style="background: white; color: var(--primary-color);">Ver Detalles</button>
                         </div>
                     </div>
@@ -97,80 +99,19 @@
     <section class="py-4 cards-grid">
         <div class="container-custom">
             <h2 class="section-title">Cartas Populares</h2>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <p id="popular-cards-status" role="status" aria-live="polite">Cargando cartas...</p>
+            <div id="popular-cards-grid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"></div>
+            <template id="popular-card-template">
                 <div class="col">
-                    <div class="card-item">
-                        <img src="img/21466326.jpg" alt="Dark Magician">
+                    <article class="card-item">
+                        <img class="popular-card-image" alt="" loading="lazy">
                         <div class="card-item-info">
-                            <div class="card-item-name">Dark Magician</div>
-                            <div class="card-item-type">Mago / Oscuro</div>
+                            <div class="card-item-name"></div>
+                            <div class="card-item-type"></div>
                         </div>
-                    </div>
+                    </article>
                 </div>
-                <div class="col">
-                    <div class="card-item">
-                        <img src="img/53804307.jpg" alt="Exodia">
-                        <div class="card-item-info">
-                            <div class="card-item-name">Exodia</div>
-                            <div class="card-item-type">Normal / Oscuro</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card-item">
-                        <img src="img/80181649.jpg" alt="Red-Eyes Black Dragon">
-                        <div class="card-item-info">
-                            <div class="card-item-name">Red-Eyes Black Dragon</div>
-                            <div class="card-item-type">Dragón / Oscuro</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card-item">
-                        <img src="img/99788587.jpg" alt="Cyber Dragon">
-                        <div class="card-item-info">
-                            <div class="card-item-name">Cyber Dragon</div>
-                            <div class="card-item-type">Mecánico / Luz</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card-item">
-                        <img src="placeholder-card.jpg" alt="Stardust Dragon">
-                        <div class="card-item-info">
-                            <div class="card-item-name">Stardust Dragon</div>
-                            <div class="card-item-type">Dragón / Síncrono</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card-item">
-                        <img src="placeholder-card.jpg" alt="Trickstar">
-                        <div class="card-item-info">
-                            <div class="card-item-name">Trickstar Lycoris</div>
-                            <div class="card-item-type">Efecto / Luz</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card-item">
-                        <img src="placeholder-card.jpg" alt="Kashtira">
-                        <div class="card-item-info">
-                            <div class="card-item-name">Kashtira Riseheart</div>
-                            <div class="card-item-type">Efecto / Tierra</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card-item">
-                        <img src="placeholder-card.jpg" alt="Branded">
-                        <div class="card-item-info">
-                            <div class="card-item-name">Branded Fusion</div>
-                            <div class="card-item-type">Magia Rápida</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </template>
         </div>
     </section>
 
@@ -214,5 +155,6 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="js/pages/index.js"></script>
 </body>
 </html>
