@@ -1,7 +1,19 @@
 import Ajv from "ajv"
 import { ValidationError } from "../utils/errors.js"
 
-const ajv = new Ajv()
+const ajv = new Ajv({ allErrors: true })
+
+const TRADUCCIONES_AJV = {
+  required: (campo) => `Falta el parametro obligatorio "${campo}".`,
+  additionalProperties: (campo) => `El parametro "${campo}" no esta permitido.`,
+  type: (campo, params) => `El campo "${campo}" debe ser de tipo ${params.type}.`,
+  minLength: (campo, params) => `El campo "${campo}" debe tener al menos ${params.limit} caracteres.`,
+  pattern: (campo) => `El campo "${campo}" tiene un formato invalido o esta vacio.`,
+  minimum: (campo, params) => `El campo "${campo}" debe ser mayor o igual a ${params.limit}.`,
+  maxItems: (campo, params) => `El campo "${campo}" no puede tener mas de ${params.limit} elementos.`,
+  minProperties: (_, params) => `Se debe enviar al menos ${params.limit} campo para actualizar.`,
+  enum: (campo, params) => `El campo "${campo}" debe ser uno de los siguientes valores: ${params.allowedValues.join(", ")}.`,
+}
 
 /** Extrae el nombre legible del campo que fallo en la validacion de Ajv.
  *
@@ -25,29 +37,9 @@ function obtenerNombreCampo(error) {
  */
 export function formatearErrorAjv(error) {
   const campo = obtenerNombreCampo(error)
+  const traductor = TRADUCCIONES_AJV[error.keyword]
 
-  switch (error.keyword) {
-    case "required":
-      return `Falta el parametro obligatorio "${campo}".`
-    case "additionalProperties":
-      return `El parametro "${campo}" no esta permitido.`
-    case "type":
-      return `El campo "${campo}" debe ser de tipo ${error.params.type}.`
-    case "minLength":
-      return `El campo "${campo}" debe tener al menos ${error.params.limit} caracteres.`
-    case "pattern":
-      return `El campo "${campo}" tiene un formato invalido o esta vacio.`
-    case "minimum":
-      return `El campo "${campo}" debe ser mayor o igual a ${error.params.limit}.`
-    case "maxItems":
-      return `El campo "${campo}" no puede tener mas de ${error.params.limit} elementos.`
-    case "minProperties":
-      return `Se debe enviar al menos ${error.params.limit} campo para actualizar.`
-    case "enum":
-      return `El campo "${campo}" debe ser uno de los siguientes valores: ${error.params.allowedValues.join(", ")}.`
-    default:
-      return `El campo "${campo}" no es valido.`
-  }
+  return traductor ? traductor(campo, error.params) : `El campo "${campo}" no es valido.`
 }
 
 /** Crea un middleware de Express que valida req[origen] contra un JSON Schema.
@@ -63,8 +55,11 @@ export function validar(esquema, origen = "body") {
     const esValido = validarEsquema(datos)
 
     if (!esValido) {
-      const primerError = validarEsquema.errors[0]
-      return next(new ValidationError(formatearErrorAjv(primerError)))
+      const detalles = validarEsquema.errors.map((error) => ({
+        campo: obtenerNombreCampo(error),
+        mensaje: formatearErrorAjv(error),
+      }))
+      return next(new ValidationError(detalles[0].mensaje, detalles))
     }
 
     next()
