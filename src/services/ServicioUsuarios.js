@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs"
 import { RepositorioUsuarios } from "../repositories/RepositorioUsuarios.js"
 import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
 import { AuthenticationError, ConflictError } from "../utils/errors.js"
-import { Usuario } from "../models/Usuario.js"
 
 export class ServicioUsuarios {
   #repositorioUsuarios
@@ -31,24 +30,23 @@ export class ServicioUsuarios {
    * @param {string} datos.nombre
    * @param {string} datos.username
    * @param {string} datos.contraseña
-   * @returns {Promise<Usuario>}
+   * @returns {Promise<import("../models/Usuario.js").Usuario>}
    */
   async registrarUsuario({ nombre, username, contraseña }) {
-    Usuario.validarContraseñaPlana(contraseña)
     const contraseñaHash = await bcrypt.hash(contraseña, 10)
 
     return await this.#repositorioUsuarios.agregar({
       nombre,
       username,
       contraseña: contraseñaHash,
-      rol: 'usuario'
+      rol: "usuario"
     })
   }
 
   /** Verifica las credenciales de un usuario.
    * @param {string} username
    * @param {string} contraseñaPlana
-   * @returns {Promise<Usuario>}
+   * @returns {Promise<import("../models/Usuario.js").Usuario>}
    */
   async autenticarUsuario(username, contraseñaPlana) {
     const usuario = this.#repositorioUsuarios.buscar(username)
@@ -62,7 +60,7 @@ export class ServicioUsuarios {
   }
 
   async eliminarUsuario(usuarioAEliminar, adminLogueado) {
-    const usernameLimpio = typeof usuarioAEliminar === "string" ? usuarioAEliminar.trim() : usuarioAEliminar
+    const usernameLimpio = usuarioAEliminar.trim()
     if (usernameLimpio === adminLogueado) {
       throw new ConflictError("No se puede eliminar tu propia cuenta de administrador.")
     }

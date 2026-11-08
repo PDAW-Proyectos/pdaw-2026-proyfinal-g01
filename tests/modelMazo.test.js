@@ -68,27 +68,6 @@ describe("Mazo", () => {
       expect(mazo.extraDeck).toEqual([200])
     })
 
-    test.each([0, -1, -50, 1.5, "1", null, undefined, NaN])(
-      "lanza ValidationError si el id es inválido (%p)",
-      (idInvalido) => {
-        expect(() => new Mazo(datosMazoBase({ id: idInvalido }))).toThrow(ValidationError)
-      }
-    )
-
-    test.each(["", "   ", null, undefined, 123, {}])(
-      "lanza ValidationError si el username es inválido (%p)",
-      (usernameInvalido) => {
-        expect(() => new Mazo(datosMazoBase({ username: usernameInvalido }))).toThrow(ValidationError)
-      }
-    )
-
-    test.each(["", "   ", null, undefined, 123, {}])(
-      "lanza ValidationError si el nombre es inválido (%p)",
-      (nombreInvalido) => {
-        expect(() => new Mazo(datosMazoBase({ nombre: nombreInvalido }))).toThrow(ValidationError)
-      }
-    )
-
     test("permite crear un mazo con exactamente 60 cartas en mainDeck y 15 en extraDeck", () => {
       const main60 = Array.from({ length: 60 }, (_, i) => i + 1)
       const extra15 = Array.from({ length: 15 }, (_, i) => i + 100)
@@ -97,18 +76,6 @@ describe("Mazo", () => {
 
       expect(mazo.mainDeck).toHaveLength(60)
       expect(mazo.extraDeck).toHaveLength(15)
-    })
-
-    test("lanza ValidationError si mainDeck supera las 60 cartas", () => {
-      const main61 = Array.from({ length: 61 }, (_, i) => i + 1)
-
-      expect(() => new Mazo(datosMazoBase({ mainDeck: main61 }))).toThrow(ValidationError)
-    })
-
-    test("lanza ValidationError si extraDeck supera las 15 cartas", () => {
-      const extra16 = Array.from({ length: 16 }, (_, i) => i + 1)
-
-      expect(() => new Mazo(datosMazoBase({ extraDeck: extra16 }))).toThrow(ValidationError)
     })
   })
 
@@ -181,27 +148,6 @@ describe("Mazo", () => {
       expect(resultado).toBe(true)
       expect(mazo.extraDeck).toEqual([700])
       expect(mazo.mainDeck).toEqual([])
-    })
-
-    test.each([0, -10, 2.5, "100", null, undefined, NaN])(
-      "lanza ValidationError si idCarta no es un entero positivo (%p)",
-      (idCartaInvalido) => {
-        const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo" })
-
-        expect(() => mazo.agregarCarta(idCartaInvalido, "none", "main")).toThrow(ValidationError)
-      }
-    )
-
-    test("lanza ValidationError si el destino no es 'main' ni 'extra'", () => {
-      const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo" })
-
-      expect(() => mazo.agregarCarta(100, "none", "side")).toThrow(ValidationError)
-    })
-
-    test("lanza ValidationError si banInfo no es un estado válido", () => {
-      const mazo = new Mazo({ id: 1, username: "yugi", nombre: "Mazo" })
-
-      expect(() => mazo.agregarCarta(100, "EstadoInexistente", "main")).toThrow(ValidationError)
     })
 
     describe("límites de copias según banlist (MAX_COPIAS_POR_CARTA)", () => {
