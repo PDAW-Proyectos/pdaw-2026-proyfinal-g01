@@ -1,15 +1,5 @@
-import { ValidationError } from "./errors.js"
-
 function normalizarTexto(valor) {
   return String(valor).trim().toLowerCase()
-}
-
-function normalizarNumero(valor, campo) {
-  const numero = Number(valor)
-  if (Number.isNaN(numero)) {
-    throw new ValidationError(`El filtro "${campo}" debe ser un numero valido.`)
-  }
-  return numero
 }
 
 function filtroTextoParcial(propiedad) {
@@ -26,8 +16,8 @@ function filtroExacto(propiedad) {
 }
 
 function filtroNumerico(propiedad) {
-  return function (valor, campo) {
-    const buscado = normalizarNumero(valor, campo)
+  return function (valor) {
+    const buscado = Number(valor)
     return (carta) => carta[propiedad] === buscado
   }
 }
@@ -57,7 +47,6 @@ const CREADORES_FILTRO = {
  * @param {Array<import("../models/carta/Carta.js").Carta>} cartas
  * @param {Object} [filtros={}]
  * @returns {Array<import("../models/carta/Carta.js").Carta>}
- * @throws {ValidationError} Si algun atributo no existe o un valor numerico es invalido.
  */
 export function filtrarCartas(cartas, filtros = {}) {
   const predicados = []
@@ -66,11 +55,9 @@ export function filtrarCartas(cartas, filtros = {}) {
     if (valor === undefined || valor === null || valor === "") continue
 
     const crearPredicado = CREADORES_FILTRO[campo]
-    if (!crearPredicado) {
-      throw new ValidationError(`El atributo de filtro "${campo}" no es valido.`)
+    if (crearPredicado) {
+      predicados.push(crearPredicado(valor))
     }
-
-    predicados.push(crearPredicado(valor, campo))
   }
 
   if (predicados.length === 0) {

@@ -1,5 +1,4 @@
 import { ServicioImagenes } from "../services/ServicioImagenes.js"
-import { ValidationError } from "../utils/errors.js"
 
 export class ControladorImagenes {
   #servicioImagenes
@@ -16,18 +15,10 @@ export class ControladorImagenes {
     this.#servicioImagenes = servicioImagenes
   }
 
-  /** Verifica que el parametro o campo exista en la peticion. */
-  #validarParametro(valor, nombreCampo) {
-    if (valor === undefined || valor === null) {
-      throw new ValidationError(`Falta el parametro obligatorio "${nombreCampo}".`)
-    }
-  }
-
   obtenerImagen = async (req, res, next) => {
     try {
       const { id } = req.params
       const { tipo } = req.query
-      this.#validarParametro(id, "id")
       const rutaImagen = await this.#servicioImagenes.obtenerImagen(id, tipo)
 
       res.status(200).sendFile(rutaImagen)

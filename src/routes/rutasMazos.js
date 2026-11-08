@@ -1,18 +1,47 @@
 import { Router } from "express"
 import { controladorMazos } from "../utils/container.js"
 import { requiereAutenticacion } from "../middlewares/seguridad.middleware.js"
+import { validar } from "../middlewares/validacion.middleware.js"
+import { esquemasMazos } from "../schemas/mazos.schema.js"
 
 const router = Router()
 
 // Muchas de las rutas son nuevas tenemos que añadirlas a la tabla
-router.get("/", controladorMazos.listarMazos)
-router.get("/:id", controladorMazos.obtenerMazo)
+router.get("/", validar(esquemasMazos.queryListar, "query"), controladorMazos.listarMazos)
+router.get("/:id", validar(esquemasMazos.parametroId, "params"), controladorMazos.obtenerMazo)
 
-router.post("/",requiereAutenticacion , controladorMazos.crearMazo)
-router.patch("/:id",requiereAutenticacion , controladorMazos.actualizarMazo)
-router.delete("/:id",requiereAutenticacion , controladorMazos.eliminarMazo)
+router.post(
+  "/",
+  requiereAutenticacion,
+  validar(esquemasMazos.crear, "body"),
+  controladorMazos.crearMazo
+)
+router.patch(
+  "/:id",
+  requiereAutenticacion,
+  validar(esquemasMazos.parametroId, "params"),
+  validar(esquemasMazos.actualizar, "body"),
+  controladorMazos.actualizarMazo
+)
+router.delete(
+  "/:id",
+  requiereAutenticacion,
+  validar(esquemasMazos.parametroId, "params"),
+  controladorMazos.eliminarMazo
+)
 
-router.post("/:id/cartas",requiereAutenticacion , controladorMazos.agregarCarta)
-router.delete("/:id/cartas/:idCarta",requiereAutenticacion , controladorMazos.eliminarCarta)
+router.post(
+  "/:id/cartas",
+  requiereAutenticacion,
+  validar(esquemasMazos.parametroId, "params"),
+  validar(esquemasMazos.agregarCarta, "body"),
+  controladorMazos.agregarCarta
+)
+router.delete(
+  "/:id/cartas/:idCarta",
+  requiereAutenticacion,
+  validar(esquemasMazos.parametrosMazoYCarta, "params"),
+  controladorMazos.eliminarCarta
+)
 
 export default router

@@ -491,14 +491,6 @@ describe("RepositorioMazos", () => {
       expect(await leerDb()).toEqual({ 1: mazo1, 3: mazo3 })
     })
 
-    test("rechaza con ValidationError al cargar un mazo cuyo id es 0 o inválido", async () => {
-      const mazo0 = crearDatosMazo(0)
-      await sembrarDb({ 0: mazo0 })
-      const repo = new RepositorioMazos(rutaDb)
-
-      await expect(repo.cargar()).rejects.toThrow(ValidationError)
-    })
-
     test("lanza NotFoundError si el id no existe y no modifica el archivo", async () => {
       const mazo1 = crearDatosMazo(1)
       const mazo2 = crearDatosMazo(2)

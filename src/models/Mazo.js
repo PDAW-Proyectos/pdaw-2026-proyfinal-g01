@@ -10,7 +10,6 @@ const MAX_COPIAS_POR_CARTA = {
   "Semi-Limited": 2,
   none: 3
 }
-const DESTINOS_PERMITIDOS = ["main", "extra"]
 
 /** Representa la entidad Mazo
  */
@@ -30,23 +29,6 @@ export class Mazo {
    * @param {Array<number>} [datos.extraDeck=[]]
    */
   constructor({ id, username, nombre, mainDeck = [], extraDeck = [] }) {
-    // Validaciones
-    if (!Number.isInteger(id) || id <= 0) {
-      throw new ValidationError("El id del mazo debe ser un entero positivo")
-    }
-    if (typeof username !== "string" || username.trim() === "") {
-      throw new ValidationError("El username no puede estar vacio")
-    }
-    if (typeof nombre !== "string" || nombre.trim() === "") {
-      throw new ValidationError("El nombre no puede estar vacio")
-    }
-    if (mainDeck.length > MAX_MAIN_DECK) {
-      throw new ValidationError(`El Main Deck no puede tener mas de ${MAX_MAIN_DECK} cartas.`)
-    }
-    if (extraDeck.length > MAX_EXTRA_DECK) {
-      throw new ValidationError(`El Extra Deck no puede tener mas de ${MAX_EXTRA_DECK} cartas.`)
-    }
-
     this.#id = id
     this.#username = username.trim()
     this.#nombre = nombre.trim()
@@ -115,29 +97,19 @@ export class Mazo {
    * @returns {boolean}
    */
   agregarCarta(idCarta, banInfo, destino) {
-    // Validaciones
-    if (!Number.isInteger(idCarta) || idCarta <= 0) {
-      throw new ValidationError("El id de la carta debe ser un entero positivo.");
-    }
-    if (!DESTINOS_PERMITIDOS.includes(destino)) {
-      throw new ValidationError("El destino de la carta no esta permitido.");
-    }
-    if (!(banInfo in MAX_COPIAS_POR_CARTA)) {
-      throw new ValidationError("El estado de banlist no es valido.");
-    }
     if (this.#validarMaxCopias(idCarta, banInfo)) {
-      throw new ValidationError("No se pueden añadir copias de la carta.");
+      throw new ValidationError("No se pueden añadir copias de la carta.")
     }
 
     if (destino === "main") {
       if (this.#mainDeck.length >= MAX_MAIN_DECK) {
-        throw new ValidationError(`El Main Deck ya alcanzo el limite de ${MAX_MAIN_DECK} cartas.`);
+        throw new ValidationError(`El Main Deck ya alcanzo el limite de ${MAX_MAIN_DECK} cartas.`)
       }
       this.#mainDeck.push(idCarta)
     }
     if (destino === "extra") {
       if (this.#extraDeck.length >= MAX_EXTRA_DECK) {
-        throw new ValidationError(`El Extra Deck ya alcanzo el limite de ${MAX_EXTRA_DECK} cartas.`);
+        throw new ValidationError(`El Extra Deck ya alcanzo el limite de ${MAX_EXTRA_DECK} cartas.`)
       }
       this.#extraDeck.push(idCarta)
     }
