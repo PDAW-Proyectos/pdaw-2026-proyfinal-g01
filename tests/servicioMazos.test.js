@@ -1,4 +1,4 @@
-import { readFile, rm, mkdir, access, writeFile } from "node:fs/promises"
+import { readFile, rm, mkdir, writeFile } from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { jest } from "@jest/globals"
