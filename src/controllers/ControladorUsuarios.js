@@ -1,5 +1,4 @@
 import { ServicioUsuarios } from "../services/ServicioUsuarios.js"
-import { UsuarioMapper } from "../utils/usuario.mapper.js"
 
 export class ControladorUsuarios {
   #servicioUsuarios
@@ -22,7 +21,7 @@ export class ControladorUsuarios {
 
       const usuario = await this.#servicioUsuarios.registrarUsuario({ nombre, username, contraseña })
 
-      res.status(201).json(UsuarioMapper.toDTO(usuario))
+      res.status(201).json(usuario.toDTO())
     } catch (error) {
       next(error)
     }
@@ -40,7 +39,7 @@ export class ControladorUsuarios {
       await regenerate(req)
       req.session.username = usuario.username
       req.session.rol = usuario.rol
-      res.status(200).json(UsuarioMapper.toDTO(usuario))
+      res.status(200).json(usuario.toDTO())
     } catch (error) {
       next(error)
     }

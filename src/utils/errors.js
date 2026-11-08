@@ -1,74 +1,108 @@
-export class ConflictError extends Error {
-  /** Un error pesonalizado para decir que la clave ingresada ya esta en uso por otro objeto.
+export class AppError extends Error {
+  /** Clase base para los errores operacionales de la aplicacion.
+   * @param {string} mensaje
+   * @param {Object} [options={}]
+   * @param {number} [options.statusCode=500]
+   * @param {string} [options.title="Error interno"]
+   * @param {Array|Object} [options.details]
+   * @param {Error} [options.cause]
+   */
+  constructor(mensaje, options = {}) {
+    const { statusCode = 500, title = "Error interno", details, cause } = options
+    super(mensaje, { cause })
+    this.name = this.constructor.name
+    this.statusCode = statusCode
+    this.title = title
+    this.details = details
+  }
+}
+
+export class ConflictError extends AppError {
+  /** Un error personalizado para decir que la clave ingresada ya esta en uso por otro objeto.
    * @param {string} mensaje
    */
   constructor(mensaje) {
-    super(mensaje)
-    this.name = "ConflictError"
-    this.statusCode = 409
+    super(mensaje, {
+      statusCode: 409,
+      title: "Conflicto con el estado actual",
+    })
   }
 }
 
-export class NotFoundError extends Error {
-  /** Un error pesonalizado para decir que no se encontro el objeto asociado a la key.
+export class NotFoundError extends AppError {
+  /** Un error personalizado para decir que no se encontro el objeto asociado a la key.
    * @param {string} mensaje
    */
   constructor(mensaje) {
-    super(mensaje)
-    this.name = "NotFoundError"
-    this.statusCode = 404
+    super(mensaje, {
+      statusCode: 404,
+      title: "No encontrado",
+    })
   }
 }
 
-export class ValidationError extends Error {
-  /** Un error pesonalizado para decir que el dato no es valido.
+export class ValidationError extends AppError {
+  /** Un error personalizado para decir que el dato no es valido.
+   * @param {string} mensaje
+   * @param {Array<{campo: string, mensaje: string}>} [details]
+   */
+  constructor(mensaje, details) {
+    super(mensaje, {
+      statusCode: 400,
+      title: "Datos invalidos",
+      details,
+    })
+  }
+}
+
+export class AuthenticationError extends AppError {
+  /** Un error personalizado para indicar falta de autenticacion o credenciales invalidas.
    * @param {string} mensaje
    */
   constructor(mensaje) {
-    super(mensaje);
-    this.name = "ValidationError";
-    this.statusCode = 400;
+    super(mensaje, {
+      statusCode: 401,
+      title: "No autenticado",
+    })
   }
 }
 
-export class AuthenticationError extends Error {
-  constructor(mensaje) {
-    super(mensaje);
-    this.name = "AuthenticationError";
-    this.statusCode = 401; //
-  }
-}
-
-export class AuthorizationError extends Error {
+export class AuthorizationError extends AppError {
   /** Un error personalizado para decir que el usuario autenticado no tiene los permisos necesarios.
    * @param {string} mensaje
    */
   constructor(mensaje) {
-    super(mensaje);
-    this.name = "AuthorizationError";
-    this.statusCode = 403;
+    super(mensaje, {
+      statusCode: 403,
+      title: "Sin permisos",
+    })
   }
 }
 
-export class ExternalApiError extends Error {
+export class ExternalApiError extends AppError {
   /** Un error personalizado para indicar un fallo al comunicarse con la API externa.
    * @param {string} mensaje
-   * @param {Number} [statusCode=502]
+   * @param {Error} [cause]
    */
-  constructor(mensaje) {
-    super(mensaje)
-    this.name = "ExternalApiError"
-    this.statusCode = 502
+  constructor(mensaje, cause) {
+    super(mensaje, {
+      statusCode: 502,
+      title: "Servicio externo no disponible",
+      cause,
+    })
   }
 }
 
-export class DatabaseError extends Error {
+export class DatabaseError extends AppError {
   /** Un error personalizado para indicar un fallo al leer o actualizar la base de datos local.
    * @param {string} mensaje
+   * @param {Error} [cause]
    */
-  constructor(mensaje) {
-    super(mensaje)
-    this.name = "DatabaseError"
-    this.statusCode = 500
+  constructor(mensaje, cause) {
+    super(mensaje, {
+      statusCode: 500,
+      title: "Error interno",
+      cause,
+    })
   }
 }

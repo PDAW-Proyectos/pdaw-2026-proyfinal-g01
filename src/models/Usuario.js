@@ -60,6 +60,14 @@ export class Usuario {
     })
   }
 
+  toDTO() {
+    return {
+      nombre: this.#nombre,
+      username: this.#username,
+      rol: this.#rol
+    }
+  }
+
   /** Compara una contraseña en texto plano con el hash guardado.
    * @param {string} contraseñaPlana
    * @returns {Promise<boolean>}
