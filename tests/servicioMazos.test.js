@@ -8,22 +8,10 @@ import { ServicioMazos } from "../src/services/ServicioMazos.js"
 import { AuthorizationError, NotFoundError } from "../src/utils/errors.js"
 import { Mazo } from "../src/models/Mazo.js"
 
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const carpetaDataTest = path.resolve(__dirname, "..", "dataTest")
 const rutaDbMazos = path.join(carpetaDataTest, "mazosTempTest.json")
 const rutaDbCartas = path.join(carpetaDataTest, "cartasTempTest.json")
-
-
-const existe = async (ruta) => {
-  try {
-    await access(ruta)
-    return true
-  } catch {
-    return false
-  }
-}
-
 
 const sembrarDb = (ruta, datos) => writeFile(ruta, JSON.stringify(datos), "utf8")
 
