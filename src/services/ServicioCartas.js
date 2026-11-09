@@ -6,6 +6,7 @@ import { stat } from "node:fs/promises"
 
 const UNA_SEMANA_MS = 7 * 24 * 60 * 60 * 1000
 const MAX_REINTENTOS = 3
+const CARTAS_POR_PAGINA = 20
 
 export class ServicioCartas {
   #repositorioCartas
@@ -67,10 +68,10 @@ export class ServicioCartas {
     }
   }
 
-  /** Lista todas las cartas o las filtra segun los atributos proporcionados.
+  /** Lista todas las cartas o las filtra segun los atributos proporcionados, paginando los resultados.
    * @param {Object} [filtros={}]
-   * @returns {Array<import("../models/carta/Carta.js").Carta>}
-   * @throws {NotFoundError} Si no se encuentran cartas que coincidan con la busqueda.
+   * @returns {{ datos: Array<import("../models/carta/Carta.js").Carta>, paginacion: Object }}
+   * @throws {NotFoundError} Si no se encuentran cartas que coincidan con la busqueda o si la pagina no existe.
    */
   listarCartas(filtros = {}) {
     const arrayCartas = Array.from(this.#repositorioCartas.cartas.values())
@@ -80,7 +81,27 @@ export class ServicioCartas {
       throw new NotFoundError("No se encontraron cartas que coincidan con los criterios de busqueda.")
     }
 
-    return resultados
+    const paginaActual = Number(filtros.page) || 1
+    const totalCartas = resultados.length
+    const totalPaginas = Math.ceil(totalCartas / CARTAS_POR_PAGINA)
+
+    if (paginaActual > totalPaginas) {
+      throw new NotFoundError(`La pagina ${paginaActual} no existe. Total de paginas: ${totalPaginas}.`)
+    }
+
+    const inicio = (paginaActual - 1) * CARTAS_POR_PAGINA
+    const datos = resultados.slice(inicio, inicio + CARTAS_POR_PAGINA)
+
+    return {
+      datos,
+      paginacion: {
+        paginaActual,
+        totalPaginas,
+        totalCartas,
+        tieneAnterior: paginaActual > 1,
+        tieneSiguiente: paginaActual < totalPaginas
+      }
+    }
   }
 
   /** Obtiene una carta especifica a partir de su ID.

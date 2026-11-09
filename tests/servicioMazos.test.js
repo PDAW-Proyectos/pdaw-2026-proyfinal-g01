@@ -81,7 +81,14 @@ describe("ServicioMazos + Repositorios (Test Temporal de Integración)", () => {
       await repoMazos.cargar()
 
       const resultado = servicio.listarMazos()
-      expect(resultado).toHaveLength(2)
+      expect(resultado.datos).toHaveLength(2)
+      expect(resultado.paginacion).toEqual({
+        paginaActual: 1,
+        totalPaginas: 1,
+        totalMazos: 2,
+        tieneAnterior: false,
+        tieneSiguiente: false
+      })
     })
 
     test("lista solo los mazos del usuario si se pasa username", async () => {
@@ -92,8 +99,15 @@ describe("ServicioMazos + Repositorios (Test Temporal de Integración)", () => {
       await repoMazos.cargar()
 
       const resultado = servicio.listarMazos("yugi")
-      expect(resultado).toHaveLength(1)
-      expect(resultado[0].username).toBe("yugi")
+      expect(resultado.datos).toHaveLength(1)
+      expect(resultado.datos[0].username).toBe("yugi")
+      expect(resultado.paginacion).toEqual({
+        paginaActual: 1,
+        totalPaginas: 1,
+        totalMazos: 1,
+        tieneAnterior: false,
+        tieneSiguiente: false
+      })
     })
 
     test("lanza NotFoundError si el usuario no tiene mazos", () => {

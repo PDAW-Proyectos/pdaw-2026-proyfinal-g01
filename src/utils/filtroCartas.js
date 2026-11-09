@@ -51,6 +51,7 @@ const CREADORES_FILTRO = {
 export function filtrarCartas(cartas, filtros = {}) {
   const predicados = []
 
+  // Creacion de array de funciones que filtran los valores
   for (const [campo, valor] of Object.entries(filtros)) {
     if (valor === undefined || valor === null || valor === "") continue
 
@@ -64,6 +65,6 @@ export function filtrarCartas(cartas, filtros = {}) {
     return cartas
   }
 
-  // predicados es un array de funciones por eso funciona
+  // Uso del array para recorrer todo el mismo cada vez que se tiene una carta
   return cartas.filter((carta) => predicados.every((cumple) => cumple(carta)))
 }

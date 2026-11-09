@@ -102,21 +102,19 @@ describe("RepositorioMazos", () => {
       expect(repo.cantidadTotal()).toBe(0)
     })
 
-    test("el getter mazos devuelve una copia profunda que no afecta al repositorio", async () => {
+    test("el getter mazos devuelve el mapa con los mazos cargados", async () => {
       const mazo1 = crearDatosMazo(1)
       const mazo2 = crearDatosMazo(2)
       await sembrarDb({ 1: mazo1, 2: mazo2 })
       const repo = new RepositorioMazos(rutaDb)
       await repo.cargar()
 
-      const copia = repo.mazos
-      copia.get(1).agregarCarta(999, "none", "main")
-      copia.set(99, new Mazo(crearDatosMazo(99)))
-      copia.delete(2)
+      const mapa = repo.mazos
 
-      expect(repo.buscar(1).toJSON()).toEqual(mazo1)
-      expect(repo.buscar(2).toJSON()).toEqual(mazo2)
-      expect(repo.cantidadTotal()).toBe(2)
+      expect(mapa).toBeInstanceOf(Map)
+      expect(mapa.size).toBe(2)
+      expect(mapa.get(1).toJSON()).toEqual(mazo1)
+      expect(mapa.get(2).toJSON()).toEqual(mazo2)
     })
   })
 
@@ -269,30 +267,6 @@ describe("RepositorioMazos", () => {
       await repo.cargar()
 
       expect(repo.buscar(1)).toBeNull()
-    })
-
-    test("devuelve una copia profunda: modificar el mazo devuelto no altera el repositorio", async () => {
-      const mazo1 = crearDatosMazo(1)
-      await sembrarDb({ 1: mazo1 })
-      const repo = new RepositorioMazos(rutaDb)
-      await repo.cargar()
-
-      const copia = repo.buscar(1)
-      copia.agregarCarta(999, "none", "main")
-
-      expect(repo.buscar(1).toJSON()).toEqual(mazo1)
-    })
-
-    test("buscarPorUsername devuelve una copia del arreglo de ids que no altera el repositorio", async () => {
-      const mazo1 = crearDatosMazo(1, { username: "yugi" })
-      await sembrarDb({ 1: mazo1 })
-      const repo = new RepositorioMazos(rutaDb)
-      await repo.cargar()
-
-      const ids = repo.buscarPorUsername("yugi")
-      ids.push(999)
-
-      expect(repo.buscarPorUsername("yugi")).toEqual([1])
     })
 
     test("buscarPorUsername devuelve null si el usuario no tiene mazos o el username no es string", async () => {

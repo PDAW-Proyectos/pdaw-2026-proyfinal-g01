@@ -17,9 +17,9 @@ export class ControladorMazos {
 
   listarMazos = (req, res, next) => {
     try {
-      const username = req.session.rol === "admin" && req.query.all === "true" ? undefined : req.session.username
+      const username = req.query.all === "true" ? undefined : req.session.username
 
-      const mazos = this.#servicioMazos.listarMazos(username)
+      const mazos = this.#servicioMazos.listarMazos(username, req.query.page)
 
       res.status(200).json(mazos)
     } catch (error) {
