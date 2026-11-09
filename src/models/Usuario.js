@@ -1,8 +1,4 @@
 import bcrypt from "bcryptjs"
-import { ValidationError } from "../utils/errors.js"
-
-// Reglas de negocio
-const MIN_LARGO_CONTRASEÑA = 6
 
 /** Representa la entidad Usuario
  */
@@ -19,21 +15,7 @@ export class Usuario {
    * @param {string} datos.contraseña
    * @param {string} [datos.rol='usuario']
    */
-  constructor({ nombre, username, contraseña, rol = 'usuario' }) {
-    // Validaciones
-    if (typeof nombre !== "string" || nombre.trim() === "") {
-      throw new ValidationError("El nombre no puede estar vacio")
-    }
-    if (typeof username !== "string" || username.trim() === "") {
-      throw new ValidationError("El username no puede estar vacio")
-    }
-    if (typeof contraseña !== "string" || contraseña.trim() === "") {
-      throw new ValidationError("La contraseña no puede estar vacia")
-    }
-    if (rol !== 'usuario' && rol !== 'admin') {
-      throw new ValidationError("Rol inválido. Debe ser 'usuario' o 'admin'.")
-    }
-
+  constructor({ nombre, username, contraseña, rol = "usuario" }) {
     this.#nombre = nombre.trim()
     this.#username = username.trim()
     this.#contraseña = contraseña
@@ -78,11 +60,11 @@ export class Usuario {
     })
   }
 
-  static validarContraseñaPlana(contraseña) {
-    if (typeof contraseña !== "string" || contraseña.length < MIN_LARGO_CONTRASEÑA) {
-      throw new ValidationError(
-        `La contraseña debe tener al menos ${MIN_LARGO_CONTRASEÑA} caracteres.`
-      )
+  toDTO() {
+    return {
+      nombre: this.#nombre,
+      username: this.#username,
+      rol: this.#rol
     }
   }
 

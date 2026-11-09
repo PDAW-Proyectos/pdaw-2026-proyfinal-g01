@@ -4,13 +4,16 @@ import express from "express"
 import session from "express-session"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
-import { errorHandler } from "./middlewares/errorHandler.js"
+import { errorHandler, requestContext } from "./middlewares/errorHandler.middleware.js"
 import rutasMazos from "./routes/rutasMazos.js"
 import rutasCartas from "./routes/rutasCartas.js"
 import rutasImagenes from "./routes/rutasImagenes.js"
 import rutasUsuarios from "./routes/rutasUsuarios.js"
 
 const app = express()
+
+// Registro de contexto e identificador unico por solicitud (X-Request-Id)
+app.use(requestContext())
 
 // como en el archivo server.js de el proyecto anterior inicio los middlewares
 const __dirname = path.dirname(fileURLToPath(import.meta.url))

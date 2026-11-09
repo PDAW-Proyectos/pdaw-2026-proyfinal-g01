@@ -1,5 +1,4 @@
 import { ServicioCartas } from "../services/ServicioCartas.js"
-import { ValidationError } from "../utils/errors.js"
 
 export class ControladorCartas {
   #servicioCartas
@@ -16,13 +15,6 @@ export class ControladorCartas {
     this.#servicioCartas = servicioCartas
   }
 
-  /** Verifica que el parametro o campo exista en la peticion. */
-  #validarParametro(valor, nombreCampo) {
-    if (valor === undefined || valor === null) {
-      throw new ValidationError(`Falta el parametro obligatorio "${nombreCampo}".`)
-    }
-  }
-
   listarCartas = (req, res, next) => {
     try {
       const cartas = this.#servicioCartas.listarCartas(req.query)
@@ -36,7 +28,6 @@ export class ControladorCartas {
   obtenerCarta = (req, res, next) => {
     try {
       const { id } = req.params
-      this.#validarParametro(id, "id")
       const carta = this.#servicioCartas.obtenerCarta(id)
 
       res.status(200).json(carta)

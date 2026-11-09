@@ -1,5 +1,4 @@
 import { ServicioMazos } from "../services/ServicioMazos.js"
-import { ValidationError } from "../utils/errors.js"
 
 export class ControladorMazos {
   #servicioMazos
@@ -16,18 +15,9 @@ export class ControladorMazos {
     this.#servicioMazos = servicioMazos
   }
 
-  /** Verifica que el parametro o campo exista en la peticion. */
-  #validarParametro(valor, nombreCampo) {
-    if (valor === undefined || valor === null) {
-      throw new ValidationError(`Falta el parametro obligatorio "${nombreCampo}".`)
-    }
-  }
-
   listarMazos = (req, res, next) => {
     try {
-      const username = req.session.rol ===
-                       'admin' && req.query.all ===
-                       'true' ? undefined : req.session.username;
+      const username = req.session.rol === "admin" && req.query.all === "true" ? undefined : req.session.username
 
       const mazos = this.#servicioMazos.listarMazos(username)
 
@@ -40,7 +30,6 @@ export class ControladorMazos {
   obtenerMazo = (req, res, next) => {
     try {
       const { id } = req.params
-      this.#validarParametro(id, "id")
       const mazo = this.#servicioMazos.obtenerMazo(id)
 
       res.status(200).json(mazo)
@@ -57,8 +46,6 @@ export class ControladorMazos {
         username: req.session.username
       }
 
-      this.#validarParametro(datosMazo.username, "sesión (usuario no autenticado)")
-
       const nuevoMazo = await this.#servicioMazos.crearMazo(datosMazo)
 
       res.status(201).json(nuevoMazo)
@@ -71,10 +58,6 @@ export class ControladorMazos {
     try {
       const { id } = req.params
       const username = req.session.username
-
-      this.#validarParametro(id, "id")
-      this.#validarParametro(req.body, "body")
-      this.#validarParametro(username, "sesión (usuario no autenticado)")
 
       const mazoActualizado = await this.#servicioMazos.actualizarMazo(id, req.body, username)
 
@@ -89,9 +72,6 @@ export class ControladorMazos {
       const { id } = req.params
       const username = req.session.username
 
-      this.#validarParametro(id, "id")
-      this.#validarParametro(username, "sesión (usuario no autenticado)")
-
       await this.#servicioMazos.eliminarMazo(id, username)
 
       res.status(204).send()
@@ -103,12 +83,8 @@ export class ControladorMazos {
   agregarCarta = async (req, res, next) => {
     try {
       const { id } = req.params
-      const idCarta = req.body?.idCarta
+      const { idCarta } = req.body
       const username = req.session.username
-
-      this.#validarParametro(id, "id")
-      this.#validarParametro(idCarta, "idCarta")
-      this.#validarParametro(username, "sesión (usuario no autenticado)")
 
       const mazoActualizado = await this.#servicioMazos.agregarCarta(id, idCarta, username)
 
@@ -122,10 +98,6 @@ export class ControladorMazos {
     try {
       const { id, idCarta } = req.params
       const username = req.session.username
-
-      this.#validarParametro(id, "id")
-      this.#validarParametro(idCarta, "idCarta")
-      this.#validarParametro(username, "sesión (usuario no autenticado)")
 
       const mazoActualizado = await this.#servicioMazos.eliminarCarta(id, idCarta, username)
 

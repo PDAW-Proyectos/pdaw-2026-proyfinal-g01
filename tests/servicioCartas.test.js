@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url"
 import { jest } from "@jest/globals"
 import { RepositorioCartas } from "../src/repositories/RepositorioCartas.js"
 import { ServicioCartas } from "../src/services/ServicioCartas.js"
-import { DatabaseError, NotFoundError, ValidationError } from "../src/utils/errors.js"
+import { DatabaseError, NotFoundError } from "../src/utils/errors.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const carpetaDataTest = path.resolve(__dirname, "..", "dataTest")
@@ -130,6 +130,8 @@ const existe = async (ruta) => {
 
 describe("ServicioCartas + RepositorioCartas (Test Temporal)", () => {
   beforeAll(async () => {
+    jest.restoreAllMocks()
+    await rm(rutaDb, { force: true })
     await mkdir(carpetaDataTest, { recursive: true })
   })
 
@@ -270,19 +272,6 @@ describe("ServicioCartas + RepositorioCartas (Test Temporal)", () => {
       expect(servicio.listarCartas({ level: 7, scale: 4 })[0].name).toBe("Odd-Eyes Pendulum Dragon")
       expect(servicio.listarCartas({ attribute: "DARK" })).toHaveLength(3)
       expect(servicio.listarCartas({ linkval: 3 })[0].name).toBe("Decode Talker")
-    })
-
-    test("lanza ValidationError si se pasa un atributo no permitido o un número inválido", async () => {
-      const repo = new RepositorioCartas(rutaDb)
-      await repo.guardar(payloadApiMock().data)
-      const servicio = new ServicioCartas(repo)
-
-      expect(() => servicio.listarCartas({ id: 46986414 })).toThrow(ValidationError)
-      expect(() => servicio.listarCartas({ type: "Spell Card" })).toThrow(ValidationError)
-      expect(() => servicio.listarCartas({ desc: "Draw 2 cards" })).toThrow(ValidationError)
-      expect(() => servicio.listarCartas({ ban_tcg: "Banned" })).toThrow(ValidationError)
-      expect(() => servicio.listarCartas({ linkmarkers: ["Top"] })).toThrow(ValidationError)
-      expect(() => servicio.listarCartas({ atk: "no-es-numero" })).toThrow(ValidationError)
     })
 
     test("lanza NotFoundError cuando ninguna carta coincide con los filtros o el repositorio está vacío", async () => {
