@@ -48,6 +48,7 @@ export class ServicioMazos {
    * @returns {{ datos: Array<Object>, paginacion: Object }}
    * @throws {NotFoundError} Si no hay mazos o si la pagina solicitada no existe.
    */
+<<<<<<< HEAD
   listarMazos(username, page = 1) {
     let idsMazos
 
@@ -61,6 +62,11 @@ export class ServicioMazos {
       if (idsMazos.length === 0) {
         throw new NotFoundError("No hay mazos creados.")
       }
+=======
+  listarMazos(username) {
+    if (!username) {
+      return Array.from(this.#repositorioMazos.mazos.keys()).map((id) => this.obtenerMazo(id))
+>>>>>>> 6a9a64d489d1901973338b4dd02f2a831264397e
     }
 
     const paginaActual = Number(page) || 1
