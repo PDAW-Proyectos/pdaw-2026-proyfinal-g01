@@ -30,19 +30,15 @@ export class RepositorioImagenes {
 
   get rutaSmall() { return this.#rutaSmall }
 
-  /** Copia del Set de los ids de imagenes completas descargadas
+  /** Set de los ids de imagenes completas descargadas
    * @returns {Set <Number>}
    */
-  get imagenesFull() {
-    return new Set(this.#imagenesFull)
-  }
+  get imagenesFull() { return this.#imagenesFull }
 
-  /** Copia del Set de los ids de imagenes pequeñas descargadas
+  /** Set de los ids de imagenes pequeñas descargadas
    * @returns {Set <Number>}
    */
-  get imagenesSmall() {
-    return new Set(this.#imagenesSmall)
-  }
+  get imagenesSmall() { return this.#imagenesSmall }
 
   // Methods
   /** Escanea una carpeta y devuelve un Set con los IDs cuyos archivos existen y no estan vacios */

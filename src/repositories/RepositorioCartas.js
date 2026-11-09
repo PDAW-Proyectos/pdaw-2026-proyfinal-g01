@@ -21,13 +21,7 @@ export class RepositorioCartas {
   /**
    * @returns {Map <Number, Carta>}
    */
-  get cartas() {
-    const copia = new Map()
-    for (const [id, carta] of this.#cartas) {
-      copia.set(id, CartaFactory.fromJSON(carta.toJSON()))
-    }
-    return copia
-  }
+  get cartas() { return this.#cartas }
 
   // Methods
   /** Calcula el total de cartas en el repositorio
@@ -42,8 +36,7 @@ export class RepositorioCartas {
    * @returns {Carta | null}
    */
   buscar(id) {
-    const carta = this.#cartas.get(id)
-    return carta ? CartaFactory.fromJSON(carta.toJSON()) : null
+    return this.#cartas.get(id) ?? null
   }
 
   /**  */

@@ -1,4 +1,4 @@
-import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
+import { RepositorioMazos, MAX_MAZOS } from "../repositories/RepositorioMazos.js"
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
 import { NotFoundError, AuthorizationError } from "../utils/errors.js"
 
@@ -35,27 +35,55 @@ export class ServicioMazos {
       throw new NotFoundError(`El Mazo asociado al id "${idMazo}" no se encontro.`)
     }
 
-    if (mazo.username !== username.trim()) {
+    if (mazo.username !== username) {
       throw new AuthorizationError("No tienes permisos para modificar este mazo.")
     }
 
     return mazo
   }
 
-  /**
-   * Lista los mazos de un usuario si se pasa el username, si no, lista todos (si es admin por ej).
+  /** Lista los mazos de un usuario si se pasa el username; si no, lista todos los mazos paginados.
+   * @param {string} [username]
+   * @param {number|string} [page=1]
+   * @returns {{ datos: Array<Object>, paginacion: Object }}
+   * @throws {NotFoundError} Si no hay mazos o si la pagina solicitada no existe.
    */
-  listarMazos(username) {
-    if (!username) {
-      return Array.from(this.#repositorioMazos.mazos.values()).map((id) => this.obtenerMazo(id))
+  listarMazos(username, page = 1) {
+    let idsMazos
+
+    if (username) {
+      idsMazos = this.#repositorioMazos.buscarPorUsername(username)
+      if (!idsMazos) {
+        throw new NotFoundError("El Usuario no tiene ningun mazo creado.")
+      }
+    } else {
+      idsMazos = Array.from(this.#repositorioMazos.mazos.keys())
+      if (idsMazos.length === 0) {
+        throw new NotFoundError("No hay mazos creados.")
+      }
     }
 
-    const idsMazos = this.#repositorioMazos.buscarPorUsername(username)
-    if (!idsMazos) {
-      throw new NotFoundError(`El Usuario no tiene ningun mazo creado.`)
+    const paginaActual = Number(page) || 1
+    const totalMazos = idsMazos.length
+    const totalPaginas = Math.ceil(totalMazos / MAX_MAZOS)
+
+    if (paginaActual > totalPaginas) {
+      throw new NotFoundError(`La pagina ${paginaActual} no existe. Total de paginas: ${totalPaginas}.`)
     }
 
-    return idsMazos.map((id) => this.obtenerMazo(id))
+    const inicio = (paginaActual - 1) * MAX_MAZOS
+    const datos = idsMazos.slice(inicio, inicio + MAX_MAZOS).map((id) => this.obtenerMazo(id))
+
+    return {
+      datos,
+      paginacion: {
+        paginaActual,
+        totalPaginas,
+        totalMazos,
+        tieneAnterior: paginaActual > 1,
+        tieneSiguiente: paginaActual < totalPaginas
+      }
+    }
   }
 
   obtenerMazo(idMazo) {

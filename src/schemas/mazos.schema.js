@@ -20,6 +20,10 @@ export const esquemasMazos = {
       all: {
         type: "string",
         enum: ["true", "false"]
+      },
+      page: {
+        type: "string",
+        pattern: PATRON_ENTERO_POSITIVO
       }
     }
   },
