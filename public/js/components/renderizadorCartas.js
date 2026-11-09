@@ -17,7 +17,7 @@ function obtenerElemento(id) {
  * @param {"full" | "small"} tipo
  * @returns {string}
  */
-function obtenerUrlImagen(carta, tipo) {
+export function obtenerUrlImagen(carta, tipo) {
   if (!Number.isInteger(Number(carta.id))) {
     throw new Error(`La carta "${carta.name}" no tiene un ID válido.`)
   }

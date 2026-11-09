@@ -1,4 +1,5 @@
 import { obtenerCartas } from "../services/cartaApi.js"
+import { inicializarBusquedaCartas } from "../modules/busquedaCartas.js"
 import {
   obtenerPrecioMaximo,
   renderizarCartaDestacada,
@@ -54,6 +55,8 @@ function seleccionarCartaMasCara(cartas) {
 }
 
 async function inicializarInicio() {
+  inicializarBusquedaCartas()
+
   try {
     const cartas = await obtenerCartas()
     const destacada = seleccionarCartaMasCara(cartas)

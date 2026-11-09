@@ -47,34 +47,49 @@
     <section class="hero-section">
         <div class="container-custom">
             <!-- Search Bar -->
-            <div class="search-bar mb-4">
-                <div class="row g-2 align-items-center">
-                    <div class="col-lg-4 col-md-12">
-                        <input type="text" class="form-control search-input" placeholder="Buscar carta por nombre...">
+            <div class="search-container">
+                <div class="search-bar mb-4">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-lg-4 col-md-12">
+                            <input id="search-input" type="search" class="form-control search-input" placeholder="Buscar carta por nombre..." aria-label="Buscar carta por nombre" aria-controls="search-results" aria-expanded="false" autocomplete="off">
+                        </div>
+                        <div class="col-lg-2 col-md-6">
+                            <select id="search-type-filter" class="form-select filter-select" aria-label="Filtrar por tipo de carta">
+                                <option value="">Todas las Cartas</option>
+                                <option value="link">Link</option>
+                                <option value="monster">Monstruo</option>
+                                <option value="pendulum">Pendulo</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-2 col-md-6">
+                            <select id="search-race-filter" class="form-select filter-select" aria-label="Filtrar por raza">
+                                <option value="">Todas las razas</option>
+                                <option value="Spellcaster">Spellcaster</option>
+                                <option value="Dragon">Dragon</option>
+                                <option value="Zombie">Zombie</option>
+                                <option value="Warrior">Warrior</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-4 col-md-12">
+                            <button id="search-button" class="btn btn-main btn-main-primary w-100 btn-search">Buscar</button>
+                        </div>
                     </div>
-                    <div class="col-lg-2 col-md-6">
-                        <select class="form-select filter-select">
-                            <option>Todas las Cartas</option>
-                            <option>Link</option>
-                            <option>Monstruo</option>
-                            <option>Pendulo</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-2 col-md-6">
-                        <select class="form-select filter-select">
-                            <option>Raza</option>
-                            <option>Spellcaster</option>
-                            <option>Dragon</option>
-                            <option>Zombie</option>
-                            <option>Warrior</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-4 col-md-12">
-                        <button class="btn btn-main btn-main-primary w-100 btn-search">Buscar</button>
+                    <!-- Dropdown de resultados -->
+                    <div id="search-dropdown" class="search-dropdown">
+
+                        <!-- Spinner -->
+                        <div id="search-loading" class="search-loading" role="status" aria-live="polite">
+                            <div class="spinner"></div>
+                            <span>Buscando cartas...</span>
+                        </div>
+
+
+                        <!-- Resultados -->
+                        <div id="search-results" class="search-results" role="list" aria-label="Resultados de búsqueda"></div>
+
                     </div>
                 </div>
             </div>
-            
             <!-- Featured Card -->
             <div class="featured-card" aria-busy="true">
                 <div class="row align-items-center">
