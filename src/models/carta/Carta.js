@@ -74,6 +74,17 @@ export class Carta {
   /** Array de Object con los valores ebay_price y amazon_price */
   get card_prices() { return this.#card_prices.map((precio) => ({ ...precio })) }
 
+  /** Mayor precio de la carta entre ebay_price y amazon_price */
+  get card_price() {
+    let mayorPrecio = 0
+    for (const precio of this.#card_prices) {
+      const precioEbay = Number(precio.ebay_price ?? 0)
+      const precioAmazon = Number(precio.amazon_price ?? 0)
+      mayorPrecio = Math.max(mayorPrecio, precioEbay, precioAmazon)
+    }
+    return mayorPrecio
+  }
+
   // Methods
   /** Transforma los atributos de la carta en un Object generico para poder guardarlo en un archivo JSON.
    * @returns {Object}
@@ -88,6 +99,24 @@ export class Carta {
       desc: this.#desc,
       card_images: this.card_images,
       card_prices: this.card_prices,
+    }
+    if (Object.keys(this.#banlist_info).length > 0) {
+      obj.banlist_info = this.banlist_info
+    }
+    return obj
+  }
+
+  /** Transforma la carta a un DTO para enviar al cliente con card_price y sin frameType, card_images ni card_prices.
+   * @returns {Object}
+   */
+  toDTO() {
+    const obj = {
+      id: this.#id,
+      name: this.#name,
+      type: this.#type,
+      race: this.#race,
+      desc: this.#desc,
+      card_price: this.card_price,
     }
     if (Object.keys(this.#banlist_info).length > 0) {
       obj.banlist_info = this.banlist_info

@@ -1,6 +1,6 @@
+/** Clase base para los errores operacionales de la aplicacion. */
 export class AppError extends Error {
-  /** Clase base para los errores operacionales de la aplicacion.
-   * @param {string} mensaje
+  /** @param {string} mensaje
    * @param {Object} [options={}]
    * @param {number} [options.statusCode=500]
    * @param {string} [options.title="Error interno"]
@@ -17,10 +17,9 @@ export class AppError extends Error {
   }
 }
 
+/** Un error personalizado para decir que la clave ingresada ya esta en uso por otro objeto. */
 export class ConflictError extends AppError {
-  /** Un error personalizado para decir que la clave ingresada ya esta en uso por otro objeto.
-   * @param {string} mensaje
-   */
+  /** @param {string} mensaje */
   constructor(mensaje) {
     super(mensaje, {
       statusCode: 409,
@@ -29,10 +28,9 @@ export class ConflictError extends AppError {
   }
 }
 
+/** Un error personalizado para decir que no se encontro el objeto asociado a la key. */
 export class NotFoundError extends AppError {
-  /** Un error personalizado para decir que no se encontro el objeto asociado a la key.
-   * @param {string} mensaje
-   */
+  /** @param {string} mensaje */
   constructor(mensaje) {
     super(mensaje, {
       statusCode: 404,
@@ -41,10 +39,10 @@ export class NotFoundError extends AppError {
   }
 }
 
+/** Un error personalizado para decir que el dato no es valido. */
 export class ValidationError extends AppError {
-  /** Un error personalizado para decir que el dato no es valido.
-   * @param {string} mensaje
-   * @param {Array<{campo: string, mensaje: string}>} [details]
+  /** @param {string} mensaje
+   * @param {Array <{campo: string, mensaje: string}>} [details]
    */
   constructor(mensaje, details) {
     super(mensaje, {
@@ -55,10 +53,9 @@ export class ValidationError extends AppError {
   }
 }
 
+/** Un error personalizado para indicar falta de autenticacion o credenciales invalidas. */
 export class AuthenticationError extends AppError {
-  /** Un error personalizado para indicar falta de autenticacion o credenciales invalidas.
-   * @param {string} mensaje
-   */
+  /** @param {string} mensaje */
   constructor(mensaje) {
     super(mensaje, {
       statusCode: 401,
@@ -67,10 +64,9 @@ export class AuthenticationError extends AppError {
   }
 }
 
+/** Un error personalizado para decir que el usuario autenticado no tiene los permisos necesarios. */
 export class AuthorizationError extends AppError {
-  /** Un error personalizado para decir que el usuario autenticado no tiene los permisos necesarios.
-   * @param {string} mensaje
-   */
+  /** @param {string} mensaje */
   constructor(mensaje) {
     super(mensaje, {
       statusCode: 403,
@@ -79,9 +75,9 @@ export class AuthorizationError extends AppError {
   }
 }
 
+/** Un error personalizado para indicar un fallo al comunicarse con la API externa. */
 export class ExternalApiError extends AppError {
-  /** Un error personalizado para indicar un fallo al comunicarse con la API externa.
-   * @param {string} mensaje
+  /** @param {string} mensaje
    * @param {Error} [cause]
    */
   constructor(mensaje, cause) {
@@ -93,9 +89,9 @@ export class ExternalApiError extends AppError {
   }
 }
 
+/** Un error personalizado para indicar un fallo al leer o actualizar la base de datos local. */
 export class DatabaseError extends AppError {
-  /** Un error personalizado para indicar un fallo al leer o actualizar la base de datos local.
-   * @param {string} mensaje
+  /** @param {string} mensaje
    * @param {Error} [cause]
    */
   constructor(mensaje, cause) {

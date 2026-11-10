@@ -16,7 +16,6 @@ const TRADUCCIONES_AJV = {
 }
 
 /** Extrae el nombre legible del campo que fallo en la validacion de Ajv.
- *
  * @returns {string}
  */
 function obtenerNombreCampo(error) {

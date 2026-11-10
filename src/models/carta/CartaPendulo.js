@@ -31,4 +31,14 @@ export class CartaPendulo extends CartaMonstruo {
       scale: this.#scale
     }
   }
+
+  /** Transforma los atributos de la carta pendulo en un DTO para enviar al cliente.
+   * @returns {Object}
+   */
+  toDTO() {
+    return {
+      ...super.toDTO(),
+      scale: this.#scale
+    }
+  }
 }

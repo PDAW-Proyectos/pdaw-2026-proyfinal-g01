@@ -44,9 +44,9 @@ const CREADORES_FILTRO = {
 // Se uso ia para mejorar la forma en la que se aplicaban los filtros para intentar tener eficiencia
 // por el numero de cartas.
 /** Prepara los predicados de los filtros activos una sola vez y filtra la lista de cartas.
- * @param {Array<import("../models/carta/Carta.js").Carta>} cartas
+ * @param {Array <import("../models/carta/Carta.js").Carta>} cartas
  * @param {Object} [filtros={}]
- * @returns {Array<import("../models/carta/Carta.js").Carta>}
+ * @returns {Array <Carta>}
  */
 export function filtrarCartas(cartas, filtros = {}) {
   const predicados = []
