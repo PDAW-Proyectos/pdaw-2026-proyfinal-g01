@@ -2,7 +2,7 @@ import { readFile, writeFile } from "node:fs/promises"
 import { NotFoundError, ValidationError } from "../utils/errors.js"
 import { Mazo } from "../models/Mazo.js"
 
-const MAX_MAZOS = 10
+export const MAX_MAZOS = 10
 
 /** Clase que almacena los mazos ordenandolos por username, sirve para cargar los
  * mazos desde la base de data y guardarlos en la misma. */
@@ -31,13 +31,7 @@ export class RepositorioMazos {
   /** Mapa de mazos con claves de id para rapido acceso
    * @returns {Map <Number, Mazo>}
    */
-  get mazos() {
-    const copia = new Map()
-    for (const [id, mazo] of this.#mazos) {
-      copia.set(id, Mazo.fromJSON(mazo))
-    }
-    return copia
-  }
+  get mazos() { return this.#mazos }
 
   // Methods
   /** Calcula el total de mazos en el repositorio
@@ -52,8 +46,7 @@ export class RepositorioMazos {
    * @returns {Mazo | null}
    */
   buscar(id) {
-    const mazo = this.#mazos.get(id)
-    return mazo ? Mazo.fromJSON(mazo) : null
+    return this.#mazos.get(id) ?? null
   }
 
   /** Busca los ids de los mazos pertenecientes a un usuario.
@@ -65,8 +58,7 @@ export class RepositorioMazos {
       return null
     }
 
-    const ids = this.#mazosPorUsername.get(username.trim())
-    return ids ? [...ids] : null
+    return this.#mazosPorUsername.get(username) ?? null
   }
 
   /** Guarda todos los Mazos a la base de datos, como objeto JSON */

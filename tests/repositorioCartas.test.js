@@ -59,18 +59,18 @@ describe("RepositorioCartas", () => {
       expect(repo.cantidadTotal()).toBe(0)
     })
 
-    test("el getter 'cartas' devuelve una copia profunda", async () => {
+    test("el getter 'cartas' devuelve el mapa con las cartas cargadas", async () => {
       const carta1 = crearDatosCarta(100)
       await sembrarDb({ 100: carta1 })
       
       const repo = new RepositorioCartas(rutaDb)
       await repo.cargar()
 
-      const copia = repo.cartas
-      copia.delete(100) 
+      const mapa = repo.cartas
 
-      expect(repo.cantidadTotal()).toBe(1)
-      expect(repo.buscar(100).name).toBe("Carta Prueba")
+      expect(mapa).toBeInstanceOf(Map)
+      expect(mapa.size).toBe(1)
+      expect(mapa.get(100).name).toBe("Carta Prueba")
     })
   })
 

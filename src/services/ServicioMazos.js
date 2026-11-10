@@ -1,18 +1,18 @@
-import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
+import { RepositorioMazos, MAX_MAZOS } from "../repositories/RepositorioMazos.js"
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
 import { NotFoundError, AuthorizationError } from "../utils/errors.js"
 
 const TIPOS_EXTRA_DECK = ["fusion", "synchro", "xyz", "link", "fusion_pendulum", "synchro_pendulum", "xyz_pendulum"]
 
+/** La clase ServicioMazos maneja el RepositorioMazos y ademas lee del
+ * RepositorioCartas para conseguir el resto de la informacion. */
 export class ServicioMazos {
   #repositorioMazos
   #repositorioCartas
 
-  /** Inicia el servicio con el repositorio dado, maneja el RepositorioMazos y ademas lee del
-   * RepositorioCartas para conseguir el resto de la informacion.
+  /** Inicia el servicio con los repositorios dados.
    * @param {RepositorioMazos} repositorioMazos
    * @param {RepositorioCartas} repositorioCartas
-   * @throws TypeError si el parametro no de la clase usada por el servicio.
    */
   constructor(repositorioMazos, repositorioCartas) {
     // Validaciones
@@ -35,44 +35,72 @@ export class ServicioMazos {
       throw new NotFoundError(`El Mazo asociado al id "${idMazo}" no se encontro.`)
     }
 
-    if (mazo.username !== username.trim()) {
+    if (mazo.username !== username) {
       throw new AuthorizationError("No tienes permisos para modificar este mazo.")
     }
 
     return mazo
   }
 
-  /**
-   * Lista los mazos de un usuario si se pasa el username, si no, lista todos (si es admin por ej).
+  /** Lista los mazos de un usuario si se pasa el username, si no, lista todos los mazos paginados.
+   * @param {string} [username]
+   * @param {number|string} [page=1]
+   * @returns {{ datos: Array <Object>, paginacion: Object }}
    */
-  listarMazos(username) {
-    if (!username) {
-      return Array.from(this.#repositorioMazos.mazos.keys()).map((id) => this.obtenerMazo(id))
+  listarMazos(username, page = 1) {
+    let idsMazos
+
+    if (username) {
+      idsMazos = this.#repositorioMazos.buscarPorUsername(username)
+      if (!idsMazos) {
+        throw new NotFoundError("El Usuario no tiene ningun mazo creado.")
+      }
+    } else {
+      idsMazos = Array.from(this.#repositorioMazos.mazos.keys())
+      if (idsMazos.length === 0) {
+        throw new NotFoundError("No hay mazos creados.")
+      }
     }
 
-    const idsMazos = this.#repositorioMazos.buscarPorUsername(username)
-    if (!idsMazos) {
-      throw new NotFoundError(`El Usuario no tiene ningun mazo creado.`)
+    const paginaActual = Number(page) || 1
+    const totalMazos = idsMazos.length
+    const totalPaginas = Math.ceil(totalMazos / MAX_MAZOS)
+
+    if (paginaActual > totalPaginas) {
+      throw new NotFoundError(`La pagina ${paginaActual} no existe. Total de paginas: ${totalPaginas}.`)
     }
 
-    return idsMazos.map((id) => this.obtenerMazo(id))
+    const inicio = (paginaActual - 1) * MAX_MAZOS
+    const datos = idsMazos.slice(inicio, inicio + MAX_MAZOS).map((id) => this.obtenerMazo(id))
+
+    return {
+      datos,
+      paginacion: {
+        paginaActual,
+        totalPaginas,
+        totalMazos,
+        tieneAnterior: paginaActual > 1,
+        tieneSiguiente: paginaActual < totalPaginas
+      }
+    }
   }
 
+  /** Busca y obtiene el mazo devolviendo con las cartas cargadas, si el mismo existe.
+   * @param {string} idMazo
+   * @returns {Object}
+   */
   obtenerMazo(idMazo) {
     const mazo = this.#repositorioMazos.buscar(Number(idMazo))
     if (!mazo) {
       throw new NotFoundError(`El Mazo asociado al id "${idMazo}" no se encontro.`)
     }
 
-    const cartasMainDeck = mazo.mainDeck.map(id => this.#repositorioCartas.buscar(id))
-    const cartasExtraDeck = mazo.extraDeck.map(id => this.#repositorioCartas.buscar(id))
+    const cartasMainDeck = mazo.mainDeck.map(id => this.#repositorioCartas.buscar(id)?.toDTO())
+    const cartasExtraDeck = mazo.extraDeck.map(id => this.#repositorioCartas.buscar(id)?.toDTO())
 
     let precioTotal = 0;
     [...cartasMainDeck, ...cartasExtraDeck].forEach(carta => {
-      const primerPrecio = carta?.card_prices?.[0]
-      const precioEbay = Number(primerPrecio?.ebay_price ?? 0)
-      const precioAmazon = Number(primerPrecio?.amazon_price ?? 0)
-      precioTotal += Math.max(precioEbay, precioAmazon)
+      precioTotal += carta?.card_price ?? 0
     })
 
     return {

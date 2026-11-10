@@ -38,4 +38,15 @@ export class CartaLink extends CartaMonstruo {
       linkmarkers: this.#linkmarkers
     }
   }
+
+  /** Transforma los atributos de la carta link en un DTO para enviar al cliente.
+   * @returns {Object}
+   */
+  toDTO() {
+    return {
+      ...super.toDTO(),
+      linkval: this.#linkval,
+      linkmarkers: this.#linkmarkers
+    }
+  }
 }

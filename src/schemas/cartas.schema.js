@@ -27,7 +27,8 @@ export const esquemasCartas = {
       def: { type: "string", pattern: PATRON_NUMERO_FILTRO },
       level: { type: "string", pattern: PATRON_NUMERO_FILTRO },
       scale: { type: "string", pattern: PATRON_NUMERO_FILTRO },
-      linkval: { type: "string", pattern: PATRON_NUMERO_FILTRO }
+      linkval: { type: "string", pattern: PATRON_NUMERO_FILTRO },
+      page: { type: "string", pattern: PATRON_ENTERO_POSITIVO }
     }
   }
 }

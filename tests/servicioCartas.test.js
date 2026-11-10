@@ -161,6 +161,7 @@ describe("ServicioCartas + RepositorioCartas (Test Temporal)", () => {
     expect(darkMagician.name).toBe("Dark Magician")
     expect(darkMagician.atk).toBe(2500)
     expect(darkMagician.card_prices).toEqual([{ ebay_price: "1.99", amazon_price: "2.50" }])
+    expect(darkMagician.card_price).toBe(2.5)
 
     // 2. Verifica que el archivo JSON se escribió correctamente en disco
     expect(await existe(rutaDb)).toBe(true)
@@ -255,8 +256,15 @@ describe("ServicioCartas + RepositorioCartas (Test Temporal)", () => {
       await repo.guardar(payloadApiMock().data)
       const servicio = new ServicioCartas(repo)
 
-      const cartas = servicio.listarCartas()
-      expect(cartas).toHaveLength(4)
+      const resultado = servicio.listarCartas()
+      expect(resultado.datos).toHaveLength(4)
+      expect(resultado.paginacion).toEqual({
+        paginaActual: 1,
+        totalPaginas: 1,
+        totalCartas: 4,
+        tieneAnterior: false,
+        tieneSiguiente: false
+      })
     })
 
     test("filtra por los atributos permitidos (name, frameType, race, atk, def, level, attribute, scale, linkval)", async () => {
@@ -264,14 +272,14 @@ describe("ServicioCartas + RepositorioCartas (Test Temporal)", () => {
       await repo.guardar(payloadApiMock().data)
       const servicio = new ServicioCartas(repo)
 
-      expect(servicio.listarCartas({ name: "magician" })[0].name).toBe("Dark Magician")
-      expect(servicio.listarCartas({ frameType: "link" })[0].name).toBe("Decode Talker")
-      expect(servicio.listarCartas({ race: "Dragon" })[0].name).toBe("Odd-Eyes Pendulum Dragon")
-      expect(servicio.listarCartas({ atk: 2500 })).toHaveLength(2)
-      expect(servicio.listarCartas({ atk: 2500, def: 2100 })[0].name).toBe("Dark Magician")
-      expect(servicio.listarCartas({ level: 7, scale: 4 })[0].name).toBe("Odd-Eyes Pendulum Dragon")
-      expect(servicio.listarCartas({ attribute: "DARK" })).toHaveLength(3)
-      expect(servicio.listarCartas({ linkval: 3 })[0].name).toBe("Decode Talker")
+      expect(servicio.listarCartas({ name: "magician" }).datos[0].name).toBe("Dark Magician")
+      expect(servicio.listarCartas({ frameType: "link" }).datos[0].name).toBe("Decode Talker")
+      expect(servicio.listarCartas({ race: "Dragon" }).datos[0].name).toBe("Odd-Eyes Pendulum Dragon")
+      expect(servicio.listarCartas({ atk: 2500 }).datos).toHaveLength(2)
+      expect(servicio.listarCartas({ atk: 2500, def: 2100 }).datos[0].name).toBe("Dark Magician")
+      expect(servicio.listarCartas({ level: 7, scale: 4 }).datos[0].name).toBe("Odd-Eyes Pendulum Dragon")
+      expect(servicio.listarCartas({ attribute: "DARK" }).datos).toHaveLength(3)
+      expect(servicio.listarCartas({ linkval: 3 }).datos[0].name).toBe("Decode Talker")
     })
 
     test("lanza NotFoundError cuando ninguna carta coincide con los filtros o el repositorio está vacío", async () => {

@@ -55,20 +55,17 @@ describe("RepositorioUsuarios", () => {
       expect(repo.cantidadTotal()).toBe(0)
     })
 
-    test("el getter 'usuarios' devuelve una copia profunda que no afecta al repositorio", async () => {
+    test("el getter 'usuarios' devuelve el mapa con los usuarios cargados", async () => {
       const u1 = crearDatosUsuario("yugi")
       await sembrarDb({ yugi: u1 })
       const repo = new RepositorioUsuarios(rutaDb)
       await repo.cargar()
 
-      const copia = repo.usuarios
-      // Modificamos la copia
-      copia.delete("yugi")
-      copia.set("kaiba", new Usuario(crearDatosUsuario("kaiba")))
+      const mapa = repo.usuarios
 
-      expect(repo.buscar("yugi").toJSON()).toEqual(u1)
-      expect(repo.buscar("kaiba")).toBeNull()
-      expect(repo.cantidadTotal()).toBe(1)
+      expect(mapa).toBeInstanceOf(Map)
+      expect(mapa.size).toBe(1)
+      expect(mapa.get("yugi").toJSON()).toEqual(u1)
     })
   })
 
@@ -147,13 +144,13 @@ describe("RepositorioUsuarios", () => {
   })
 
   describe("buscar", () => {
-    test("devuelve el usuario correspondiente recortando espacios en blanco", async () => {
+    test("devuelve el usuario correspondiente al username buscado", async () => {
       const u1 = crearDatosUsuario("yugi")
       await sembrarDb({ yugi: u1 })
       const repo = new RepositorioUsuarios(rutaDb)
       await repo.cargar()
 
-      const encontrado = repo.buscar("  yugi  ")
+      const encontrado = repo.buscar("yugi")
 
       expect(encontrado).toBeInstanceOf(Usuario)
       expect(encontrado.toJSON()).toEqual(u1)
@@ -173,18 +170,6 @@ describe("RepositorioUsuarios", () => {
       expect(repo.buscar(123)).toBeNull()
       expect(repo.buscar(null)).toBeNull()
       expect(repo.buscar({})).toBeNull()
-    })
-
-    test("devuelve una copia profunda: modificarla no altera el repositorio original", async () => {
-      const u1 = crearDatosUsuario("yugi")
-      await sembrarDb({ yugi: u1 })
-      const repo = new RepositorioUsuarios(rutaDb)
-      await repo.cargar()
-
-      const copia = repo.buscar("yugi")
-      // Como los campos en Usuario son privados y no tienen setters, 
-      // la protección en este caso viene por la re-instanciación con fromJSON()
-      expect(copia).not.toBe(repo.usuarios.get("yugi")) 
     })
   })
 

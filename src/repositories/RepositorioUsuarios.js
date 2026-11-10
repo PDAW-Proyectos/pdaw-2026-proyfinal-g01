@@ -24,13 +24,7 @@ export class RepositorioUsuarios {
   /** Mapa de usuarios con claves de username para rapido acceso
    * @returns {Map <string, Usuario>}
    */
-  get usuarios() {
-    const copia = new Map()
-    for (const [username, usuario] of this.#usuarios) {
-      copia.set(username, Usuario.fromJSON(usuario.toJSON()))
-    }
-    return copia
-  }
+  get usuarios() { return this.#usuarios }
 
   // Methods
   /** Calcula el total de usuarios en el repositorio
@@ -48,9 +42,8 @@ export class RepositorioUsuarios {
     if (typeof username !== "string") {
       return null
     }
-    const usernameNormalizado = username.trim()
-    const usuario = this.#usuarios.get(usernameNormalizado)
-    return usuario ? Usuario.fromJSON(usuario.toJSON()) : null
+
+    return this.#usuarios.get(username) ?? null
   }
 
   /** Guarda todos los Usuarios a la base de datos, como objeto JSON */

@@ -17,9 +17,12 @@ export class ControladorCartas {
 
   listarCartas = (req, res, next) => {
     try {
-      const cartas = this.#servicioCartas.listarCartas(req.query)
+      const resultado = this.#servicioCartas.listarCartas(req.query)
 
-      res.status(200).json(cartas)
+      res.status(200).json({
+        ...resultado,
+        datos: resultado.datos.map((carta) => carta.toDTO())
+      })
     } catch (error) {
       next(error)
     }
@@ -30,7 +33,7 @@ export class ControladorCartas {
       const { id } = req.params
       const carta = this.#servicioCartas.obtenerCarta(id)
 
-      res.status(200).json(carta)
+      res.status(200).json(carta.toDTO())
     } catch (error) {
       next(error)
     }

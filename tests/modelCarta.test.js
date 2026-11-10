@@ -98,6 +98,12 @@ describe("Carta", () => {
       ])
     })
 
+    test("card_price devuelve el mayor precio como número entre ebay_price y amazon_price", () => {
+      const carta = new Carta(datosMagia())
+
+      expect(carta.card_price).toBe(2)
+    })
+
     test("card_images devuelve una copia y no la lista interna", () => {
       const carta = new Carta(datosMagia())
       const imagenes = carta.card_images
@@ -116,6 +122,7 @@ describe("Carta", () => {
       const carta = new Carta(datosMagia({ card_prices: [] }))
 
       expect(carta.card_prices).toEqual([])
+      expect(carta.card_price).toBe(0)
     })
 
     test("guarda la información de banlist cuando se proporciona", () => {
@@ -163,8 +170,8 @@ describe("Carta", () => {
     })
   })
 
-  describe("toJSON()", () => {
-    test("devuelve un objeto con todos los atributos de la carta", () => {
+  describe("toJSON() y toDTO()", () => {
+    test("toJSON devuelve un objeto con todos los atributos para persistencia", () => {
       const json = new Carta(datosMagia()).toJSON()
 
       expect(json).toEqual({
@@ -182,6 +189,22 @@ describe("Carta", () => {
           { ebay_price: "1.50", amazon_price: "2.00" }
         ]
       })
+    })
+
+    test("toDTO devuelve card_price con el mayor precio y omite frameType, card_prices y card_images", () => {
+      const dto = new Carta(datosMagia()).toDTO()
+
+      expect(dto).toEqual({
+        id: 1001,
+        name: "Pot of Greed",
+        type: "Spell Card",
+        race: "Normal",
+        desc: "Descripcion de prueba",
+        card_price: 2
+      })
+      expect(dto).not.toHaveProperty("frameType")
+      expect(dto).not.toHaveProperty("card_prices")
+      expect(dto).not.toHaveProperty("card_images")
     })
 
     test("no incluye banlist_info si la carta no la tiene", () => {
@@ -304,7 +327,7 @@ describe("CartaMonstruo", () => {
     })
   })
 
-  describe("toJSON()", () => {
+  describe("toJSON() y toDTO()", () => {
     test("incluye los atributos de Carta y los propios del monstruo", () => {
       const json = new CartaMonstruo(datosMonstruo()).toJSON()
 
@@ -327,6 +350,23 @@ describe("CartaMonstruo", () => {
 
       expect(json.def).toBeNull()
       expect(json.level).toBeNull()
+    })
+
+    test("toDTO incluye los atributos de CartaMonstruo con card_price y sin frameType ni card_images", () => {
+      const dto = new CartaMonstruo(datosMonstruo()).toDTO()
+
+      expect(dto).toMatchObject({
+        id: 1001,
+        name: "Carta de prueba",
+        atk: 2500,
+        def: 2100,
+        level: 7,
+        attribute: "DARK",
+        card_price: 2
+      })
+      expect(dto).not.toHaveProperty("frameType")
+      expect(dto).not.toHaveProperty("card_prices")
+      expect(dto).not.toHaveProperty("card_images")
     })
   })
 })
@@ -365,7 +405,7 @@ describe("CartaPendulo", () => {
     })
   })
 
-  describe("toJSON()", () => {
+  describe("toJSON() y toDTO()", () => {
     test("incluye la escala además de los atributos heredados", () => {
       const json = new CartaPendulo(datosPendulo()).toJSON()
 
@@ -378,6 +418,23 @@ describe("CartaPendulo", () => {
         attribute: "DARK",
         scale: 4
       })
+    })
+
+    test("toDTO incluye scale y card_price y omite frameType y card_images", () => {
+      const dto = new CartaPendulo(datosPendulo()).toDTO()
+
+      expect(dto).toMatchObject({
+        name: "Carta de prueba",
+        atk: 2500,
+        def: 2100,
+        level: 7,
+        attribute: "DARK",
+        scale: 4,
+        card_price: 2
+      })
+      expect(dto).not.toHaveProperty("frameType")
+      expect(dto).not.toHaveProperty("card_prices")
+      expect(dto).not.toHaveProperty("card_images")
     })
   })
 })
@@ -424,7 +481,7 @@ describe("CartaLink", () => {
     })
   })
 
-  describe("toJSON()", () => {
+  describe("toJSON() y toDTO()", () => {
     test("incluye linkval y linkmarkers además de los atributos heredados", () => {
       const json = new CartaLink(datosLink()).toJSON()
 
@@ -438,6 +495,24 @@ describe("CartaLink", () => {
         linkval: 3,
         linkmarkers: ["Top", "Bottom-Left", "Bottom-Right"]
       })
+    })
+
+    test("toDTO incluye linkval, linkmarkers y card_price y omite frameType y card_images", () => {
+      const dto = new CartaLink(datosLink()).toDTO()
+
+      expect(dto).toMatchObject({
+        name: "Carta de prueba",
+        atk: 2300,
+        def: null,
+        level: null,
+        attribute: "LIGHT",
+        linkval: 3,
+        linkmarkers: ["Top", "Bottom-Left", "Bottom-Right"],
+        card_price: 2
+      })
+      expect(dto).not.toHaveProperty("frameType")
+      expect(dto).not.toHaveProperty("card_prices")
+      expect(dto).not.toHaveProperty("card_images")
     })
   })
 })
