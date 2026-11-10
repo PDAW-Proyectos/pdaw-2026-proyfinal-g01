@@ -10,7 +10,8 @@ export async function obtenerCartas() {
     throw new Error(`La API de cartas respondio con HTTP ${respuesta.status}.`)
   }
 
-  const cartas = await respuesta.json()
+  const resultado = await respuesta.json()
+  const cartas = Array.isArray(resultado) ? resultado : resultado?.datos
   if (!Array.isArray(cartas) || cartas.length === 0) {
     throw new Error("La API de cartas no devolvio una lista de cartas.")
   }
@@ -66,7 +67,8 @@ export async function buscarCartas(filtros, { signal } = {}) {
     throw new Error(`La búsqueda de cartas respondió con HTTP ${respuesta.status}.`)
   }
 
-  const cartas = await respuesta.json()
+  const resultado = await respuesta.json()
+  const cartas = Array.isArray(resultado) ? resultado : resultado?.datos
   if (!Array.isArray(cartas)) {
     throw new Error("La API de cartas devolvió un formato de búsqueda inválido.")
   }

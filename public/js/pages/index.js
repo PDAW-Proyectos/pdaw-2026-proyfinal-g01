@@ -1,4 +1,4 @@
-import { obtenerCartas } from "../services/cartaApi.js"
+import { buscarCartas, obtenerCartas } from "../services/cartaApi.js"
 import { inicializarBusquedaCartas } from "../modules/busquedaCartas.js"
 import {
   obtenerPrecioMaximo,
@@ -35,6 +35,14 @@ function seleccionarCartasPopulares(cartas) {
   return populares
 }
 
+async function obtenerCartasPopulares() {
+  const resultados = await Promise.all(
+    NOMBRES_CARTAS_POPULARES.map((name) => buscarCartas({ name }))
+  )
+
+  return seleccionarCartasPopulares(resultados.flat())
+}
+
 function seleccionarCartaMasCara(cartas) {
   let cartaMasCara = null
   let precioMaximo = 0
@@ -58,9 +66,11 @@ async function inicializarInicio() {
   inicializarBusquedaCartas()
 
   try {
-    const cartas = await obtenerCartas()
-    const destacada = seleccionarCartaMasCara(cartas)
-    const populares = seleccionarCartasPopulares(cartas)
+    const [cartas, populares] = await Promise.all([
+      obtenerCartas(),
+      obtenerCartasPopulares()
+    ])
+    const destacada = seleccionarCartaMasCara([...cartas, ...populares])
 
     renderizarCartaDestacada(destacada.carta, destacada.precio)
     renderizarCartasPopulares(populares)

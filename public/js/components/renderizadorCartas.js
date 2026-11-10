@@ -29,11 +29,16 @@ export function obtenerUrlImagen(carta, tipo) {
 
 /**
  * Devuelve el precio positivo más alto entre las fuentes de precio disponibles
- * en el modelo de cartas (eBay y Amazon).
+ * en el modelo de cartas (eBay y Amazon) o el DTO de la API.
  * @param {Object} carta
  * @returns {number}
  */
 export function obtenerPrecioMaximo(carta) {
+  const precioDTO = Number(carta.card_price)
+  if (Number.isFinite(precioDTO) && precioDTO > 0) {
+    return precioDTO
+  }
+
   const precios = carta.card_prices?.flatMap((fuente) =>
     [fuente.ebay_price, fuente.amazon_price].map(Number)
   ) ?? []
