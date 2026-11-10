@@ -1,3 +1,5 @@
+import { enlazarNavegacionCarta } from "../modules/navegacionCarta.js"
+
 const formatoPrecio = new Intl.NumberFormat("es-AR", {
   style: "currency",
   currency: "USD"
@@ -60,6 +62,7 @@ export function renderizarCartaDestacada(carta, precio) {
   obtenerElemento("featured-card-price").textContent =
     `Precio máximo disponible: ${formatoPrecio.format(precio)}`
   obtenerElemento("featured-card-status").textContent = ""
+  enlazarNavegacionCarta(bloque, carta)
   bloque.setAttribute("aria-busy", "false")
 }
 
@@ -81,6 +84,7 @@ export function renderizarCartasPopulares(cartas) {
     columna.querySelector(".card-item-name").textContent = carta.name
     columna.querySelector(".card-item-type").textContent =
       `${carta.race} / ${carta.type}`
+    enlazarNavegacionCarta(columna.querySelector(".card-item"), carta)
     fragmento.append(columna)
   }
 

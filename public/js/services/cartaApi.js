@@ -19,6 +19,33 @@ export async function obtenerCartas() {
 }
 
 /**
+ * Obtiene desde el backend los datos completos de una carta por su ID.
+ * @param {number|string} id
+ * @returns {Promise<Object>}
+ */
+export async function obtenerCartaPorId(id) {
+  const idNumerico = Number(id)
+  const idValido =
+    (typeof id === "number" && Number.isSafeInteger(idNumerico) && idNumerico > 0) ||
+    (typeof id === "string" && /^[1-9]\d*$/.test(id) && Number.isSafeInteger(idNumerico))
+  if (!idValido) {
+    throw new Error("El ID de la carta debe ser un entero positivo.")
+  }
+
+  const respuesta = await fetch(`/api/cartas/${encodeURIComponent(idNumerico)}`)
+  if (!respuesta.ok) {
+    throw new Error(`La API de cartas respondió con HTTP ${respuesta.status}.`)
+  }
+
+  const carta = await respuesta.json()
+  if (!carta || typeof carta !== "object" || Number(carta.id) !== idNumerico) {
+    throw new Error("La API de cartas devolvió un detalle inválido.")
+  }
+
+  return carta
+}
+
+/**
  * Busca cartas en el backend, que consulta su catálogo sincronizado con YGOProDeck.
  * Los filtros opcionales admitidos son `name` y `race`.
  * @param {{name: string, race?: string}} filtros

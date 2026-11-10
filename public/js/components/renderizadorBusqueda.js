@@ -1,4 +1,5 @@
 import { obtenerUrlImagen } from "./renderizadorCartas.js"
+import { enlazarNavegacionCarta } from "../modules/navegacionCarta.js"
 
 const LIMITE_RESULTADOS = 10
 
@@ -46,7 +47,6 @@ export function renderizarResultadosBusqueda(cartas) {
       const resultado = document.createElement("button")
       resultado.type = "button"
       resultado.className = "search-result-item"
-      resultado.setAttribute("role", "listitem")
 
       const imagen = document.createElement("img")
       imagen.className = "search-result-image"
@@ -67,10 +67,7 @@ export function renderizarResultadosBusqueda(cartas) {
 
       informacion.append(nombre, tipo)
       resultado.append(imagen, informacion)
-      resultado.addEventListener("click", () => {
-        obtenerElemento("search-input").value = carta.name
-        actualizarVisibilidadDropdown(false)
-      })
+      enlazarNavegacionCarta(resultado, carta)
       fragmento.append(resultado)
     }
 

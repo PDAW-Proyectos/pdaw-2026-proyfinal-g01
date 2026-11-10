@@ -110,6 +110,23 @@
     border-radius: 0px;
 }
 
+.featured-card[role="link"],
+.card-item[role="link"] {
+    cursor: pointer;
+}
+
+.featured-card[role="link"]:focus-visible,
+.card-item[role="link"]:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 4px;
+}
+
+.featured-card-action {
+    display: inline-block;
+    background: white;
+    color: var(--primary-color);
+}
+
 .card-image-large {
     width: 100%;
     max-width: 280px;
@@ -177,6 +194,23 @@
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     color: var(--text-primary);
+}
+
+.featured-card[role="link"],
+.card-item[role="link"] {
+    cursor: pointer;
+}
+
+.featured-card[role="link"]:focus-visible,
+.card-item[role="link"]:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 4px;
+}
+
+.featured-card-action {
+    display: inline-block;
+    background: white;
+    color: var(--primary-color);
 }
 
 .card-item {
