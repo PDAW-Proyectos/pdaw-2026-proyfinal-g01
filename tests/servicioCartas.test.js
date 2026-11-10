@@ -161,6 +161,7 @@ describe("ServicioCartas + RepositorioCartas (Test Temporal)", () => {
     expect(darkMagician.name).toBe("Dark Magician")
     expect(darkMagician.atk).toBe(2500)
     expect(darkMagician.card_prices).toEqual([{ ebay_price: "1.99", amazon_price: "2.50" }])
+    expect(darkMagician.card_price).toBe(2.5)
 
     // 2. Verifica que el archivo JSON se escribió correctamente en disco
     expect(await existe(rutaDb)).toBe(true)

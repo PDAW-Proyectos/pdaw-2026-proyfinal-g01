@@ -1,5 +1,6 @@
 const NIVELES = { debug: 10, info: 20, warn: 30, error: 40 }
 
+// Algunas claves extra por si las dudas
 const CLAVES_SENSIBLES = new Set([
   "contraseña",
   "passwordhash",

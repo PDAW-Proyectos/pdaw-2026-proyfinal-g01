@@ -2,7 +2,7 @@
 // pasarselas en las clases logicas que tenemos, ademas las inicia a todas para poder
 // usarlas en todo el codigo.
 
-// Las rutas todavia no existen en config pero es donde las deberiamos poner
+import { mkdir } from "node:fs/promises"
 import { RUTA_USUARIOS, RUTA_MAZOS, RUTA_CARTAS, RUTA_IMAGENES } from "./config.js"
 import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
@@ -17,6 +17,8 @@ import { ControladorCartas } from "../controllers/ControladorCartas.js"
 import { ControladorImagenes } from "../controllers/ControladorImagenes.js"
 import { ControladorUsuarios } from "../controllers/ControladorUsuarios.js"
 
+// Inicio la carpeta para la base de datos si no existe
+await mkdir("data", { recursive: true })
 
 // Aca se inicia la carga de repositorios poner el repositorioUsuarios aca.
 export const repositorioMazos = new RepositorioMazos(RUTA_MAZOS)
