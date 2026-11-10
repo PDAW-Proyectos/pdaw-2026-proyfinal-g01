@@ -1,6 +1,7 @@
-import { ExternalApiError, NotFoundError, ValidationError } from "../utils/errors.js"
+import { ExternalApiError, NotFoundError, ValidationError, TimeoutError } from "../utils/errors.js"
 
 const URL_CARTAS = "https://db.ygoprodeck.com/api/v7/cardinfo.php"
+const TIEMPO_ESPERA_BASE_MS = 5000
 
 // Las validaciones de este codigo fueron basadas en un codigo de stackoverflow, para saber que chequear
 /** Realiza el fetch y valida el estado HTTP y el Content-Type de la respuesta.
@@ -13,7 +14,20 @@ async function realizarPeticion(url, tipoEsperado) {
     throw new ValidationError("La URL proporcionada no es valida.")
   }
 
-  const respuesta = await fetch(url)
+  // Intervalo aleatorio entre 1 y 1000 ms sumado al tiempo base de 5 segundos
+  const intervaloAleatorio = Math.floor(Math.random() * 1000) + 1
+  const tiempoLimite = TIEMPO_ESPERA_BASE_MS + intervaloAleatorio
+
+  let respuesta
+  try {
+    respuesta = await fetch(url, { signal: AbortSignal.timeout(tiempoLimite) })
+  } catch (error) {
+    if (error.name === "TimeoutError") {
+      throw new TimeoutError(`Tiempo de espera agotado al consultar la API externa: ${url}`, error)
+    }
+    throw error
+  }
+
   if (respuesta.status === 400 || respuesta.status === 404) {
     throw new NotFoundError(`Recurso no encontrado en la API externa: ${url}`)
   }
