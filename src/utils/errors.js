@@ -89,6 +89,20 @@ export class ExternalApiError extends AppError {
   }
 }
 
+/** Un error personalizado para indicar que se agoto el tiempo de espera al comunicarse con un servicio externo. */
+export class TimeoutError extends AppError {
+  /** @param {string} mensaje
+   * @param {Error} [cause]
+   */
+  constructor(mensaje, cause) {
+    super(mensaje, {
+      statusCode: 504,
+      title: "Tiempo de espera agotado",
+      cause,
+    })
+  }
+}
+
 /** Un error personalizado para indicar un fallo al leer o actualizar la base de datos local. */
 export class DatabaseError extends AppError {
   /** @param {string} mensaje

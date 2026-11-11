@@ -64,7 +64,7 @@ describe("Carta", () => {
       expect(carta.type).toBe("Spell Card")
       expect(carta.frameType).toBe("spell")
       expect(carta.race).toBe("Normal")
-      expect(carta.descripcion).toBe("Descripcion de prueba")
+      expect(carta.desc).toBe("Descripcion de prueba")
     })
 
     test("copia solo image_url e image_url_small de cada imagen", () => {

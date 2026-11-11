@@ -10,6 +10,7 @@ const CARTAS_POR_PAGINA = 20
 
 export class ServicioCartas {
   #repositorioCartas
+  #arrayCartas = []
 
   constructor(repositorioCartas) {
     // Validaciones
@@ -56,6 +57,7 @@ export class ServicioCartas {
 
       if (tiempoTranscurrido >= UNA_SEMANA_MS) {
         await this.#descargarDesdeApi()
+        this.#arrayCartas = Array.from(this.#repositorioCartas.cartas.values())
         tiempoTranscurrido = 0
       }
     }
@@ -74,8 +76,12 @@ export class ServicioCartas {
    * @throws {NotFoundError} Si no se encuentran cartas que coincidan con la busqueda o si la pagina no existe.
    */
   listarCartas(filtros = {}) {
-    const arrayCartas = Array.from(this.#repositorioCartas.cartas.values())
-    const resultados = filtrarCartas(arrayCartas, filtros)
+    // Si la caché está vacía o desactualizada respecto al repositorio, se regenera
+    if (this.#arrayCartas.length !== this.#repositorioCartas.cantidadTotal()) {
+      this.#arrayCartas = Array.from(this.#repositorioCartas.cartas.values())
+    }
+
+    const resultados = filtrarCartas(this.#arrayCartas, filtros)
 
     if (resultados.length === 0) {
       throw new NotFoundError("No se encontraron cartas que coincidan con los criterios de busqueda.")

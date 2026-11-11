@@ -63,7 +63,7 @@ export class Carta {
   get race() { return this.#race }
 
   /** Descripcion de la carta. */
-  get descripcion() { return this.#desc }
+  get desc() { return this.#desc }
 
   /** Descripcion de la carta. */
   get banlist_info() { return {...this.#banlist_info} }

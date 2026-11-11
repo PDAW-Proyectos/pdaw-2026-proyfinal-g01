@@ -1,4 +1,5 @@
 import app from "./app.js"
+import { inicializarContenedor } from "./utils/container.js"
 import { logger } from "./utils/logger.js"
 
 // Declaracion del puerto
@@ -7,7 +8,10 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
   throw new Error("PORT debe ser un entero entre 1 y 65535.")
 }
 
-// Iniciación del server
+// Iniciacion de la base de datos, osea el container
+await inicializarContenedor()
+
+// Iniciacion del server
 const server = app.listen(port, () => {
   logger.info("servidor iniciado", { port, url: `http://localhost:${port}` })
 })

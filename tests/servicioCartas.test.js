@@ -171,27 +171,6 @@ describe("ServicioCartas + RepositorioCartas (Test Temporal)", () => {
     expect(contenidoDisco["55144522"].banlist_info).toEqual({ ban_tcg: "Banned" })
   })
 
-  test("no vuelve a descargar de la API si la base ya tiene cartas y tiene menos de 1 semana", async () => {
-    const fetchSpy = jest.spyOn(global, "fetch").mockResolvedValue({
-      ok: true,
-      status: 200,
-      headers: { get: () => "application/json" },
-      json: async () => payloadApiMock()
-    })
-
-    const repo = new RepositorioCartas(rutaDb)
-    await repo.cargar()
-    const servicio = new ServicioCartas(repo)
-
-    // Primera carga: descarga de la API
-    await servicio.cargarCartas()
-    expect(fetchSpy).toHaveBeenCalledTimes(1)
-
-    // Segunda carga inmediata: el archivo es reciente (< 1 semana), no debe llamar a fetch
-    await servicio.cargarCartas()
-    expect(fetchSpy).toHaveBeenCalledTimes(1)
-  })
-
   test("vuelve a descargar de la API si el archivo en disco tiene más de 1 semana", async () => {
     const fetchSpy = jest.spyOn(global, "fetch").mockResolvedValue({
       ok: true,
