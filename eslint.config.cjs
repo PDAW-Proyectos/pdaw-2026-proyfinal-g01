@@ -5,7 +5,7 @@ module.exports = [
   { ignores: ['node_modules/', 'coverage/'] },
   js.configs.recommended,
   {
-    languageOptions: { sourceType: 'module', globals: { ...globals.node, ...globals.jest } },
+    languageOptions: { sourceType: 'module', globals: { ...globals.node, ...globals.jest, ...globals.browser } },
     rules: { eqeqeq: 'error', 'no-var': 'error', 'prefer-const': 'error' },
   },
 ];
