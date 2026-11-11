@@ -56,3 +56,4 @@ Registrar aquí qué herramientas se usaron, para qué tareas y qué se adoptó 
 | Semana1 | Antigravity | Creación de historias de usuario extras | Las ultimas 2 historias de usuarios son creadas por la ia,tenes mas pero no sabemos si las vamos a implementar |
 | 19/10/26 | Figma IA | Crear los wireFrame | Se maqueto los wire me registro, login y vista admin, para acelerar el maquetado |
 | semana3 | Antigravity | Creación de los test unitarios de las clases RepositorioMazo y Mazo | Se pidió a la ia que cree los test para probar la lógica de las clases teniendo encuenta la implementación actual y la documentación |
+| semana5 | Antigravity | Expandir la documentacion de los endpoints de la API | Se pidió a la ia que usuando nuestra implementacion de los endpoints cree la documentacion de la API |

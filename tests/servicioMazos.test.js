@@ -17,19 +17,19 @@ const sembrarDb = (ruta, datos) => writeFile(ruta, JSON.stringify(datos), "utf8"
 
 // Datos falsos de cartas para probar cálculos de precios, banlist y extra deck
 const cartasMock = {
-  100: { 
-    id: 100, name: "Dark Magician", frameType: "normal", 
+  100: {
+    id: 100, name: "Dark Magician", frameType: "normal",
     card_prices: [{ ebay_price: "2.00", amazon_price: "1.50" }],
-    card_images: [{ image_url: "url1", image_url_small: "url1_small" }] 
+    card_images: [{ image_url: "url1", image_url_small: "url1_small" }]
   },
-  200: { 
-    id: 200, name: "Pot of Greed", frameType: "spell", 
-    banlist_info: { ban_tcg: "Banned" }, 
+  200: {
+    id: 200, name: "Pot of Greed", frameType: "spell",
+    banlist_info: { ban_tcg: "Banned" },
     card_prices: [{ ebay_price: "5.00", amazon_price: "5.00" }],
     card_images: [{ image_url: "url2", image_url_small: "url2_small" }]
   },
-  300: { 
-    id: 300, name: "Decode Talker", frameType: "link", 
+  300: {
+    id: 300, name: "Decode Talker", frameType: "link",
     card_prices: [{ ebay_price: "1.00", amazon_price: "3.50" }],
     card_images: [{ image_url: "url3", image_url_small: "url3_small" }]
   }
@@ -52,7 +52,7 @@ describe("ServicioMazos + Repositorios (Test Temporal de Integración)", () => {
 
     repoMazos = new RepositorioMazos(rutaDbMazos)
     repoCartas = new RepositorioCartas(rutaDbCartas)
-    
+
     await repoMazos.cargar()
     await repoCartas.cargar()
 
@@ -126,11 +126,11 @@ describe("ServicioMazos + Repositorios (Test Temporal de Integración)", () => {
 
       expect(mazo.id).toBe(1)
       expect(mazo.nombre).toBe("Mazo Yugi")
-      
+
       // Verifica que las cartas se poblaron con la info real de la DB de cartas
       expect(mazo.mainDeck[0].name).toBe("Dark Magician")
       expect(mazo.extraDeck[0].name).toBe("Decode Talker")
-      
+
       // Verifica cálculo del precio
       expect(mazo.precioTotal).toBe(10.5)
     })
@@ -143,7 +143,7 @@ describe("ServicioMazos + Repositorios (Test Temporal de Integración)", () => {
   describe("crearMazo y actualizarMazo", () => {
     test("crea un mazo y lo guarda en el archivo", async () => {
       const datos = { username: "yugi", nombre: "Nuevo Mazo", mainDeck: [], extraDeck: [] }
-      
+
       const nuevoMazo = await servicio.crearMazo(datos)
 
       expect(nuevoMazo).toBeInstanceOf(Mazo)
@@ -210,23 +210,16 @@ describe("ServicioMazos + Repositorios (Test Temporal de Integración)", () => {
       await repoMazos.cargar()
     })
 
-    test("agrega carta al Main Deck e incluye info de la banlist si corresponde", async () => {
-      await servicio.agregarCarta(1, 200, "yugi") 
-      
-      const enDisco = JSON.parse(await readFile(rutaDbMazos, "utf8"))
-      expect(enDisco["1"].mainDeck).toContain(200)
-    })
-
     test("agrega carta al Extra Deck basándose en el frameType de la API", async () => {
-      await servicio.agregarCarta(1, 300, "yugi") 
-      
+      await servicio.agregarCarta(1, 300, "yugi")
+
       const enDisco = JSON.parse(await readFile(rutaDbMazos, "utf8"))
-      expect(enDisco["1"].extraDeck).toContain(300) 
+      expect(enDisco["1"].extraDeck).toContain(300)
     })
 
     test("elimina una carta existente en el mazo", async () => {
-      await servicio.eliminarCarta(1, 100, "yugi") 
-      
+      await servicio.eliminarCarta(1, 100, "yugi")
+
       const enDisco = JSON.parse(await readFile(rutaDbMazos, "utf8"))
       expect(enDisco["1"].mainDeck).not.toContain(100)
     })

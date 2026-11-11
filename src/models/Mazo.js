@@ -1,14 +1,14 @@
 import { ValidationError } from "../utils/errors.js"
 
 // Reglas de negocio
-const MAX_MAIN_DECK = 60
-const MIN_MAIN_DECK = 40
-const MAX_EXTRA_DECK = 15
-const MAX_COPIAS_POR_CARTA = {
+export const MAX_MAIN_DECK = 60
+export const MIN_MAIN_DECK = 40
+export const MAX_EXTRA_DECK = 15
+export const MAX_COPIAS_POR_CARTA = {
   Forbidden: 0,
+  Banned: 0,
   Limited: 1,
-  "Semi-Limited": 2,
-  none: 3
+  "Semi-Limited": 2
 }
 
 /** Representa la entidad Mazo
@@ -29,6 +29,13 @@ export class Mazo {
    * @param {Array<number>} [datos.extraDeck=[]]
    */
   constructor({ id, username, nombre, mainDeck = [], extraDeck = [] }) {
+    if (mainDeck.length > MAX_MAIN_DECK) {
+      throw new ValidationError(`El Main Deck ya alcanzo el limite de ${MAX_MAIN_DECK} cartas.`)
+    }
+    if (extraDeck.length > MAX_EXTRA_DECK) {
+      throw new ValidationError(`El Extra Deck ya alcanzo el limite de ${MAX_EXTRA_DECK} cartas.`)
+    }
+
     this.#id = id
     this.#username = username.trim()
     this.#nombre = nombre.trim()
@@ -54,7 +61,8 @@ export class Mazo {
   // Validaciones privadas
   #validarMaxCopias(idCarta, banInfo) {
     const copias = [...this.#mainDeck, ...this.#extraDeck].filter(id => id === idCarta).length
-    return copias >= MAX_COPIAS_POR_CARTA[banInfo]
+    const max = MAX_COPIAS_POR_CARTA[banInfo] ?? 3
+    return copias >= max
   }
 
   // Methods
