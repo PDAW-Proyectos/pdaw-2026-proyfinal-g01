@@ -14,6 +14,7 @@ export async function api(url, { method = "GET", body, signal } = {}) {
     res = await fetch(url, {
       method,
       signal,
+      credentials: "same-origin", //Envia cookies solo si el frontend y backend comparten el mismo origen.
       body: body && JSON.stringify(body),
       headers: body ? { "Content-Type": "application/json" } : undefined,
     });
