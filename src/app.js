@@ -15,8 +15,21 @@ const app = express()
 // Registro de contexto e identificador unico por solicitud (X-Request-Id)
 app.use(requestContext())
 
-// como en el archivo server.js de el proyecto anterior inicio los middlewares
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+// La ruta /test (Test Runner) solo está disponible al ejecutar el servidor en modo desarrollo (npm run dev)
+app.use("/test", (req, res, next) => {
+  const esDesarrollo = process.env.NODE_ENV === "development" || process.execArgv.includes("--watch")
+  if (!esDesarrollo) {
+    return res.status(404).send("Not Found")
+  }
+  if (req.path === "/" || req.path === "") {
+    return res.redirect("/test/test-endpoints.html")
+  }
+
+  next()
+})
+
 app.use(express.static(path.join(__dirname, "..", "public")))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
