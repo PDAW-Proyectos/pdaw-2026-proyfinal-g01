@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Test Runner - WikiYugioh</title>
+  <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/all.css">
+  <link rel="stylesheet" href="test-endpoints.css">
+</head>
+<body>
+
+  <header class="header-panel">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="h3 fw-bold mb-1 text-dark">🧪 API Test Runner</h2>
+          <p class="text-secondary mb-0 small">Pruebas en navegador de los endpoints de WikiYugioh (reemplazo de Bruno / Postman).</p>
+        </div>
+        <div>
+          <a href="../index.html" class="btn btn-outline-secondary btn-sm me-2">← Volver a la App</a>
+          <button id="btnRunAll" class="btn btn-primary fw-bold shadow-sm">▶ Ejecutar Todos los Tests</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Métricas -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="text-secondary small fw-semibold">Total Tests</div>
+          <div id="statTotal" class="stat-val text-dark">0</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="text-secondary small fw-semibold">Pasados</div>
+          <div id="statPass" class="stat-val text-success">0</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="text-secondary small fw-semibold">Fallados</div>
+          <div id="statFail" class="stat-val text-danger">0</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="text-secondary small fw-semibold">Tiempo Total</div>
+          <div id="statTime" class="stat-val text-primary">0 ms</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controles secundarios -->
+    <div class="d-flex gap-2 mb-3">
+      <button id="btnRunAuth" class="btn btn-outline-secondary btn-sm">Solo Auth & Usuarios</button>
+      <button id="btnRunCartas" class="btn btn-outline-secondary btn-sm">Solo Cartas</button>
+      <button id="btnRunMazos" class="btn btn-outline-secondary btn-sm">Solo Mazos</button>
+      <button id="btnClear" class="btn btn-outline-danger btn-sm ms-auto">Limpiar Resultados</button>
+    </div>
+
+    <!-- Contenedor de Resultados -->
+    <div id="resultsList">
+      <div class="text-center text-muted py-5 bg-white rounded border border-light-subtle shadow-sm">
+        <p class="mb-0">Haz clic en <strong>"Ejecutar Todos los Tests"</strong> para iniciar la suite de pruebas.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="test-endpoints.js"></script>
+</body>
+</html>

@@ -18,16 +18,16 @@ import { ControladorImagenes } from "../controllers/ControladorImagenes.js"
 import { ControladorUsuarios } from "../controllers/ControladorUsuarios.js"
 
 // Aca se inicia la carga de repositorios poner el repositorioUsuarios aca.
-export const repositorioMazos = new RepositorioMazos(RUTA_MAZOS)
-export const repositorioCartas = new RepositorioCartas(RUTA_CARTAS)
-export const repositorioImagenes = new RepositorioImagenes(RUTA_IMAGENES)
-export const repositorioUsuarios = new RepositorioUsuarios(RUTA_USUARIOS)
+const repositorioMazos = new RepositorioMazos(RUTA_MAZOS)
+const repositorioCartas = new RepositorioCartas(RUTA_CARTAS)
+const repositorioImagenes = new RepositorioImagenes(RUTA_IMAGENES)
+const repositorioUsuarios = new RepositorioUsuarios(RUTA_USUARIOS)
 
 // El servicio se carga usando los repositorios necesarios ej:
-export const servicioMazos = new ServicioMazos(repositorioMazos, repositorioCartas)
-export const servicioCartas = new ServicioCartas(repositorioCartas)
-export const servicioImagenes = new ServicioImagenes(repositorioImagenes, repositorioCartas)
-export const servicioUsuarios = new ServicioUsuarios(repositorioUsuarios, repositorioMazos)
+const servicioMazos = new ServicioMazos(repositorioMazos, repositorioCartas)
+const servicioCartas = new ServicioCartas(repositorioCartas)
+const servicioImagenes = new ServicioImagenes(repositorioImagenes, repositorioCartas)
+const servicioUsuarios = new ServicioUsuarios(repositorioUsuarios, repositorioMazos)
 
 // Por ultimo se los conecta a los controladores
 export const controladorMazos = new ControladorMazos(servicioMazos)
