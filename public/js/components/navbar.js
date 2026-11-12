@@ -11,15 +11,28 @@ function renderUsuarioLogueado(usuario) {
   navAuthContainer.replaceChildren()
 
   const inicial = usuario.username ? usuario.username.charAt(0).toUpperCase() : 'U'
+  const esAdmin = usuario.rol === 'admin'
 
-  // Vista mobile
+  // --- VISTA MOBILE (< xl) ---
+  const mobileGroup = document.createElement('div')
+  mobileGroup.className = 'd-flex flex-column gap-2 d-xl-none w-100'
+
+  if (esAdmin) {
+    const linkAdminMobile = document.createElement('a')
+    linkAdminMobile.href = 'admin.html'
+    linkAdminMobile.className = 'btn btn-main btn-main-primary w-100'
+    linkAdminMobile.textContent = 'Panel Admin'
+    mobileGroup.appendChild(linkAdminMobile)
+  }
+
   const btnLogoutMobile = document.createElement('button')
   btnLogoutMobile.type = 'button'
-  btnLogoutMobile.className = 'btn btn-main btn-main-outline d-xl-none w-100'
+  btnLogoutMobile.className = 'btn btn-main btn-main-outline w-100'
   btnLogoutMobile.textContent = 'Cerrar sesión'
   btnLogoutMobile.addEventListener('click', cerrarSesion)
+  mobileGroup.appendChild(btnLogoutMobile)
 
-  // Vista escritorio
+  // --- VISTA ESCRITORIO (>= xl) ---
   const dropdownDiv = document.createElement('div')
   dropdownDiv.className = 'dropdown d-none d-xl-block'
 
@@ -40,6 +53,17 @@ function renderUsuarioLogueado(usuario) {
   spanUser.className = 'dropdown-item-text fw-bold text-dark'
   spanUser.textContent = `Hola, ${usuario.username}`
   liUser.appendChild(spanUser)
+  ulMenu.appendChild(liUser)
+
+  if (esAdmin) {
+    const liAdmin = document.createElement('li')
+    const linkAdminDesktop = document.createElement('a')
+    linkAdminDesktop.className = 'dropdown-item fw-semibold text-primary'
+    linkAdminDesktop.href = 'admin.html'
+    linkAdminDesktop.textContent = 'Panel Admin'
+    liAdmin.appendChild(linkAdminDesktop)
+    ulMenu.appendChild(liAdmin)
+  }
 
   const liDivider = document.createElement('li')
   const hr = document.createElement('hr')
@@ -54,14 +78,13 @@ function renderUsuarioLogueado(usuario) {
   btnLogoutDesktop.addEventListener('click', cerrarSesion)
   liLogout.appendChild(btnLogoutDesktop)
 
-  ulMenu.appendChild(liUser)
   ulMenu.appendChild(liDivider)
   ulMenu.appendChild(liLogout)
 
   dropdownDiv.appendChild(btnAvatar)
   dropdownDiv.appendChild(ulMenu)
 
-  navAuthContainer.appendChild(btnLogoutMobile)
+  navAuthContainer.appendChild(mobileGroup)
   navAuthContainer.appendChild(dropdownDiv)
 }
 
