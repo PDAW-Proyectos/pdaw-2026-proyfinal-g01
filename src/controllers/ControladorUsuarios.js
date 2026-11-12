@@ -1,7 +1,7 @@
-import { ServicioUsuarios } from "../services/ServicioUsuarios.js";
+import { ServicioUsuarios } from "../services/ServicioUsuarios.js"
 
 export class ControladorUsuarios {
-  #servicioUsuarios;
+  #servicioUsuarios
 
   /**
    * @param {ServicioUsuarios} servicioUsuarios
@@ -9,83 +9,68 @@ export class ControladorUsuarios {
    */
   constructor(servicioUsuarios) {
     if (!(servicioUsuarios instanceof ServicioUsuarios)) {
-      throw new TypeError(
-        "El controlador se tiene que crear con un ServicioUsuarios",
-      );
+      throw new TypeError("El controlador se tiene que crear con un ServicioUsuarios")
     }
 
-    this.#servicioUsuarios = servicioUsuarios;
+    this.#servicioUsuarios = servicioUsuarios
   }
 
   registrar = async (req, res, next) => {
     try {
-      const { nombre, username, contraseña } = req.body;
+      const { nombre, username, contraseña } = req.body
 
-      const usuario = await this.#servicioUsuarios.registrarUsuario({
-        nombre,
-        username,
-        contraseña,
-      });
+      const usuario = await this.#servicioUsuarios.registrarUsuario({ nombre, username, contraseña })
 
-      res.status(201).json(usuario.toDTO());
+      res.status(201).json(usuario.toDTO())
     } catch (error) {
-      next(error);
+      next(error)
     }
-  };
+  }
 
   login = async (req, res, next) => {
     try {
-      const { username, contraseña } = req.body;
+      const { username, contraseña } = req.body
 
-      const usuario = await this.#servicioUsuarios.autenticarUsuario(
-        username,
-        contraseña,
-      );
+      const usuario = await this.#servicioUsuarios.autenticarUsuario(username, contraseña)
       const regenerate = (req) =>
-        new Promise((ok, fail) =>
-          req.session.regenerate((e) => (e ? fail(e) : ok())),
-        );
+        new Promise((ok, fail) => req.session.regenerate((e) => (e ? fail(e) : ok())))
 
       // La logica de req.session se agregara aca
-      await regenerate(req);
-      req.session.username = usuario.username;
-      req.session.rol = usuario.rol;
-      res.status(200).json(usuario.toDTO());
+      await regenerate(req)
+      req.session.username = usuario.username
+      req.session.rol = usuario.rol
+      res.status(200).json(usuario.toDTO())
     } catch (error) {
-      next(error);
+      next(error)
     }
-  };
+  }
 
   logout = async (req, res, next) => {
     try {
       const destroy = (req) =>
-        new Promise((ok, fail) =>
-          req.session.destroy((error) => (error ? fail(error) : ok())),
-        );
+        new Promise((ok, fail) => req.session.destroy((error) => error ? fail(error) : ok()))
 
-      await destroy(req);
-      res.clearCookie("wiki.sid").status(200).end();
+      await destroy(req)
+      res.clearCookie("wiki.sid").status(200).end()
     } catch (error) {
-      next(error);
+      next(error)
     }
-  };
+  }
 
   eliminar = async (req, res, next) => {
     try {
-      const usuarioAEliminar = req.params.username;
-      const usuarioSesionActual = req.session.username;
+      const usuarioAEliminar = req.params.username
+      const usuarioSesionActual = req.session.username
 
       // le paso a servicio usuarios para que verifique que no sea el mismo usuario admin de la sesion el que se quiere eliminar a si mismo
-      await this.#servicioUsuarios.eliminarUsuario(
-        usuarioAEliminar,
-        usuarioSesionActual,
-      );
+      await this.#servicioUsuarios.eliminarUsuario(usuarioAEliminar, usuarioSesionActual)
 
-      res.status(200).json({ mensaje: "Usuario eliminado con éxito" });
+      res.status(200).json({ mensaje: "Usuario eliminado con éxito" })
     } catch (error) {
-      next(error);
+      next(error)
     }
-  };
+  }
+
 
   obtenerPerfil = async (req, res, next) => {
     try {
@@ -97,7 +82,11 @@ export class ControladorUsuarios {
         } 
       });
     } catch (error) {
-      next(error);
+      next(error)
     }
-  };
+  }
 }
+
+
+  
+
