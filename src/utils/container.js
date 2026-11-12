@@ -4,6 +4,7 @@
 
 import { mkdir } from "node:fs/promises"
 import { RUTA_USUARIOS, RUTA_MAZOS, RUTA_CARTAS, RUTA_IMAGENES } from "./config.js"
+import { ProgramadorDescargas } from "./ProgramadorDescargas.js"
 import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
 import { RepositorioImagenes } from "../repositories/RepositorioImagenes.js"
@@ -29,6 +30,9 @@ const servicioCartas = new ServicioCartas(repositorioCartas)
 const servicioImagenes = new ServicioImagenes(repositorioImagenes, repositorioCartas)
 const servicioUsuarios = new ServicioUsuarios(repositorioUsuarios, repositorioMazos)
 
+// Programador de descargas semanales (recibe todos los servicios que descargan datos)
+const programadorDescargas = new ProgramadorDescargas([servicioCartas])
+
 // Por ultimo se los conecta a los controladores
 export const controladorMazos = new ControladorMazos(servicioMazos)
 export const controladorCartas = new ControladorCartas(servicioCartas)
@@ -45,6 +49,6 @@ export async function inicializarContenedor() {
   await repositorioImagenes.cargar()
   await repositorioUsuarios.cargar()
 
-  // Cargamos/descargamos las cartas a la base de datos, si no estan
-  await servicioCartas.cargarCartas()
+  // Ejecutamos y programamos las descargas semanales necesarias
+  await programadorDescargas.iniciar()
 }

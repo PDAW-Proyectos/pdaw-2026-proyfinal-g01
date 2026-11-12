@@ -21,6 +21,15 @@ const datosBase = (extra = {}) => ({
   card_prices: [
     { ebay_price: "1.50", amazon_price: "2.00" }
   ],
+  misc_info: [
+    {
+      viewsweek: 120,
+      tcg_date: "2002-03-08",
+      ocg_date: "1999-02-04",
+      konami_id: 4007,
+      md_rarity: "UR"
+    }
+  ],
   ...extra
 })
 
@@ -104,7 +113,7 @@ describe("Carta", () => {
   })
 
   describe("serialización (toJSON y toDTO)", () => {
-    test("toJSON formatea todos los atributos de persistencia", () => {
+    test("toJSON formatea todos los atributos de persistencia incluyendo misc_info", () => {
       const carta = new Carta(datosMagia({ banlist_info: { ban_tcg: "Limited" } }))
       expect(carta.toJSON()).toEqual({
         id: 1001,
@@ -119,6 +128,15 @@ describe("Carta", () => {
         ],
         card_prices: [
           { ebay_price: "1.50", amazon_price: "2.00" }
+        ],
+        misc_info: [
+          {
+            viewsweek: 120,
+            tcg_date: "2002-03-08",
+            ocg_date: "1999-02-04",
+            konami_id: 4007,
+            md_rarity: "UR"
+          }
         ]
       })
     })
@@ -128,7 +146,7 @@ describe("Carta", () => {
       expect(carta.toJSON()).not.toHaveProperty("banlist_info")
     })
 
-    test("toDTO incluye card_price y omite frameType, card_images y card_prices", () => {
+    test("toDTO incluye card_price y misc_info como objeto y omite frameType, card_images y card_prices", () => {
       const carta = new Carta(datosMagia())
       expect(carta.toDTO()).toEqual({
         id: 1001,
@@ -136,7 +154,14 @@ describe("Carta", () => {
         type: "Spell Card",
         race: "Normal",
         desc: "Descripcion de prueba",
-        card_price: 2
+        card_price: 2,
+        misc_info: {
+          viewsweek: 120,
+          tcg_date: "2002-03-08",
+          ocg_date: "1999-02-04",
+          konami_id: 4007,
+          md_rarity: "UR"
+        }
       })
     })
   })
@@ -165,7 +190,14 @@ describe("CartaMonstruo", () => {
       def: 2100,
       level: 7,
       attribute: "DARK",
-      card_price: 2
+      card_price: 2,
+      misc_info: {
+        viewsweek: 120,
+        tcg_date: "2002-03-08",
+        ocg_date: "1999-02-04",
+        konami_id: 4007,
+        md_rarity: "UR"
+      }
     })
   })
 })
@@ -185,7 +217,14 @@ describe("CartaPendulo", () => {
     })
     expect(carta.toDTO()).toMatchObject({
       scale: 4,
-      card_price: 2
+      card_price: 2,
+      misc_info: {
+        viewsweek: 120,
+        tcg_date: "2002-03-08",
+        ocg_date: "1999-02-04",
+        konami_id: 4007,
+        md_rarity: "UR"
+      }
     })
   })
 })
@@ -210,7 +249,14 @@ describe("CartaLink", () => {
     expect(carta.toDTO()).toMatchObject({
       linkval: 3,
       linkmarkers: ["Top", "Bottom-Left", "Bottom-Right"],
-      card_price: 2
+      card_price: 2,
+      misc_info: {
+        viewsweek: 120,
+        tcg_date: "2002-03-08",
+        ocg_date: "1999-02-04",
+        konami_id: 4007,
+        md_rarity: "UR"
+      }
     })
   })
 })

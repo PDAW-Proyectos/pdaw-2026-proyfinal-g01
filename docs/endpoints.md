@@ -56,7 +56,7 @@ Todas las respuestas incluyen la cabecera `X-Request-Id` con el identificador ú
 
 #### `GET /api/cartas/:id` (200)
 - **Content-Type:** `application/json`
-- **Cuerpo (DTO de Carta):** El objeto varía según la subclase de carta (`Carta`, `CartaMonstruo`, `CartaPendulo`, `CartaLink`). El método `toDTO()` expone `card_price` con el mayor precio numérico entre `ebay_price` y `amazon_price` y omite `frameType`, `card_prices` y `card_images` (las imágenes se consultan mediante `/api/imagenes/:id`).
+- **Cuerpo (DTO de Carta):** El objeto varía según la subclase de carta (`Carta`, `CartaMonstruo`, `CartaPendulo`, `CartaLink`). El método `toDTO()` expone `card_price` con el mayor precio numérico entre `ebay_price` y `amazon_price`, `misc_info` como un objeto con `{ viewsweek, tcg_date, ocg_date, konami_id, md_rarity }`, y omite `frameType`, `card_prices` y `card_images` (las imágenes se consultan mediante `/api/imagenes/:id`).
 
 **Ejemplo de Carta Magia/Trampa (`Carta`):**
 ```json
@@ -67,6 +67,13 @@ Todas las respuestas incluyen la cabecera `X-Request-Id` con el identificador ú
   "race": "Quick-Play",
   "desc": "Target 1 Spell/Trap on the field; destroy that target.",
   "card_price": 1.2,
+  "misc_info": {
+    "viewsweek": 8450,
+    "tcg_date": "2002-09-01",
+    "ocg_date": "2000-09-28",
+    "konami_id": 4909,
+    "md_rarity": "R"
+  },
   "banlist_info": {
     "ban_tcg": "Limited"
   }
@@ -92,6 +99,13 @@ Todas las respuestas incluyen la cabecera `X-Request-Id` con el identificador ú
       "race": "Spellcaster",
       "desc": "The ultimate wizard in terms of attack and defense.",
       "card_price": 8.48,
+      "misc_info": {
+        "viewsweek": 12500,
+        "tcg_date": "2002-03-08",
+        "ocg_date": "1999-02-04",
+        "konami_id": 4007,
+        "md_rarity": "UR"
+      },
       "atk": 2500,
       "def": 2100,
       "level": 7,
@@ -136,6 +150,13 @@ Todas las respuestas incluyen la cabecera `X-Request-Id` con el identificador ú
       "race": "Spellcaster",
       "desc": "The ultimate wizard in terms of attack and defense.",
       "card_price": 8.48,
+      "misc_info": {
+        "viewsweek": 12500,
+        "tcg_date": "2002-03-08",
+        "ocg_date": "1999-02-04",
+        "konami_id": 4007,
+        "md_rarity": "UR"
+      },
       "atk": 2500,
       "def": 2100,
       "level": 7,
