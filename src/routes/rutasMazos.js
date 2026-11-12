@@ -6,8 +6,19 @@ import { esquemasMazos } from "../schemas/mazos.schema.js"
 
 const router = Router()
 
-// Muchas de las rutas son nuevas tenemos que añadirlas a la tabla
-router.get("/", validar(esquemasMazos.queryListar, "query"), controladorMazos.listarMazos)
+function requiereSesionParaMazos(req, res, next) {
+  if (req.query.all === "true") {
+    return next()
+  }
+  return requiereAutenticacion(req, res, next)
+}
+
+router.get(
+  "/",
+  validar(esquemasMazos.queryListar, "query"),
+  requiereSesionParaMazos,
+  controladorMazos.listarMazos
+)
 router.get("/:id", validar(esquemasMazos.parametroId, "params"), controladorMazos.obtenerMazo)
 
 router.post(

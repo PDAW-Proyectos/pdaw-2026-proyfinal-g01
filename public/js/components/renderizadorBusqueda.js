@@ -28,8 +28,9 @@ export function mostrarCargaBusqueda() {
 /**
  * Presenta las cartas encontradas usando nodos DOM y texto seguro.
  * @param {Array<Object>} cartas
+ * @param {(carta: Object) => void} [onSelect] Acción para usar el resultado en lugar de navegar al detalle.
  */
-export function renderizarResultadosBusqueda(cartas) {
+export function renderizarResultadosBusqueda(cartas, onSelect) {
   const carga = obtenerElemento("search-loading")
   const resultados = obtenerElemento("search-results")
   const fragmento = document.createDocumentFragment()
@@ -67,7 +68,12 @@ export function renderizarResultadosBusqueda(cartas) {
 
       informacion.append(nombre, tipo)
       resultado.append(imagen, informacion)
-      enlazarNavegacionCarta(resultado, carta)
+      if (onSelect) {
+        resultado.setAttribute("role", "option")
+        resultado.addEventListener("click", () => onSelect(carta))
+      } else {
+        enlazarNavegacionCarta(resultado, carta)
+      }
       fragmento.append(resultado)
     }
 

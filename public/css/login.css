@@ -171,3 +171,14 @@ body {
         align-items: flex-start;
     }
 }
+
+.password-wrapper{
+    display: flex; 
+    align-items: center; 
+    position: relative;
+}
+
+#show-password{
+    padding: 15px; 
+    border: none;
+}

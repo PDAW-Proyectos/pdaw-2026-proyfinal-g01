@@ -22,14 +22,14 @@ function coincideTipo(carta, filtro) {
  * espera 250ms después de la escritura, cancela solicitudes obsoletas y muestra el spinner
  * solo si la consulta tarda más que el intervalo configurado.
  */
-export function inicializarBusquedaCartas() {
+export function inicializarBusquedaCartas({ onSelect } = {}) {
   const entrada = document.getElementById("search-input")
   const boton = document.getElementById("search-button")
   const filtroTipo = document.getElementById("search-type-filter")
   const filtroRaza = document.getElementById("search-race-filter")
   const dropdown = document.getElementById("search-dropdown")
 
-  if (!entrada || !boton || !filtroTipo || !filtroRaza || !dropdown) {
+  if (!entrada || !boton || !dropdown) {
     throw new Error("No se encontraron todos los controles de búsqueda de cartas.")
   }
 
@@ -62,14 +62,16 @@ export function inicializarBusquedaCartas() {
     try {
       const cartas = await buscarCartas({
         name: nombre,
-        race: filtroRaza.value
+        race: filtroRaza?.value
       }, { signal: controlador.signal })
 
       if (idActual !== idBusqueda) return
 
       clearTimeout(temporizadorSpinner)
-      const filtradas = cartas.filter((carta) => coincideTipo(carta, filtroTipo.value))
-      renderizarResultadosBusqueda(filtradas)
+      const filtradas = cartas.filter((carta) =>
+        coincideTipo(carta, filtroTipo?.value ?? "all")
+      )
+      renderizarResultadosBusqueda(filtradas, onSelect)
     } catch (error) {
       if (error.name === "AbortError" || idActual !== idBusqueda) return
 
@@ -100,8 +102,8 @@ export function inicializarBusquedaCartas() {
       cerrarDropdownBusqueda()
     }
   })
-  filtroTipo.addEventListener("change", buscar)
-  filtroRaza.addEventListener("change", buscar)
+  filtroTipo?.addEventListener("change", buscar)
+  filtroRaza?.addEventListener("change", buscar)
   document.addEventListener("click", (evento) => {
     if (!dropdown.parentElement?.contains(evento.target)) {
       cancelarBusquedaActual()
