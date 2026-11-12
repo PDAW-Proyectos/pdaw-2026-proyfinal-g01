@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <link rel="stylesheet" href="css/all.css">
     <link rel="stylesheet" href="css/registro.css">
 </head>
+
 <body>
     <!-- Registro Container -->
     <div class="container flex-grow-1">
@@ -21,75 +23,57 @@
                         <p>Regístrate para acceder a todas las funciones</p>
                     </div>
 
-                    <form action="#" method="POST">
+                    <!-- Resumen de errores accesible -->
+                    <div id="resumen-errores" role="alert" tabindex="-1" hidden class="alert alert-danger mb-3">
+                        <h2 class="h6 fw-bold">Hay datos para corregir</h2>
+                        <ul id="lista-errores" class="mb-0"></ul>
+                    </div>
+
+                    <div id="status-mensaje" role="alert" aria-live="polite" class="mb-3 fw-bold text-center"></div>
+
+                    <form action="#" method="POST" id="form-registro" novalidate>
                         <div class="mb-4">
                             <label for="nombre" class="form-label-custom">Nombre completo</label>
-                            <input
-                                type="text"
-                                id="nombre"
-                                name="nombre"
-                                class="form-control form-control-custom"
-                                placeholder="Ingrese su nombre"
-                                required
-                            >
+                            <input type="text" id="nombre" name="nombre" 
+                                class="form-control form-control-custom" placeholder="Ingrese su nombre"
+                                required aria-describedby="ayuda-nombre error-nombre">
                             <small id="ayuda-nombre"></small>
                             <small id="error-nombre" class="error"></small>
                         </div>
 
                         <div class="mb-4">
                             <label for="username" class="form-label-custom">Nombre de usuario</label>
-                            <input
-                                type="text"
-                                id="username"
-                                name="username"
-                                class="form-control form-control-custom"
-                                placeholder="ejemplo123"
-                                required
-                            >
+                            <input type="text" id="username" name="username" class="form-control form-control-custom"
+                                placeholder="ejemplo123"  
+                                required aria-describedby="ayuda-username error-username">
                             <small id="ayuda-username"></small>
                             <small id="error-username" class="error"></small>
                         </div>
 
                         <div class="mb-4">
-                            <label for="password" class="form-label-custom">Contraseña</label>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                class="form-control form-control-custom"
-                                placeholder="Mínimo 8 caracteres"
-                                minlength="8"
-                                required
-                            >
+                            <label for="contraseña" class="form-label-custom">Contraseña</label>
+                            <input type="password" id="contraseña" name="contraseña"
+                                class="form-control form-control-custom" placeholder="Mínimo 6 caracteres" minlength="8"
+                                required aria-describedby="ayuda-contraseña error-contraseña">
                             <small id="ayuda-contraseña"></small>
                             <small id="error-contraseña" class="error"></small>
                         </div>
 
                         <div class="mb-4">
                             <label for="confirm-password" class="form-label-custom">Confirmar contraseña</label>
-                            <input
-                                type="password"
-                                id="confirm-password"
-                                name="confirm-password"
-                                class="form-control form-control-custom"
-                                placeholder="Repite tu contraseña"
-                                minlength="8"
-                                required
-                            >
-                            <small id="error-confirm-contraseña" class="error"></small>
+                            <input type="password" id="confirm-password" name="confirm-password"
+                                class="form-control form-control-custom" placeholder="Repite tu contraseña"
+                                minlength="6" required aria-describedby="error-confirm-password">
+                            <small id="error-confirm-password" class="error"></small>
                         </div>
 
                         <div class="mb-4">
                             <div class="form-check">
-                                <input
-                                    type="checkbox"
-                                    class="form-check-input"
-                                    id="terminos"
-                                    name="terminos"
-                                    required
-                                >
+                                <input type="checkbox" class="form-check-input" id="terminos" name="terminos" required aria-describedby="error-terminos">
                                 <label class="form-check-label" for="terminos" style="color: var(--text-secondary);">
-                                    Acepto los <a href="#" style="color: var(--primary-color); text-decoration: none;">Términos y Condiciones</a>
+                                    Acepto los <a href="#"
+                                        style="color: var(--primary-color); text-decoration: none;">Términos y
+                                        Condiciones</a>
                                 </label>
                             </div>
                             <small id="error-terminos" class="error"></small>
@@ -120,5 +104,8 @@
     </footer>
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="js/components/navbar.js"></script>
+    <script type="module" src="js/pages/registro.js"></script>
 </body>
+
 </html>
