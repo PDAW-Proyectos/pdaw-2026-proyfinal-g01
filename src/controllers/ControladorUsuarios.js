@@ -70,4 +70,23 @@ export class ControladorUsuarios {
       next(error)
     }
   }
+
+
+  obtenerPerfil = async (req, res, next) => {
+    try {
+      // Se reconstruye el objeto a partir de los datos del login. 
+      res.status(200).json({ 
+        usuario: {
+          username: req.session.username,
+          rol: req.session.rol
+        } 
+      });
+    } catch (error) {
+      next(error)
+    }
+  }
 }
+
+
+  
+

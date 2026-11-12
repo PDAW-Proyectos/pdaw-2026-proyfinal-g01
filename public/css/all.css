@@ -27,3 +27,7 @@ body {
     background-color: var(--background-light);
     line-height: 1.6;
 }
+
+.btn-main {
+    white-space: nowrap;
+}
