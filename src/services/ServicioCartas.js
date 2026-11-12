@@ -1,16 +1,15 @@
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
-import { DatabaseError, NotFoundError } from "../utils/errors.js"
+import { NotFoundError } from "../utils/errors.js"
 import { filtrarCartas } from "../utils/filtroCartas.js"
 import { descargarCartas } from "./ServicioApiYgo.js"
-import { stat } from "node:fs/promises"
 
-const UNA_SEMANA_MS = 7 * 24 * 60 * 60 * 1000
-const MAX_REINTENTOS = 3
 const CARTAS_POR_PAGINA = 20
+const CANTIDAD_POPULARES = 10
 
 export class ServicioCartas {
   #repositorioCartas
   #arrayCartas = []
+  #arrayCartasPopulares = []
 
   constructor(repositorioCartas) {
     // Validaciones
@@ -21,53 +20,44 @@ export class ServicioCartas {
     this.#repositorioCartas = repositorioCartas
   }
 
-  /** Descarga las cartas de la API externa y actualiza el repositorio local,
-   * reintentando una cantidad fija de veces si ocurre un fallo.
+  /** Ruta del archivo de persistencia del repositorio de cartas.
+   * @returns {string}
    */
-  async #descargarDesdeApi() {
-    let intentos = 1
-    while (intentos <= MAX_REINTENTOS) {
-      try {
-        const datosCartas = await descargarCartas()
-        await this.#repositorioCartas.guardar(datosCartas)
-        return
-      } catch (error) {
-        if (intentos === MAX_REINTENTOS) {
-          throw new DatabaseError(`No se pudo actualizar la base de cartas tras ${MAX_REINTENTOS} intentos: ${error.message}`)
-        }
-        intentos++
-      }
-    }
+  get ruta() {
+    return this.#repositorioCartas.ruta
   }
 
-  /** Se ejecuta al iniciar el servidor: descarga si no existe o si paso 1 semana, y programa la actualizacion */
-  async cargarCartas() {
-    // Se inicia en caso de que la base de datos tenga dias de creada pero no llegue a una semana
-    let tiempoTranscurrido = 0
+  /** Indica si el repositorio de cartas se encuentra vacio.
+   * @returns {boolean}
+   */
+  estaVacio() {
+    return this.#repositorioCartas.cantidadTotal() === 0
+  }
 
-    if (this.#repositorioCartas.cantidadTotal() === 0) {
-      await this.#descargarDesdeApi()
-    } else {
-      try {
-        const info = await stat(this.#repositorioCartas.ruta)
-        tiempoTranscurrido = Date.now() - info.mtimeMs
-      } catch (error) {
-        throw new DatabaseError(`No se pudo conseguir las stats de la base de cartas: ${error.message}`)
-      }
+  /** Sincroniza los arreglos en memoria (#arrayCartas y #arrayCartasPopulares) con el repositorio. */
+  actualizarCache() {
+    this.#arrayCartas = Array.from(this.#repositorioCartas.cartas.values())
+    this.#arrayCartasPopulares = [...this.#arrayCartas]
+      .sort((a, b) => (b.misc_info[0]?.viewsweek ?? 0) - (a.misc_info[0]?.viewsweek ?? 0))
+      .slice(0, CANTIDAD_POPULARES)
+  }
 
-      if (tiempoTranscurrido >= UNA_SEMANA_MS) {
-        await this.#descargarDesdeApi()
-        this.#arrayCartas = Array.from(this.#repositorioCartas.cartas.values())
-        tiempoTranscurrido = 0
-      }
+  /** Descarga las cartas de la API externa y actualiza el repositorio local. */
+  async descargar() {
+    const datosCartas = await descargarCartas()
+    await this.#repositorioCartas.guardar(datosCartas)
+  }
+
+  /** Devuelve el top 10 de cartas mas populares de la semana segun viewsweek.
+   * @returns {Array<import("../models/carta/Carta.js").Carta>}
+   * @throws {NotFoundError} Si no hay cartas cargadas en el repositorio.
+   */
+  listarCartasPopulares() {
+    if (this.#arrayCartasPopulares.length === 0) {
+      throw new NotFoundError("No hay cartas cargadas para calcular las populares.")
     }
 
-    // .unref() evita que el timer bloquee el cierre de Jest o Node
-    if (tiempoTranscurrido > 0) {
-      setTimeout(() => { this.cargarCartas() }, (UNA_SEMANA_MS - tiempoTranscurrido)).unref()
-    } else {
-      setInterval(() => { this.#descargarDesdeApi() }, UNA_SEMANA_MS).unref()
-    }
+    return [...this.#arrayCartasPopulares]
   }
 
   /** Lista todas las cartas o las filtra segun los atributos proporcionados, paginando los resultados.
@@ -76,11 +66,6 @@ export class ServicioCartas {
    * @throws {NotFoundError} Si no se encuentran cartas que coincidan con la busqueda o si la pagina no existe.
    */
   listarCartas(filtros = {}) {
-    // Si la caché está vacía o desactualizada respecto al repositorio, se regenera
-    if (this.#arrayCartas.length !== this.#repositorioCartas.cantidadTotal()) {
-      this.#arrayCartas = Array.from(this.#repositorioCartas.cartas.values())
-    }
-
     const resultados = filtrarCartas(this.#arrayCartas, filtros)
 
     if (resultados.length === 0) {

@@ -1,6 +1,6 @@
 import { ExternalApiError, NotFoundError, ValidationError, TimeoutError } from "../utils/errors.js"
 
-const URL_CARTAS = "https://db.ygoprodeck.com/api/v7/cardinfo.php"
+const URL_CARTAS = "https://db.ygoprodeck.com/api/v7/cardinfo.php?misc=yes"
 const TIEMPO_ESPERA_BASE_MS = 5000
 
 // Las validaciones de este codigo fueron basadas en un codigo de stackoverflow, para saber que chequear

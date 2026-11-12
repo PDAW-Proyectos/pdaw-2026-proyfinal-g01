@@ -28,6 +28,16 @@ export class ControladorCartas {
     }
   }
 
+  listarCartasPopulares = (req, res, next) => {
+    try {
+      const cartas = this.#servicioCartas.listarCartasPopulares()
+
+      res.status(200).json(cartas.map((carta) => carta.toDTO()))
+    } catch (error) {
+      next(error)
+    }
+  }
+
   obtenerCarta = (req, res, next) => {
     try {
       const { id } = req.params
