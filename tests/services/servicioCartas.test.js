@@ -1,10 +1,10 @@
-import { readFile, rm, mkdir, access, utimes } from "node:fs/promises"
+import { readFile, rm, mkdir, access } from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { jest } from "@jest/globals"
 import { RepositorioCartas } from "../../src/repositories/RepositorioCartas.js"
 import { ServicioCartas } from "../../src/services/ServicioCartas.js"
-import { DatabaseError, NotFoundError } from "../../src/utils/errors.js"
+import { ExternalApiError, NotFoundError } from "../../src/utils/errors.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const carpetaDataTest = path.resolve(__dirname, "..", "..", "dataTest")
@@ -31,6 +31,9 @@ const payloadApiMock = () => ({
       ],
       card_prices: [
         { ebay_price: "1.99", amazon_price: "2.50" }
+      ],
+      misc_info: [
+        { viewsweek: 300 }
       ]
     },
     {
@@ -49,6 +52,9 @@ const payloadApiMock = () => ({
       ],
       card_prices: [
         { ebay_price: "3.00", amazon_price: "4.00" }
+      ],
+      misc_info: [
+        { viewsweek: 900 }
       ]
     },
     {
@@ -71,6 +77,9 @@ const payloadApiMock = () => ({
       ],
       card_prices: [
         { ebay_price: "1.20", amazon_price: "1.80" }
+      ],
+      misc_info: [
+        { viewsweek: 100 }
       ]
     },
     {
@@ -92,6 +101,9 @@ const payloadApiMock = () => ({
       ],
       card_prices: [
         { ebay_price: "0.99", amazon_price: "1.50" }
+      ],
+      misc_info: [
+        { viewsweek: 500 }
       ]
     }
   ]
@@ -124,8 +136,21 @@ describe("ServicioCartas", () => {
     })
   })
 
-  describe("cargarCartas (sincronización con API externa)", () => {
-    test("descarga cartas de la API y las persiste cuando el repositorio está vacío", async () => {
+  describe("ruta y estaVacio", () => {
+    test("expone la ruta del repositorio e indica si está vacío", async () => {
+      const repo = new RepositorioCartas(rutaDb)
+      const servicio = new ServicioCartas(repo)
+
+      expect(servicio.ruta).toBe(rutaDb)
+      expect(servicio.estaVacio()).toBe(true)
+
+      await repo.guardar(payloadApiMock().data)
+      expect(servicio.estaVacio()).toBe(false)
+    })
+  })
+
+  describe("descargar", () => {
+    test("descarga cartas de la API y las persiste en el repositorio", async () => {
       jest.spyOn(global, "fetch").mockResolvedValue({
         ok: true,
         status: 200,
@@ -137,7 +162,7 @@ describe("ServicioCartas", () => {
       await repo.cargar()
 
       const servicio = new ServicioCartas(repo)
-      await servicio.cargarCartas()
+      await servicio.descargar()
 
       expect(repo.cantidadTotal()).toBe(4)
       expect(await existe(rutaDb)).toBe(true)
@@ -146,31 +171,8 @@ describe("ServicioCartas", () => {
       expect(contenidoDisco["46986414"].name).toBe("Dark Magician")
     })
 
-    test("vuelve a descargar de la API si el archivo tiene más de 1 semana", async () => {
-      const fetchSpy = jest.spyOn(global, "fetch").mockResolvedValue({
-        ok: true,
-        status: 200,
-        headers: { get: () => "application/json" },
-        json: async () => payloadApiMock()
-      })
-
-      const repo = new RepositorioCartas(rutaDb)
-      await repo.cargar()
-      const servicio = new ServicioCartas(repo)
-
-      await servicio.cargarCartas()
-      expect(fetchSpy).toHaveBeenCalledTimes(1)
-
-      // Simular que el archivo fue modificado hace más de 7 días
-      const haceOchoDias = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000)
-      await utimes(rutaDb, haceOchoDias, haceOchoDias)
-
-      await servicio.cargarCartas()
-      expect(fetchSpy).toHaveBeenCalledTimes(2)
-    })
-
-    test("reintenta hasta 3 veces si la API falla y lanza DatabaseError al agotarse los intentos", async () => {
-      const fetchSpy = jest.spyOn(global, "fetch").mockResolvedValue({
+    test("propaga ExternalApiError si la descarga falla", async () => {
+      jest.spyOn(global, "fetch").mockResolvedValue({
         ok: false,
         status: 503,
         headers: { get: () => "application/json" }
@@ -180,8 +182,32 @@ describe("ServicioCartas", () => {
       await repo.cargar()
       const servicio = new ServicioCartas(repo)
 
-      await expect(servicio.cargarCartas()).rejects.toThrow(DatabaseError)
-      expect(fetchSpy).toHaveBeenCalledTimes(3)
+      await expect(servicio.descargar()).rejects.toThrow(ExternalApiError)
+    })
+  })
+
+  describe("listarCartasPopulares", () => {
+    test("devuelve las cartas ordenadas de mayor a menor según viewsweek (máximo 10)", async () => {
+      const repo = new RepositorioCartas(rutaDb)
+      await repo.guardar(payloadApiMock().data)
+      const servicio = new ServicioCartas(repo)
+      servicio.actualizarCache()
+
+      const populares = servicio.listarCartasPopulares()
+      expect(populares).toHaveLength(4)
+      expect(populares.map((c) => c.name)).toEqual([
+        "Pot of Greed",
+        "Decode Talker",
+        "Dark Magician",
+        "Odd-Eyes Pendulum Dragon"
+      ])
+    })
+
+    test("lanza NotFoundError si la caché está vacía", () => {
+      const repo = new RepositorioCartas(rutaDb)
+      const servicio = new ServicioCartas(repo)
+
+      expect(() => servicio.listarCartasPopulares()).toThrow(NotFoundError)
     })
   })
 
@@ -209,6 +235,7 @@ describe("ServicioCartas", () => {
       const repo = new RepositorioCartas(rutaDb)
       await repo.guardar(payloadApiMock().data)
       const servicio = new ServicioCartas(repo)
+      servicio.actualizarCache()
 
       const resultado = servicio.listarCartas()
       expect(resultado.datos).toHaveLength(4)
@@ -225,6 +252,7 @@ describe("ServicioCartas", () => {
       const repo = new RepositorioCartas(rutaDb)
       await repo.guardar(payloadApiMock().data)
       const servicio = new ServicioCartas(repo)
+      servicio.actualizarCache()
 
       expect(servicio.listarCartas({ name: "magician" }).datos[0].name).toBe("Dark Magician")
       expect(servicio.listarCartas({ frameType: "link" }).datos[0].name).toBe("Decode Talker")
@@ -238,6 +266,7 @@ describe("ServicioCartas", () => {
       expect(() => servicio.listarCartas()).toThrow(NotFoundError)
 
       await repo.guardar(payloadApiMock().data)
+      servicio.actualizarCache()
       expect(() => servicio.listarCartas({ name: "Inexistente" })).toThrow(NotFoundError)
     })
   })

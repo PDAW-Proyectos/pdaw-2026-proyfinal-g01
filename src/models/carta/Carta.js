@@ -18,11 +18,13 @@ export class Carta {
   #card_images = []
   /** @type {Array <Object>} */
   #card_prices = []
+  /** @type {Array <Object>} */
+  #misc_info = []
 
-  /** Una Carta necesita los datos id, name, type, frameType, race, desc, card_images, card_prices.
+  /** Una Carta necesita los datos id, name, type, frameType, race, desc, card_images, card_prices y misc_info.
    * @param {Object} data
    */
-  constructor({ id, name, type, frameType, race, desc, banlist_info, card_images, card_prices }) {
+  constructor({ id, name, type, frameType, race, desc, banlist_info, card_images, card_prices, misc_info = [] }) {
     this.#id = id
     this.#name = name
     this.#type = type
@@ -42,6 +44,15 @@ export class Carta {
       this.#card_prices.push({
         ebay_price: precio.ebay_price ?? 0,
         amazon_price: precio.amazon_price ?? 0
+      })
+    }
+    for (const info of misc_info) {
+      this.#misc_info.push({
+        viewsweek: info.viewsweek ?? 0,
+        tcg_date: info.tcg_date ?? null,
+        ocg_date: info.ocg_date ?? null,
+        konami_id: info.konami_id ?? null,
+        md_rarity: info.md_rarity ?? null
       })
     }
   }
@@ -74,6 +85,9 @@ export class Carta {
   /** Array de Object con los valores ebay_price y amazon_price */
   get card_prices() { return this.#card_prices.map((precio) => ({ ...precio })) }
 
+  /** Array de Object con los valores viewsweek, tcg_date, ocg_date, konami_id y md_rarity */
+  get misc_info() { return this.#misc_info.map((info) => ({ ...info })) }
+
   /** Mayor precio de la carta entre ebay_price y amazon_price */
   get card_price() {
     let mayorPrecio = 0
@@ -99,10 +113,13 @@ export class Carta {
       desc: this.#desc,
       card_images: this.card_images,
       card_prices: this.card_prices,
+      misc_info: this.misc_info,
     }
+
     if (Object.keys(this.#banlist_info).length > 0) {
       obj.banlist_info = this.banlist_info
     }
+
     return obj
   }
 
@@ -110,6 +127,8 @@ export class Carta {
    * @returns {Object}
    */
   toDTO() {
+    const primerMisc = this.#misc_info[0]
+
     const obj = {
       id: this.#id,
       name: this.#name,
@@ -117,10 +136,19 @@ export class Carta {
       race: this.#race,
       desc: this.#desc,
       card_price: this.card_price,
+      misc_info: {
+        viewsweek: primerMisc?.viewsweek ?? 0,
+        tcg_date: primerMisc?.tcg_date ?? null,
+        ocg_date: primerMisc?.ocg_date ?? null,
+        konami_id: primerMisc?.konami_id ?? null,
+        md_rarity: primerMisc?.md_rarity ?? null
+      },
     }
+
     if (Object.keys(this.#banlist_info).length > 0) {
       obj.banlist_info = this.banlist_info
     }
+
     return obj
   }
 }
