@@ -1,5 +1,9 @@
 import { jest } from "@jest/globals"
-import { descargarCartas, descargarImagen } from "../../src/services/ServicioApiYgo.js"
+import {
+  descargarCartas,
+  descargarImagen,
+  descargarMazosPopulares
+} from "../../src/services/ServicioApiYgo.js"
 import { ExternalApiError, NotFoundError, ValidationError, TimeoutError } from "../../src/utils/errors.js"
 
 describe("ServicioApiYgo", () => {
@@ -129,6 +133,92 @@ describe("ServicioApiYgo", () => {
       })
 
       await expect(descargarImagen("https://images.ygoprodeck.com/100.jpg")).rejects.toThrow(ExternalApiError)
+    })
+  })
+
+  describe("descargarMazosPopulares", () => {
+    test("descarga el top de mazos y sus cartas desde YuGiOhMeta con fallback a MasterDuelMeta", async () => {
+      const fetchSpy = jest
+        .spyOn(global, "fetch")
+        // 1. Lista de top mazos en MasterDuelMeta
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          headers: { get: () => "application/json; charset=utf-8" },
+          json: async () => [
+            { _id: "1", name: "Dracotail", tournamentPower: 14.8, tournamentPowerTrend: 1.2 },
+            { _id: "2", name: "Snake-Eye Fiendsmith", tournamentPower: 11.4, tournamentPowerTrend: -0.5 }
+          ]
+        })
+        // 2. Cartas de "Dracotail" encontradas en YuGiOhMeta (deckBreakdownTCG.cards)
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          headers: { get: () => "application/json" },
+          json: async () => [
+            {
+              deckBreakdownTCG: {
+                cards: [
+                  { card: { name: "Ash Blossom & Joyous Spring" }, at: 3 }
+                ]
+              }
+            }
+          ]
+        })
+        // 3. "Snake-Eye Fiendsmith" sin datos en YuGiOhMeta -> activa fallback
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          headers: { get: () => "application/json" },
+          json: async () => []
+        })
+        // 4. Fallback MasterDuelMeta (sampleDeck.main + sampleDeck.extra)
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          headers: { get: () => "application/json" },
+          json: async () => [
+            {
+              deckBreakdown: {
+                sampleDeck: {
+                  main: [{ card: { name: "Snake-Eye Ash" }, amount: 3 }],
+                  extra: [{ card: { name: "Promethean Princess" }, amount: 1 }]
+                }
+              }
+            }
+          ]
+        })
+
+      const resultado = await descargarMazosPopulares()
+
+      expect(resultado).toEqual([
+        {
+          nombre: "Dracotail",
+          cartas: [{ name: "Ash Blossom & Joyous Spring", amount: 3 }]
+        },
+        {
+          nombre: "Snake-Eye Fiendsmith",
+          cartas: [
+            { name: "Snake-Eye Ash", amount: 3 },
+            { name: "Promethean Princess", amount: 1 }
+          ]
+        }
+      ])
+      expect(fetchSpy).toHaveBeenCalledWith(
+        "https://www.yugiohmeta.com/api/v1/deck-types?name=Snake-Eye%20Fiendsmith&limit=1&aggregate=aboveThresh",
+        expect.any(Object)
+      )
+    })
+
+    test("lanza ExternalApiError si el arreglo de mazos populares viene vacío", async () => {
+      jest.spyOn(global, "fetch").mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: { get: () => "application/json" },
+        json: async () => []
+      })
+
+      await expect(descargarMazosPopulares()).rejects.toThrow(ExternalApiError)
     })
   })
 })

@@ -25,16 +25,16 @@ const crearDatosMazo = (id, extras = {}) => ({
   id,
   username: "yugi",
   nombre: `Mazo ${id}`,
-  mainDeck: [100, 101],
-  extraDeck: [200],
+  mainDeck: [{ id: 100, cantidad: 1 }, { id: 101, cantidad: 1 }],
+  extraDeck: [{ id: 200, cantidad: 1 }],
   ...extras,
 })
 
 const crearInputMazo = (nombre = "Mazo Nuevo", extras = {}) => ({
   username: "yugi",
   nombre,
-  mainDeck: [100, 101],
-  extraDeck: [200],
+  mainDeck: [{ id: 100, cantidad: 1 }, { id: 101, cantidad: 1 }],
+  extraDeck: [{ id: 200, cantidad: 1 }],
   ...extras,
 })
 

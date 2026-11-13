@@ -1,13 +1,25 @@
 const PATRON_NO_VACIO = "\\S"
 const PATRON_ENTERO_POSITIVO = "^[1-9]\\d*$"
 
-function esquemaListaIdsCartas(maxCartas) {
+function esquemaListaCartas(maxCartas) {
   return {
     type: "array",
     maxItems: maxCartas,
     items: {
-      type: "integer",
-      minimum: 1
+      type: "object",
+      required: ["id", "cantidad"],
+      additionalProperties: false,
+      properties: {
+        id: {
+          type: "integer",
+          minimum: 1
+        },
+        cantidad: {
+          type: "integer",
+          minimum: 1,
+          maximum: 3
+        }
+      }
     }
   }
 }
@@ -65,8 +77,8 @@ export const esquemasMazos = {
         type: "string",
         pattern: PATRON_NO_VACIO
       },
-      mainDeck: esquemaListaIdsCartas(60),
-      extraDeck: esquemaListaIdsCartas(15)
+      mainDeck: esquemaListaCartas(60),
+      extraDeck: esquemaListaCartas(15)
     }
   },
 
@@ -79,8 +91,8 @@ export const esquemasMazos = {
         type: "string",
         pattern: PATRON_NO_VACIO
       },
-      mainDeck: esquemaListaIdsCartas(60),
-      extraDeck: esquemaListaIdsCartas(15)
+      mainDeck: esquemaListaCartas(60),
+      extraDeck: esquemaListaCartas(15)
     }
   },
 

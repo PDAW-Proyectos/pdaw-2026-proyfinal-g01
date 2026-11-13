@@ -12,8 +12,10 @@
 | **Obtener carta por ID** | GET | `/api/cartas/:id` | `params`: `id` (entero positivo) | 200 | `application/json` | 400, 404 | Devuelve el DTO de la carta con los atributos según su tipo (`Carta`, `CartaMonstruo`, `CartaPendulo`, `CartaLink`) |
 | **Obtener imagen de carta** | GET | `/api/imagenes/:id` | `params`: `id` (entero positivo)<br>`query` (opcional): `tipo` (`"full"` \| `"small"`) | 200 | `image/jpeg` (Archivo binario) | 400, 404, 502 | Sirve la imagen desde disco o la descarga de la API externa con control de rate-limit |
 | **Listar mazos** | GET | `/api/mazos` | `query` (opcionales): `all` (`"true"` \| `"false"`), `page` (entero positivo) | 200 | `application/json` | 400, 404 | Si hay sesión activa y `all` ≠ `"true"`, lista los mazos del usuario; si no, lista todos (10 por página) |
-| **Obtener mazo por ID** | GET | `/api/mazos/:id` | `params`: `id` (entero positivo) | 200 | `application/json` | 400, 404 | Retorna el mazo con sus cartas completas (DTO), validez (`mainDeck >= 40`) y `precioTotal` |
-| **Crear mazo** | POST | `/api/mazos` | Body JSON: `nombre`, `mainDeck` (opcional, máx. 60 IDs), `extraDeck` (opcional, máx. 15 IDs) | 201 | `application/json` | 400, 401 | Requiere autenticación (`requiereAutenticacion`). Máximo 10 mazos por usuario |
+| **Listar mazos populares** | GET | `/api/mazos/populares` | Ninguna | 200 | `application/json` | 404 | Devuelve el top de mazos competitivos en caché con objetos `{ carta, cantidad }`, `valido` y `precioTotal` |
+| **Obtener mazo popular por ID** | GET | `/api/mazos/populares/:id` | `params`: `id` (entero positivo) | 200 | `application/json` | 400, 404 | Devuelve el detalle de un mazo popular específico en el mismo formato que `GET /api/mazos/:id` |
+| **Obtener mazo por ID** | GET | `/api/mazos/:id` | `params`: `id` (entero positivo) | 200 | `application/json` | 400, 404 | Retorna el mazo con sus cartas (`{ carta, cantidad }`), validez (`mainDeck >= 40`) y `precioTotal` |
+| **Crear mazo** | POST | `/api/mazos` | Body JSON: `nombre`, `mainDeck` (opcional, máx. 60 cartas `{ id, cantidad }`), `extraDeck` (opcional, máx. 15 cartas `{ id, cantidad }`) | 201 | `application/json` | 400, 401 | Requiere autenticación (`requiereAutenticacion`). Máximo 10 mazos por usuario |
 | **Modificar mazo** | PATCH | `/api/mazos/:id` | `params`: `id`<br>Body JSON (mín. 1 campo): `nombre`, `mainDeck`, `extraDeck` | 200 | `application/json` | 400, 401, 403, 404 | Requiere autenticación (`requiereAutenticacion`) y ser el propietario del mazo |
 | **Eliminar mazo** | DELETE | `/api/mazos/:id` | `params`: `id` | 204 | Sin cuerpo | 400, 401, 403, 404 | Requiere autenticación (`requiereAutenticacion`) y ser el propietario del mazo |
 | **Agregar carta a un mazo** | POST | `/api/mazos/:id/cartas` | `params`: `id`<br>Body JSON: `idCarta` (entero positivo) | 200 | `application/json` | 400, 401, 403, 404 | Requiere autenticación (`requiereAutenticacion`) y ser dueño. Valida límites del mazo y banlist TCG |
@@ -134,9 +136,9 @@ Todas las respuestas incluyen la cabecera `X-Request-Id` con el identificador ú
 
 ### 4. Mazos (`/api/mazos`)
 
-#### `GET /api/mazos/:id` (200)
+#### `GET /api/mazos/:id` (200) y `GET /api/mazos/populares/:id` (200)
 - **Content-Type:** `application/json`
-- **Cuerpo (Mazo con cartas expandidas mediante `toDTO()`, validación y precio total):**
+- **Cuerpo (Mazo con entradas `{ carta, cantidad }` donde `carta` es el DTO de `toDTO()`, validación y precio total):**
 ```json
 {
   "id": 1,
@@ -144,30 +146,37 @@ Todas las respuestas incluyen la cabecera `X-Request-Id` con el identificador ú
   "nombre": "Mazo Mago Oscuro",
   "mainDeck": [
     {
-      "id": 46986414,
-      "name": "Dark Magician",
-      "type": "Normal Monster",
-      "race": "Spellcaster",
-      "desc": "The ultimate wizard in terms of attack and defense.",
-      "card_price": 8.48,
-      "misc_info": {
-        "viewsweek": 12500,
-        "tcg_date": "2002-03-08",
-        "ocg_date": "1999-02-04",
-        "konami_id": 4007,
-        "md_rarity": "UR"
+      "carta": {
+        "id": 46986414,
+        "name": "Dark Magician",
+        "type": "Normal Monster",
+        "race": "Spellcaster",
+        "desc": "The ultimate wizard in terms of attack and defense.",
+        "card_price": 8.48,
+        "misc_info": {
+          "viewsweek": 12500,
+          "tcg_date": "2002-03-08",
+          "ocg_date": "1999-02-04",
+          "konami_id": 4007,
+          "md_rarity": "UR"
+        },
+        "atk": 2500,
+        "def": 2100,
+        "level": 7,
+        "attribute": "DARK"
       },
-      "atk": 2500,
-      "def": 2100,
-      "level": 7,
-      "attribute": "DARK"
+      "cantidad": 3
     }
   ],
   "extraDeck": [],
   "valido": false,
-  "precioTotal": 8.48
+  "precioTotal": 25.44
 }
 ```
+
+#### `GET /api/mazos/populares` (200)
+- **Content-Type:** `application/json`
+- **Cuerpo:** Arreglo JSON de mazos populares con el mismo formato detallado que `GET /api/mazos/populares/:id`.
 
 #### `GET /api/mazos` (200)
 - **Content-Type:** `application/json`
@@ -197,13 +206,15 @@ Todas las respuestas incluyen la cabecera `X-Request-Id` con el identificador ú
 
 #### `POST /api/mazos` (201), `PATCH /api/mazos/:id` (200), `POST /api/mazos/:id/cartas` (200) y `DELETE /api/mazos/:id/cartas/:idCarta` (200)
 - **Content-Type:** `application/json`
-- **Cuerpo (Entidad `Mazo` con arreglos de IDs numéricos de cartas):**
+- **Cuerpo (Entidad `Mazo` con arreglos de `{ id, cantidad }`):**
 ```json
 {
   "id": 1,
   "username": "yugi",
   "nombre": "Mazo Mago Oscuro",
-  "mainDeck": [46986414],
+  "mainDeck": [
+    { "id": 46986414, "cantidad": 3 }
+  ],
   "extraDeck": []
 }
 ```
