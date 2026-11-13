@@ -1,18 +1,25 @@
 import { ServicioMazos } from "../services/ServicioMazos.js"
+import { ServicioMazosPopulares } from "../services/ServicioMazosPopulares.js"
 
 export class ControladorMazos {
   #servicioMazos
+  #servicioMazosPopulares
 
   /**
    * @param {ServicioMazos} servicioMazos
-   * @throws TypeError si el parametro no es una instancia de ServicioMazos.
+   * @param {ServicioMazosPopulares} servicioMazosPopulares
+   * @throws TypeError si los parametros no son instancias validas.
    */
-  constructor(servicioMazos) {
+  constructor(servicioMazos, servicioMazosPopulares) {
     if (!(servicioMazos instanceof ServicioMazos)) {
       throw new TypeError("El controlador se tiene que crear con un ServicioMazos")
     }
+    if (!(servicioMazosPopulares instanceof ServicioMazosPopulares)) {
+      throw new TypeError("El controlador se tiene que crear con un ServicioMazosPopulares")
+    }
 
     this.#servicioMazos = servicioMazos
+    this.#servicioMazosPopulares = servicioMazosPopulares
   }
 
   listarMazos = (req, res, next) => {
@@ -22,6 +29,27 @@ export class ControladorMazos {
       const mazos = this.#servicioMazos.listarMazos(username, req.query.page)
 
       res.status(200).json(mazos)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  listarMazosPopulares = (req, res, next) => {
+    try {
+      const mazos = this.#servicioMazosPopulares.listarMazosPopulares()
+
+      res.status(200).json(mazos)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  obtenerMazoPopular = (req, res, next) => {
+    try {
+      const { id } = req.params
+      const mazo = this.#servicioMazosPopulares.obtenerMazoPopular(id)
+
+      res.status(200).json(mazo)
     } catch (error) {
       next(error)
     }
