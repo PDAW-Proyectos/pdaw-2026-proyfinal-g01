@@ -9,6 +9,7 @@ import rutasMazos from "./routes/rutasMazos.js"
 import rutasCartas from "./routes/rutasCartas.js"
 import rutasImagenes from "./routes/rutasImagenes.js"
 import rutasUsuarios from "./routes/rutasUsuarios.js"
+import { createRequire } from "node:module"
 
 const app = express()
 
@@ -16,6 +17,17 @@ const app = express()
 app.use(requestContext())
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const require = createRequire(import.meta.url)
+const { version } = require("../package.json")
+
+app.get("/api/salud", (req, res) => {
+  res.json({
+    estado: "ok",
+    version,
+    entorno: process.env.NODE_ENV || "development", // ---> despues actualizar 
+    uptime: Math.round(process.uptime()), //muestra los segundos
+  })
+})
 
 // La ruta /test (Test Runner) solo está disponible al ejecutar el servidor en modo desarrollo (npm run dev)
 app.use("/test", (req, res, next) => {
