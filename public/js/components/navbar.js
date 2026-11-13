@@ -38,7 +38,7 @@ function renderUsuarioLogueado(usuario) {
 
   const btnAvatar = document.createElement('button')
   btnAvatar.type = 'button'
-  btnAvatar.className = 'btn btn-main rounded-circle d-flex align-items-center justify-content-center p-0 fs-5 fw-bold'
+  btnAvatar.className = 'btn btn-main rounded-circle d-flex align-items-center justify-content-center p-0 fs-5 fw-bold border border-3'
   btnAvatar.style.width = '42px'
   btnAvatar.style.height = '42px'
   btnAvatar.setAttribute('data-bs-toggle', 'dropdown')

@@ -6,8 +6,15 @@ import { esquemasMazos } from "../schemas/mazos.schema.js"
 
 const router = Router()
 
+function requiereSesionParaMazos(req, res, next) {
+  if (req.query.all === "true") {
+    return next()
+  }
+  return requiereAutenticacion(req, res, next)
+}
+
 // Muchas de las rutas son nuevas tenemos que añadirlas a la tabla
-router.get("/", validar(esquemasMazos.queryListar, "query"), controladorMazos.listarMazos)
+router.get("/", validar(esquemasMazos.queryListar, "query"), requiereSesionParaMazos, controladorMazos.listarMazos)
 router.get("/populares", controladorMazos.listarMazosPopulares)
 router.get("/populares/:id", validar(esquemasMazos.parametroId, "params"), controladorMazos.obtenerMazoPopular)
 router.get("/:id", validar(esquemasMazos.parametroId, "params"), controladorMazos.obtenerMazo)

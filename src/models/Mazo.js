@@ -20,6 +20,27 @@ function contarCartas(lista) {
   return lista.reduce((total, entrada) => total + entrada.cantidad, 0)
 }
 
+function normalizarListaCartas(lista) {
+  const cantidades = new Map()
+
+  for (const entrada of lista) {
+    const id = typeof entrada === "number" ? entrada : entrada?.id
+    const cantidad = typeof entrada === "number" ? 1 : entrada?.cantidad
+    if (
+      !Number.isSafeInteger(id) ||
+      id <= 0 ||
+      !Number.isSafeInteger(cantidad) ||
+      cantidad <= 0
+    ) {
+      throw new ValidationError("La lista del mazo contiene una carta inválida.")
+    }
+
+    cantidades.set(id, (cantidades.get(id) ?? 0) + cantidad)
+  }
+
+  return Array.from(cantidades, ([id, cantidad]) => ({ id, cantidad }))
+}
+
 /** Representa la entidad Mazo
  */
 export class Mazo {
@@ -38,18 +59,21 @@ export class Mazo {
    * @param {Array<{ id: number, cantidad: number }>} [datos.extraDeck=[]]
    */
   constructor({ id, username, nombre, mainDeck = [], extraDeck = [] }) {
-    if (contarCartas(mainDeck) > MAX_MAIN_DECK) {
+    const cartasMainDeck = normalizarListaCartas(mainDeck)
+    const cartasExtraDeck = normalizarListaCartas(extraDeck)
+
+    if (contarCartas(cartasMainDeck) > MAX_MAIN_DECK) {
       throw new ValidationError(`El Main Deck ya alcanzo el limite de ${MAX_MAIN_DECK} cartas.`)
     }
-    if (contarCartas(extraDeck) > MAX_EXTRA_DECK) {
+    if (contarCartas(cartasExtraDeck) > MAX_EXTRA_DECK) {
       throw new ValidationError(`El Extra Deck ya alcanzo el limite de ${MAX_EXTRA_DECK} cartas.`)
     }
 
     this.#id = id
     this.#username = username.trim()
     this.#nombre = nombre.trim()
-    this.#mainDeck = mainDeck.map(entrada => ({ id: entrada.id, cantidad: entrada.cantidad }))
-    this.#extraDeck = extraDeck.map(entrada => ({ id: entrada.id, cantidad: entrada.cantidad }))
+    this.#mainDeck = cartasMainDeck
+    this.#extraDeck = cartasExtraDeck
   }
 
   /** @returns {number} */

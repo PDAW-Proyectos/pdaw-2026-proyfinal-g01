@@ -242,6 +242,24 @@
     color: var(--white);
 }
 
+.deck-select {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.deck-size {
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
 .new-deck-btn {
     width: 100%;
     padding: 1rem;
@@ -262,6 +280,19 @@
 .filters-section h4 {
     margin-bottom: 1rem;
     color: var(--text-primary);
+}
+
+.filters-section p,
+.deck-save-status,
+.recent-cards-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.deck-status {
+    list-style: none;
+    color: var(--text-secondary);
+    padding: 0.75rem 0;
 }
 
 .filter-group {
@@ -293,6 +324,11 @@
     margin-bottom: 2rem;
     padding-bottom: 1rem;
     border-bottom: 2px solid var(--border-color);
+}
+
+.deck-save-status {
+    margin: 0;
+    text-align: right;
 }
 
 .deck-title {
@@ -348,6 +384,32 @@
     border-color: var(--primary-color);
 }
 
+.counter-value span {
+    color: var(--text-secondary);
+}
+
+.deck-section-title {
+    margin: 1.5rem 0 0.35rem;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+}
+
+.recent-cards-label {
+    margin-bottom: 0.8rem;
+}
+
+.collection-search {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    gap: 0.75rem;
+}
+
+.collection-search .search-input {
+    min-width: 0;
+}
+
 .cards-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -360,7 +422,6 @@
     border: 2px solid var(--border-color);
     /* border-radius: 8px; */
     padding: 0.8rem;
-    cursor: move;
     transition: all 0.3s ease;
 }
 
@@ -389,6 +450,27 @@
     background: var(--background-light);
     padding: 0.3rem 0.6rem;
     display: inline-block;
+}
+
+.deck-card-remove {
+    width: 100%;
+    margin-top: 0.65rem;
+    padding: 0.45rem;
+    border: 0;
+    background: var(--danger-red);
+    color: var(--white);
+    cursor: pointer;
+}
+
+.deck-card-remove:hover {
+    filter: brightness(0.9);
+}
+
+.empty-deck-message {
+    grid-column: 1 / -1;
+    padding: 1rem;
+    background: var(--background-light);
+    color: var(--text-secondary);
 }
 
 .deck-actions {
@@ -422,6 +504,20 @@
     height: fit-content;
     position: sticky;
     top: 90px;
+}
+
+.detail-panel h2 {
+    font-size: 1.25rem;
+    overflow-wrap: anywhere;
+}
+
+.selected-card-actions {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.selected-card-actions .btn {
+    width: 100%;
 }
 
 .card-preview {
@@ -560,4 +656,208 @@
     .deck-counters {
         flex-wrap: wrap;
     }
+}
+
+/* ===== Formularios ===== */
+.form-label-mazo {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    margin-bottom: 0.35rem;
+}
+
+.form-control-mazo {
+    font-family: 'Orbitron';
+    padding: 0.85rem 1.1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0;
+    font-size: 0.9rem;
+    width: 100%;
+    background: var(--background-light);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control-mazo:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(109, 74, 255, 0.25);
+    background: var(--white);
+}
+
+/* ===== Modal ===== */
+.modal-content {
+    border-radius: 0;
+    border: none;
+    box-shadow: var(--shadow-md);
+}
+
+.modal-header-mazo {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: var(--white);
+    border-radius: 0;
+    border: none;
+}
+
+.modal-header-mazo .btn-close {
+    filter: invert(1);
+}
+
+/*--- Toast ---*/
+.toast{
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    background: #1e1e1e;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-md);
+    z-index: 1090;
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    pointer-events: none;
+    border: 0;
+    border-radius: 0;
+}
+.toast.visible{
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast.error {
+    background: var(--danger-red);
+}
+
+@media (max-width: 768px) {
+    .deck-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .deck-save-status {
+        text-align: left;
+    }
+
+}
+
+/* estilos para el dropdown de resultados */
+.search-container {
+    position: relative;
+}
+
+.search-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 8px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    overflow: hidden;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.search-dropdown.active {
+    display: block;
+}
+
+/* =========================
+   LOADING
+========================= */
+.search-loading {
+    display: none;
+    padding: 25px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.search-loading.active {
+    display: flex;
+}
+
+
+/* Spinner */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #ddd;
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================
+   RESULTADOS
+========================= */
+.search-results {
+    display: none;
+}
+
+.search-results.active {
+    display: block;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 16px;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s ease;
+}
+
+.search-result-item:hover {
+    background: #f5f5f5;
+}
+
+.search-result-image {
+    width: 50px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.search-result-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.search-result-name {
+    font-weight: bold;
+}
+
+.search-result-type {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+/* Sin resultados */
+.no-results {
+    padding: 25px;
+    text-align: center;
+    color: #777;
 }
