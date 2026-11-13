@@ -1,5 +1,34 @@
 import { ApiError, api } from "../api.js"
 
+function normalizarListaCartas(entradas) {
+  if (!Array.isArray(entradas)) {
+    throw new Error("La API de mazos devolvió una lista inválida.")
+  }
+
+  return entradas.flatMap(({ carta, cantidad }) => {
+    if (
+      !carta ||
+      typeof carta !== "object" ||
+      !Number.isSafeInteger(carta.id) ||
+      typeof carta.name !== "string" ||
+      !Number.isSafeInteger(cantidad) ||
+      cantidad < 1
+    ) {
+      throw new Error("La API de mazos devolvió una carta inválida.")
+    }
+
+    return Array.from({ length: cantidad }, () => carta)
+  })
+}
+
+function normalizarMazo(mazo) {
+  return {
+    ...mazo,
+    mainDeck: normalizarListaCartas(mazo.mainDeck),
+    extraDeck: normalizarListaCartas(mazo.extraDeck)
+  }
+}
+
 /**
  * Confirma que la petición pertenece a una sesión autenticada.
  * @returns {Promise<Object>} Perfil del usuario autenticado.
@@ -27,7 +56,7 @@ export async function listarMazosPropios() {
   if (!Array.isArray(respuesta?.datos)) {
     throw new Error("La API de mazos devolvió una lista inválida.")
   }
-  return respuesta.datos
+  return respuesta.datos.map(normalizarMazo)
 }
 
 /**
@@ -41,18 +70,18 @@ export async function obtenerMazoPorId(idMazo) {
     throw new Error("El ID del mazo debe ser un entero positivo.")
   }
 
-  const mazo = await api(`/api/mazos/${encodeURIComponent(id)}`)
+  const respuesta = await api(`/api/mazos/${encodeURIComponent(id)}`)
   if (
-    !mazo ||
-    typeof mazo !== "object" ||
-    Number(mazo.id) !== id ||
-    !Array.isArray(mazo.mainDeck) ||
-    !Array.isArray(mazo.extraDeck)
+    !respuesta ||
+    typeof respuesta !== "object" ||
+    Number(respuesta.id) !== id ||
+    !Array.isArray(respuesta.mainDeck) ||
+    !Array.isArray(respuesta.extraDeck)
   ) {
     throw new Error("La API de mazos devolvió un detalle inválido.")
   }
 
-  return mazo
+  return normalizarMazo(respuesta)
 }
 
 /**

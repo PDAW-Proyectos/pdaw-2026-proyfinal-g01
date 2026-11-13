@@ -2,8 +2,6 @@ import { RepositorioMazos, MAX_MAZOS } from "../repositories/RepositorioMazos.js
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
 import { NotFoundError, AuthorizationError } from "../utils/errors.js"
 
-const TIPOS_EXTRA_DECK = ["fusion", "synchro", "xyz", "link", "fusion_pendulum", "synchro_pendulum", "xyz_pendulum"]
-
 /** La clase ServicioMazos maneja el RepositorioMazos y ademas lee del
  * RepositorioCartas para conseguir el resto de la informacion. */
 export class ServicioMazos {
@@ -40,6 +38,13 @@ export class ServicioMazos {
     }
 
     return mazo
+  }
+
+  #hidratarListaCartas(lista) {
+    return lista.map(({ id, cantidad }) => ({
+      carta: this.#repositorioCartas.buscar(id)?.toDTO() ?? null,
+      cantidad
+    }))
   }
 
   /** Lista los mazos de un usuario si se pasa el username, si no, lista todos los mazos paginados.
@@ -95,12 +100,12 @@ export class ServicioMazos {
       throw new NotFoundError(`El Mazo asociado al id "${idMazo}" no se encontro.`)
     }
 
-    const cartasMainDeck = mazo.mainDeck.map(id => this.#repositorioCartas.buscar(id)?.toDTO())
-    const cartasExtraDeck = mazo.extraDeck.map(id => this.#repositorioCartas.buscar(id)?.toDTO())
+    const cartasMainDeck = this.#hidratarListaCartas(mazo.mainDeck)
+    const cartasExtraDeck = this.#hidratarListaCartas(mazo.extraDeck)
 
     let precioTotal = 0;
-    [...cartasMainDeck, ...cartasExtraDeck].forEach(carta => {
-      precioTotal += carta?.card_price ?? 0
+    [...cartasMainDeck, ...cartasExtraDeck].forEach(({ carta, cantidad }) => {
+      precioTotal += (carta?.card_price ?? 0) * cantidad
     })
 
     return {
@@ -123,14 +128,13 @@ export class ServicioMazos {
     })
   }
 
-
   async actualizarMazo(idMazo, data, username) {
-     this.#verificarDueñoYObtenerMazo(idMazo, username)
-     return await this.#repositorioMazos.actualizar({
-       ...data,
-       id: Number(idMazo),
-       username: username // se asegura de no perder o cambiar el dueño
-     })
+    this.#verificarDueñoYObtenerMazo(idMazo, username)
+    return await this.#repositorioMazos.actualizar({
+      ...data,
+      id: Number(idMazo),
+      username: username // se asegura de no perder o cambiar el dueño
+    })
   }
 
   async eliminarMazo(idMazo, username) {
@@ -147,10 +151,7 @@ export class ServicioMazos {
       throw new NotFoundError(`La carta asociada al id "${idCarta}" no existe.`)
     }
 
-    const banInfo = carta.banlist_info?.ban_tcg ?? "none"
-    const destino = TIPOS_EXTRA_DECK.includes(carta.frameType) ? "extra" : "main"
-
-    mazo.agregarCarta(carta.id, banInfo, destino)
+    mazo.agregarCarta(carta)
     return await this.#repositorioMazos.actualizar(mazo.toJSON())
   }
 

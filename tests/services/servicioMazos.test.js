@@ -117,9 +117,15 @@ describe("ServicioMazos", () => {
   })
 
   describe("obtenerMazo", () => {
-    test("obtiene el mazo con cartas pobladas como DTOs y calcula precioTotal", async () => {
+    test("obtiene el mazo con objetos { carta, cantidad } y calcula precioTotal", async () => {
       await sembrarDb(rutaDbMazos, {
-        1: { id: 1, username: "yugi", nombre: "Mazo Yugi", mainDeck: [100, 200], extraDeck: [300] }
+        1: {
+          id: 1,
+          username: "yugi",
+          nombre: "Mazo Yugi",
+          mainDeck: [{ id: 100, cantidad: 3 }, { id: 200, cantidad: 1 }],
+          extraDeck: [{ id: 300, cantidad: 2 }]
+        }
       })
       await repoMazos.cargar()
 
@@ -127,9 +133,17 @@ describe("ServicioMazos", () => {
 
       expect(mazo.id).toBe(1)
       expect(mazo.nombre).toBe("Mazo Yugi")
-      expect(mazo.mainDeck[0].name).toBe("Dark Magician")
-      expect(mazo.extraDeck[0].name).toBe("Decode Talker")
-      expect(mazo.precioTotal).toBe(10.5)
+      expect(mazo.mainDeck[0]).toEqual({
+        carta: expect.objectContaining({ id: 100, name: "Dark Magician" }),
+        cantidad: 3
+      })
+      expect(mazo.mainDeck[0].carta.cantidad).toBeUndefined()
+      expect(mazo.extraDeck[0]).toEqual({
+        carta: expect.objectContaining({ id: 300, name: "Decode Talker" }),
+        cantidad: 2
+      })
+      // 3 * 2.00 + 1 * 5.00 + 2 * 3.50 = 6 + 5 + 7 = 18.00
+      expect(mazo.precioTotal).toBe(18)
     })
 
     test("lanza NotFoundError si el mazo no existe", () => {
@@ -184,7 +198,7 @@ describe("ServicioMazos", () => {
   describe("agregarCarta y eliminarCarta", () => {
     beforeEach(async () => {
       await sembrarDb(rutaDbMazos, {
-        1: { id: 1, username: "yugi", nombre: "Mazo", mainDeck: [100], extraDeck: [] }
+        1: { id: 1, username: "yugi", nombre: "Mazo", mainDeck: [{ id: 100, cantidad: 2 }], extraDeck: [] }
       })
       await repoMazos.cargar()
     })
@@ -193,18 +207,28 @@ describe("ServicioMazos", () => {
       await servicio.agregarCarta(1, 300, "yugi")
 
       const enDisco = JSON.parse(await readFile(rutaDbMazos, "utf8"))
-      expect(enDisco["1"].extraDeck).toContain(300)
+      expect(enDisco["1"].extraDeck).toEqual([{ id: 300, cantidad: 1 }])
+    })
+
+    test("incrementa cantidad si se agrega otra copia de la misma carta", async () => {
+      await servicio.agregarCarta(1, 100, "yugi")
+
+      const enDisco = JSON.parse(await readFile(rutaDbMazos, "utf8"))
+      expect(enDisco["1"].mainDeck).toEqual([{ id: 100, cantidad: 3 }])
     })
 
     test("lanza NotFoundError si se intenta agregar una carta inexistente en RepositorioCartas", async () => {
       await expect(servicio.agregarCarta(1, 99999, "yugi")).rejects.toThrow(NotFoundError)
     })
 
-    test("elimina una carta existente y persiste el cambio", async () => {
+    test("decrementa una copia al eliminarCarta y elimina la entrada si llega a 0", async () => {
       await servicio.eliminarCarta(1, 100, "yugi")
+      let enDisco = JSON.parse(await readFile(rutaDbMazos, "utf8"))
+      expect(enDisco["1"].mainDeck).toEqual([{ id: 100, cantidad: 1 }])
 
-      const enDisco = JSON.parse(await readFile(rutaDbMazos, "utf8"))
-      expect(enDisco["1"].mainDeck).not.toContain(100)
+      await servicio.eliminarCarta(1, 100, "yugi")
+      enDisco = JSON.parse(await readFile(rutaDbMazos, "utf8"))
+      expect(enDisco["1"].mainDeck).toEqual([])
     })
 
     test("lanza NotFoundError si la carta a eliminar no está en el mazo", async () => {
