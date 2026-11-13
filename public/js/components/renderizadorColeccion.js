@@ -111,6 +111,18 @@ export function renderizarListaMazos(mazos, mazoActivo, onSelect) {
 export function renderizarMazo(mazo, onRemove) {
   const editor = obtenerElemento("deck-editor")
   editor.setAttribute("aria-busy", "false")
+  const verDetalles = obtenerElemento("view-deck-details")
+  if (mazo) {
+    const url = new URL("mazo.html", window.location.href)
+    url.searchParams.set("id", mazo.id)
+    verDetalles.href = url.href
+    verDetalles.setAttribute("aria-disabled", "false")
+    verDetalles.tabIndex = 0
+  } else {
+    verDetalles.removeAttribute("href")
+    verDetalles.setAttribute("aria-disabled", "true")
+    verDetalles.tabIndex = -1
+  }
 
   const mainDeck = mazo?.mainDeck ?? []
   const extraDeck = mazo?.extraDeck ?? []

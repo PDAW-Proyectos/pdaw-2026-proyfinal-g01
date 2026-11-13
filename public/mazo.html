@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -44,18 +44,16 @@
     </nav>
 
     <!-- Detalle del mazo -->
-    <main class="deck-section">
+    <main class="deck-section" id="deck-page" aria-busy="true">
         <div class="container-custom">
+            <p class="deck-load-status" id="deck-status" role="status">Cargando mazo...</p>
+            <div id="deck-content" hidden>
 
             <!-- Nombre del mazo -->
             <div class="deck-name-box">
                 <div>
-                    <h1>Mazo 1</h1>
-                    <div class="deck-author">Por: cuncun</div>
-                </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-main" style="background: var(--white); color: var(--primary-color);">★
-                        Favorito</button>
+                    <h1 id="deck-name"></h1>
+                    <div class="deck-author" id="deck-author"></div>
                 </div>
             </div>
 
@@ -65,66 +63,10 @@
                 <div class="deck-zone-body">
                     <div class="deck-zone-title">
                         Main deck
-                        <span class="deck-count">40 cartas</span>
+                        <span class="deck-count" id="main-count"></span>
                     </div>
-                    <div class="deck-cards-grid">
-                        <div class="card-item">
-                            <img src="img/30397786.jpg" alt="Blue-Eyes White Dragon">
-                            <div class="card-item-info">
-                                <div class="card-item-name">Blue-Eyes White Dragon</div>
-                                <div class="card-item-type">Dragón / Normal</div>
-                            </div>
-                        </div>
-                        <div class="card-item">
-                            <img src="placeholder-card.jpg" alt="Blue-Eyes Alternative White Dragon">
-                            <div class="card-item-info">
-                                <div class="card-item-name">Blue-Eyes Alt. Dragon x3</div>
-                                <div class="card-item-type">Dragón / Efecto</div>
-                            </div>
-                        </div>
-                        <div class="card-item">
-                            <img src="placeholder-card.jpg" alt="The White Stone of Ancients">
-                            <div class="card-item-info">
-                                <div class="card-item-name">White Stone of Ancients x3</div>
-                                <div class="card-item-type">Dragón / Efecto</div>
-                            </div>
-                        </div>
-                        <div class="card-item">
-                            <img src="placeholder-card.jpg" alt="Melody of Awakening Dragon">
-                            <div class="card-item-info">
-                                <div class="card-item-name">Melody of Awakening x3</div>
-                                <div class="card-item-type">Magia Normal</div>
-                            </div>
-                        </div>
-                        <div class="card-item">
-                            <img src="placeholder-card.jpg" alt="Trade-In">
-                            <div class="card-item-info">
-                                <div class="card-item-name">Trade-In x3</div>
-                                <div class="card-item-type">Magia Normal</div>
-                            </div>
-                        </div>
-                        <div class="card-item">
-                            <img src="placeholder-card.jpg" alt="Return of the Dragon Lords">
-                            <div class="card-item-info">
-                                <div class="card-item-name">Return of Dragon Lords x2</div>
-                                <div class="card-item-type">Magia Normal</div>
-                            </div>
-                        </div>
-                        <div class="card-item">
-                            <img src="placeholder-card.jpg" alt="Dragon Shrine">
-                            <div class="card-item-info">
-                                <div class="card-item-name">Dragon Shrine x2</div>
-                                <div class="card-item-type">Magia Normal</div>
-                            </div>
-                        </div>
-                        <div class="card-item">
-                            <img src="placeholder-card.jpg" alt="Ash Blossom">
-                            <div class="card-item-info">
-                                <div class="card-item-name">Ash Blossom x3</div>
-                                <div class="card-item-type">Zombi / Efecto</div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="deck-cards-grid" id="main-cards"></div>
+                    <nav class="deck-pagination" id="main-pagination" aria-label="Paginación del Main Deck" hidden></nav>
                 </div>
             </section>
 
@@ -134,93 +76,25 @@
                 <div class="deck-zone-body">
                     <div class="deck-zone-title">
                         Extra deck
-                        <span class="deck-count">15 cartas</span>
+                        <span class="deck-count" id="extra-count"></span>
                     </div>
-                    <div class="deck-cards-grid">
-                        <div class="card-item">
-                            <img src="img/30397786.jpg" alt="Blue-Eyes Tyrant Dragon">
-                            <div class="card-item-info">
-                                <div class="card-item-name">Blue-Eyes Tyrant x2</div>
-                                <div class="card-item-type">Fusión / Dragón</div>
-                            </div>
-                        </div>
-                        <div class="card-item">
-                            <img src="placeholder-card.jpg" alt="Neo Blue-Eyes Ultimate Dragon">
-                            <div class="card-item-info">
-                                <div class="card-item-name">Neo B.E. Ultimate x1</div>
-                                <div class="card-item-type">Fusión / Dragón</div>
-                            </div>
-                        </div>
-                        <div class="card-item">
-                            <img src="placeholder-card.jpg" alt="Blue-Eyes Spirit Dragon">
-                            <div class="card-item-info">
-                                <div class="card-item-name">B.E. Spirit Dragon x1</div>
-                                <div class="card-item-type">Sincronía / Dragón</div>
-                            </div>
-                        </div>
-                        <div class="card-item">
-                            <img src="placeholder-card.jpg" alt="Azure-Eyes Silver Dragon">
-                            <div class="card-item-info">
-                                <div class="card-item-name">Azure-Eyes Silver x2</div>
-                                <div class="card-item-type">Sincronía / Dragón</div>
-                            </div>
-                        </div>
-                        <div class="card-item">
-                            <img src="placeholder-card.jpg" alt="Number 38 Hope Harbinger">
-                            <div class="card-item-info">
-                                <div class="card-item-name">Nº38 Hope Harbinger x1</div>
-                                <div class="card-item-type">Xyz / Dragón</div>
-                            </div>
-                        </div>
-                        <div class="card-item">
-                            <img src="placeholder-card.jpg" alt="Galaxy-Eyes Cipher Blade Dragon">
-                            <div class="card-item-info">
-                                <div class="card-item-name">Cipher Blade Dragon x1</div>
-                                <div class="card-item-type">Xyz / Dragón</div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="deck-cards-grid" id="extra-cards"></div>
+                    <nav class="deck-pagination" id="extra-pagination" aria-label="Paginación del Extra Deck" hidden></nav>
                 </div>
             </section>
 
-            <!-- Fila inferior: comentarios + datos del mazo -->
+            <!-- Resumen calculado con los datos que devuelve el backend. -->
             <div class="deck-bottom">
-                <!-- Comentarios del usuario -->
-                <section class="deck-comments">
-                    <h2>Comentarios</h2>
-                    <div class="comment-item">
-                        <div>
-                            <span class="comment-author">usuario1</span>
-                            <span class="comment-date">05/11/2026</span>
-                        </div>
-                        <p class="comment-text">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
-                    </div>
-                    <div class="comment-item">
-                        <div>
-                            <span class="comment-author">usuario2</span>
-                            <span class="comment-date">02/11/2026</span>
-                        </div>
-                        <p class="comment-text">una verga este mazo</p>
-                    </div>
-                    <form class="comment-form" onsubmit="return false;">
-                        <textarea class="form-control" placeholder="Escribe un comentario..."></textarea>
-                        <div class="d-flex justify-content-end mt-2">
-                            <button class="btn btn-main btn-main-primary">Publicar</button>
-                        </div>
-                    </form>
-                </section>
-
-                <!-- Datos del mazo -->
                 <aside class="deck-data">
                     <h2>Datos del mazo</h2>
                     <ul class="data-list">
-                        <li><span class="data-label">Arquetipo</span><span class="data-value">Blue-Eyes</span></li>
-                        <li><span class="data-label">Main deck</span><span class="data-value">40 cartas</span></li>
-                        <li><span class="data-label">Extra deck</span><span class="data-value">15 cartas</span></li>
-                        <li><span class="data-label">Nivel promedio</span><span class="data-value">4.2</span></li>
-                        <li><span class="data-label">Valor estimado</span><span class="data-value">$185.50</span></li>
+                        <li><span class="data-label">Main Deck</span><span class="data-value" id="deck-main-count"></span></li>
+                        <li><span class="data-label">Extra Deck</span><span class="data-value" id="deck-extra-count"></span></li>
+                        <li><span class="data-label">Estado</span><span class="data-value" id="deck-validity"></span></li>
+                        <li><span class="data-label">Valor estimado</span><span class="data-value" id="deck-price"></span></li>
                     </ul>
                 </aside>
+            </div>
             </div>
 
         </div>
@@ -266,7 +140,8 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="js/navbar.js"></script>
+    <script type="module" src="js/components/navbar.js"></script>
+    <script type="module" src="js/pages/mazo.js"></script>
 </body>
 
 </html>

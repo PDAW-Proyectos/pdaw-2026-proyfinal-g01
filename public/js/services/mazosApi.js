@@ -31,6 +31,31 @@ export async function listarMazosPropios() {
 }
 
 /**
+ * Obtiene un mazo con los datos de sus cartas para mostrar su detalle público.
+ * @param {number|string} idMazo
+ * @returns {Promise<Object>}
+ */
+export async function obtenerMazoPorId(idMazo) {
+  const id = Number(idMazo)
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    throw new Error("El ID del mazo debe ser un entero positivo.")
+  }
+
+  const mazo = await api(`/api/mazos/${encodeURIComponent(id)}`)
+  if (
+    !mazo ||
+    typeof mazo !== "object" ||
+    Number(mazo.id) !== id ||
+    !Array.isArray(mazo.mainDeck) ||
+    !Array.isArray(mazo.extraDeck)
+  ) {
+    throw new Error("La API de mazos devolvió un detalle inválido.")
+  }
+
+  return mazo
+}
+
+/**
  * Crea un mazo vacío para el usuario de la sesión.
  * @param {string} nombre
  * @returns {Promise<Object>}
