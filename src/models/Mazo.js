@@ -4,11 +4,20 @@ import { ValidationError } from "../utils/errors.js"
 export const MAX_MAIN_DECK = 60
 export const MIN_MAIN_DECK = 40
 export const MAX_EXTRA_DECK = 15
+export const TIPOS_EXTRA_DECK = ["fusion", "synchro", "xyz", "link", "fusion_pendulum", "synchro_pendulum", "xyz_pendulum"]
 export const MAX_COPIAS_POR_CARTA = {
   Forbidden: 0,
   Banned: 0,
   Limited: 1,
   "Semi-Limited": 2
+}
+
+/** Suma la cantidad total de cartas en un arreglo de entradas `{ id, cantidad }`.
+ * @param {Array <{ id: number, cantidad: number }>} lista
+ * @returns {number}
+ */
+function contarCartas(lista) {
+  return lista.reduce((total, entrada) => total + entrada.cantidad, 0)
 }
 
 /** Representa la entidad Mazo
@@ -25,22 +34,22 @@ export class Mazo {
    * @param {number} datos.id
    * @param {string} datos.username
    * @param {string} datos.nombre
-   * @param {Array<number>} [datos.mainDeck=[]]
-   * @param {Array<number>} [datos.extraDeck=[]]
+   * @param {Array<{ id: number, cantidad: number }>} [datos.mainDeck=[]]
+   * @param {Array<{ id: number, cantidad: number }>} [datos.extraDeck=[]]
    */
   constructor({ id, username, nombre, mainDeck = [], extraDeck = [] }) {
-    if (mainDeck.length > MAX_MAIN_DECK) {
+    if (contarCartas(mainDeck) > MAX_MAIN_DECK) {
       throw new ValidationError(`El Main Deck ya alcanzo el limite de ${MAX_MAIN_DECK} cartas.`)
     }
-    if (extraDeck.length > MAX_EXTRA_DECK) {
+    if (contarCartas(extraDeck) > MAX_EXTRA_DECK) {
       throw new ValidationError(`El Extra Deck ya alcanzo el limite de ${MAX_EXTRA_DECK} cartas.`)
     }
 
     this.#id = id
     this.#username = username.trim()
     this.#nombre = nombre.trim()
-    this.#mainDeck = [...mainDeck]
-    this.#extraDeck = [...extraDeck]
+    this.#mainDeck = mainDeck.map(entrada => ({ id: entrada.id, cantidad: entrada.cantidad }))
+    this.#extraDeck = extraDeck.map(entrada => ({ id: entrada.id, cantidad: entrada.cantidad }))
   }
 
   /** @returns {number} */
@@ -52,17 +61,44 @@ export class Mazo {
   /** @returns {string} */
   get nombre() { return this.#nombre }
 
-  /** @returns {Array <number>} */
-  get mainDeck() { return [...this.#mainDeck] }
+  /** @returns {Array<{ id: number, cantidad: number }>} */
+  get mainDeck() { return this.#mainDeck.map(entrada => ({ ...entrada })) }
 
-  /** @returns {Array <number>} */
-  get extraDeck() { return [...this.#extraDeck] }
+  /** @returns {Array<{ id: number, cantidad: number }>} */
+  get extraDeck() { return this.#extraDeck.map(entrada => ({ ...entrada })) }
 
   // Validaciones privadas
   #validarMaxCopias(idCarta, banInfo) {
-    const copias = [...this.#mainDeck, ...this.#extraDeck].filter(id => id === idCarta).length
+    const copias = [...this.#mainDeck, ...this.#extraDeck]
+      .filter(entrada => entrada.id === idCarta)
+      .reduce((total, entrada) => total + entrada.cantidad, 0)
     const max = MAX_COPIAS_POR_CARTA[banInfo] ?? 3
     return copias >= max
+  }
+
+  #agregarEnLista(lista, idCarta, limite, nombreZona) {
+    if (contarCartas(lista) >= limite) {
+      throw new ValidationError(`El ${nombreZona} ya alcanzo el limite de ${limite} cartas.`)
+    }
+
+    const existente = lista.find(entrada => entrada.id === idCarta)
+    if (existente) {
+      existente.cantidad += 1
+    } else {
+      lista.push({ id: idCarta, cantidad: 1 })
+    }
+  }
+
+  #eliminarDeLista(lista, idCarta) {
+    const indice = lista.findIndex(entrada => entrada.id === idCarta)
+    if (indice === -1) return false
+
+    if (lista[indice].cantidad > 1) {
+      lista[indice].cantidad -= 1
+    } else {
+      lista.splice(indice, 1)
+    }
+    return true
   }
 
   // Methods
@@ -74,8 +110,8 @@ export class Mazo {
       id: this.#id,
       username: this.#username,
       nombre: this.#nombre,
-      mainDeck: [...this.#mainDeck],
-      extraDeck: [...this.#extraDeck]
+      mainDeck: this.mainDeck,
+      extraDeck: this.extraDeck
     }
   }
 
@@ -95,52 +131,35 @@ export class Mazo {
 
   // Methods
   valido() {
-    return this.#mainDeck.length >= MIN_MAIN_DECK
+    return contarCartas(this.#mainDeck) >= MIN_MAIN_DECK
   }
 
-  /** Agrega una carta al mazo correspondiente.
-   * @param {number} idCarta
-   * @param {string} banInfo
-   * @param {'main'|'extra'} destino - Mazo de destino (es main por defecto)
+  /** Agrega una copia de la carta al mazo correspondiente (mainDeck o extraDeck segun su frameType).
+   * @param {{ id: number, frameType?: string, banlist_info?: { ban_tcg?: string } }} carta
    * @returns {boolean}
    */
-  agregarCarta(idCarta, banInfo, destino) {
-    if (this.#validarMaxCopias(idCarta, banInfo)) {
+  agregarCarta(carta) {
+    const { id, frameType = "normal", banlist_info } = carta
+    const banInfo = banlist_info?.ban_tcg ?? "none"
+
+    if (this.#validarMaxCopias(id, banInfo)) {
       throw new ValidationError("No se pueden añadir copias de la carta.")
     }
 
-    if (destino === "main") {
-      if (this.#mainDeck.length >= MAX_MAIN_DECK) {
-        throw new ValidationError(`El Main Deck ya alcanzo el limite de ${MAX_MAIN_DECK} cartas.`)
-      }
-      this.#mainDeck.push(idCarta)
-    }
-    if (destino === "extra") {
-      if (this.#extraDeck.length >= MAX_EXTRA_DECK) {
-        throw new ValidationError(`El Extra Deck ya alcanzo el limite de ${MAX_EXTRA_DECK} cartas.`)
-      }
-      this.#extraDeck.push(idCarta)
+    if (TIPOS_EXTRA_DECK.includes(frameType)) {
+      this.#agregarEnLista(this.#extraDeck, id, MAX_EXTRA_DECK, "Extra Deck")
+    } else {
+      this.#agregarEnLista(this.#mainDeck, id, MAX_MAIN_DECK, "Main Deck")
     }
 
     return true
   }
 
-  /** Elimina una carta del mazo. Busca primero en mainDeck y si no esta, en extraDeck.
+  /** Elimina una copia de la carta del mazo. Busca primero en mainDeck y si no esta, en extraDeck.
    * @param {number} idCarta
    * @returns {boolean} True si la carta fue encontrada y eliminada, false si no
    */
   eliminarCarta(idCarta) {
-    let indice = this.#mainDeck.indexOf(idCarta)
-    if (indice !== -1) {
-      this.#mainDeck.splice(indice, 1)
-      return true
-    }
-
-    indice = this.#extraDeck.indexOf(idCarta)
-    if (indice !== -1) {
-      this.#extraDeck.splice(indice, 1)
-      return true
-    }
-    return false
+    return this.#eliminarDeLista(this.#mainDeck, idCarta) || this.#eliminarDeLista(this.#extraDeck, idCarta)
   }
 }
