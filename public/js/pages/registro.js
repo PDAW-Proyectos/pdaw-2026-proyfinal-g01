@@ -8,6 +8,7 @@ function setError(name, message) {
   const field = form.elements[name]
   if (field) {
     field.setAttribute('aria-invalid', message ? 'true' : 'false')
+    field.classList.toggle('is-invalid', Boolean(message))
   }
   const errorElement = document.getElementById(`error-${name}`)
   if (errorElement) {
@@ -77,6 +78,8 @@ form.addEventListener('submit', async (event) => {
     if (err.fieldErrors?.length) {
       err.fieldErrors.forEach(({ campo, mensaje }) => setError(campo, mensaje))
       form.elements[err.fieldErrors[0].campo]?.focus()
+      statusDiv.classList.add('text-danger')
+      statusDiv.textContent = 'Por favor, revisa los datos ingresados.'
     } else {
       statusDiv.classList.add('text-danger')
       statusDiv.textContent = err.message

@@ -183,3 +183,8 @@ body {
     padding: 15px; 
     border: none;
 }
+
+.form-input[aria-invalid="true"],
+.form-input[aria-invalid="true"]:focus {
+    border-color: #dc3545;
+}

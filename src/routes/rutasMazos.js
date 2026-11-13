@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { controladorMazos } from "../utils/container.js"
-import { requiereRol, requiereAutenticacion } from "../middlewares/seguridad.middleware.js"
+import { requiereRol, } from "../middlewares/seguridad.middleware.js"
 import { validar } from "../middlewares/validacion.middleware.js"
 import { esquemasMazos } from "../schemas/mazos.schema.js"
 
@@ -10,7 +10,7 @@ function requiereSesionParaMazos(req, res, next) {
   if (req.query.all === "true") {
     return next()
   }
-  return requiereAutenticacion(req, res, next)
+  return requiereRol("usuario")(req, res, next)
 }
 
 // Muchas de las rutas son nuevas tenemos que añadirlas a la tabla
