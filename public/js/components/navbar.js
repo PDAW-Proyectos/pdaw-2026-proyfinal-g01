@@ -7,30 +7,30 @@ async function cerrarSesion() {
   window.location.assign('login.html')
 }
 
+function renderNavbarAdmin(usuario) {
+  const spanAdmin = document.getElementById('admin-username')
+  const btnLogout = document.getElementById('btn-logout-admin')
+
+  if (spanAdmin) {
+    spanAdmin.textContent = `Admin: ${usuario.username}`
+  }
+
+  if (btnLogout) {
+    btnLogout.addEventListener('click', cerrarSesion)
+  }
+}
+
 function renderUsuarioLogueado(usuario) {
   navAuthContainer.replaceChildren()
 
   const inicial = usuario.username ? usuario.username.charAt(0).toUpperCase() : 'U'
-  const esAdmin = usuario.rol === 'admin'
 
   // --- VISTA MOBILE (< xl) ---
-  const mobileGroup = document.createElement('div')
-  mobileGroup.className = 'd-flex flex-column gap-2 d-xl-none w-100'
-
-  if (esAdmin) {
-    const linkAdminMobile = document.createElement('a')
-    linkAdminMobile.href = 'admin.html'
-    linkAdminMobile.className = 'btn btn-main btn-main-primary w-100'
-    linkAdminMobile.textContent = 'Panel Admin'
-    mobileGroup.appendChild(linkAdminMobile)
-  }
-
   const btnLogoutMobile = document.createElement('button')
   btnLogoutMobile.type = 'button'
-  btnLogoutMobile.className = 'btn btn-main btn-main-outline w-100'
+  btnLogoutMobile.className = 'btn btn-main btn-main-outline d-xl-none w-100'
   btnLogoutMobile.textContent = 'Cerrar sesión'
   btnLogoutMobile.addEventListener('click', cerrarSesion)
-  mobileGroup.appendChild(btnLogoutMobile)
 
   // --- VISTA ESCRITORIO (>= xl) ---
   const dropdownDiv = document.createElement('div')
@@ -53,17 +53,6 @@ function renderUsuarioLogueado(usuario) {
   spanUser.className = 'dropdown-item-text fw-bold text-dark'
   spanUser.textContent = `Hola, ${usuario.username}`
   liUser.appendChild(spanUser)
-  ulMenu.appendChild(liUser)
-
-  if (esAdmin) {
-    const liAdmin = document.createElement('li')
-    const linkAdminDesktop = document.createElement('a')
-    linkAdminDesktop.className = 'dropdown-item fw-semibold text-primary'
-    linkAdminDesktop.href = 'admin.html'
-    linkAdminDesktop.textContent = 'Panel Admin'
-    liAdmin.appendChild(linkAdminDesktop)
-    ulMenu.appendChild(liAdmin)
-  }
 
   const liDivider = document.createElement('li')
   const hr = document.createElement('hr')
@@ -78,14 +67,10 @@ function renderUsuarioLogueado(usuario) {
   btnLogoutDesktop.addEventListener('click', cerrarSesion)
   liLogout.appendChild(btnLogoutDesktop)
 
-  ulMenu.appendChild(liDivider)
-  ulMenu.appendChild(liLogout)
+  ulMenu.append(liUser, liDivider, liLogout)
+  dropdownDiv.append(btnAvatar, ulMenu)
 
-  dropdownDiv.appendChild(btnAvatar)
-  dropdownDiv.appendChild(ulMenu)
-
-  navAuthContainer.appendChild(mobileGroup)
-  navAuthContainer.appendChild(dropdownDiv)
+  navAuthContainer.append(btnLogoutMobile, dropdownDiv)
 }
 
 function renderUsuarioInvitado() {
@@ -105,8 +90,7 @@ function renderUsuarioInvitado() {
   linkRegistro.className = 'btn btn-main btn-main-primary'
   linkRegistro.textContent = 'Regístrate'
 
-  directButtonsGroup.appendChild(linkLogin)
-  directButtonsGroup.appendChild(linkRegistro)
+  directButtonsGroup.append(linkLogin, linkRegistro)
 
   // Dropdown "Acceder" SOLO para pantallas intermedias (entre xl y xxl)
   const dropdownDiv = document.createElement('div')
@@ -136,20 +120,27 @@ function renderUsuarioInvitado() {
   itemRegistro.textContent = 'Regístrate'
   liRegistro.appendChild(itemRegistro)
 
-  ulMenu.appendChild(liLogin)
-  ulMenu.appendChild(liRegistro)
+  ulMenu.append(liLogin, liRegistro)
+  dropdownDiv.append(btnDropdown, ulMenu)
 
-  dropdownDiv.appendChild(btnDropdown)
-  dropdownDiv.appendChild(ulMenu)
-
-  navAuthContainer.appendChild(directButtonsGroup)
-  navAuthContainer.appendChild(dropdownDiv)
+  navAuthContainer.append(directButtonsGroup, dropdownDiv)
 }
 
 async function verificarSesion() {
+  const usuario = await authService.obtenerUsuarioActual()
+  const enPanelAdmin = window.location.pathname.endsWith('admin.html')
+
+  if (usuario?.rol === 'admin') {
+    if (!enPanelAdmin) {
+      window.location.replace('admin.html')
+      return
+    }
+    renderNavbarAdmin(usuario)
+    return
+  }
+
   if (!navAuthContainer) return
 
-  const usuario = await authService.obtenerUsuarioActual()
   if (usuario) {
     renderUsuarioLogueado(usuario)
   } else {
