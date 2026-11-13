@@ -3,7 +3,7 @@
 // usarlas en todo el codigo.
 
 import { mkdir } from "node:fs/promises"
-import { RUTA_USUARIOS, RUTA_MAZOS, RUTA_MAZOS_POPULARES, RUTA_CARTAS, RUTA_IMAGENES } from "./config.js"
+import { config } from "../config.js"
 import { ProgramadorDescargas } from "./ProgramadorDescargas.js"
 import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
 import { RepositorioMazosPopulares } from "../repositories/RepositorioMazosPopulares.js"
@@ -21,11 +21,11 @@ import { ControladorImagenes } from "../controllers/ControladorImagenes.js"
 import { ControladorUsuarios } from "../controllers/ControladorUsuarios.js"
 
 // Aca se inicia la carga de repositorios poner el repositorioUsuarios aca.
-const repositorioMazos = new RepositorioMazos(RUTA_MAZOS)
-const repositorioMazosPopulares = new RepositorioMazosPopulares(RUTA_MAZOS_POPULARES)
-const repositorioCartas = new RepositorioCartas(RUTA_CARTAS)
-const repositorioImagenes = new RepositorioImagenes(RUTA_IMAGENES)
-const repositorioUsuarios = new RepositorioUsuarios(RUTA_USUARIOS)
+const repositorioMazos = new RepositorioMazos(config.rutas.mazos)
+const repositorioMazosPopulares = new RepositorioMazosPopulares(config.rutas.mazosPopulares)
+const repositorioCartas = new RepositorioCartas(config.rutas.cartas)
+const repositorioImagenes = new RepositorioImagenes(config.rutas.imagenes)
+const repositorioUsuarios = new RepositorioUsuarios(config.rutas.usuarios)
 
 // El servicio se carga usando los repositorios necesarios ej:
 const servicioMazos = new ServicioMazos(repositorioMazos, repositorioCartas)
@@ -46,7 +46,7 @@ export const controladorUsuarios = new ControladorUsuarios(servicioUsuarios)
 
 export async function inicializarContenedor() {
   // Inicio la carpeta para la base de datos si no existe
-  await mkdir("data", { recursive: true })
+  await mkdir(config.rutas.data, { recursive: true })
 
   // Carga de la base de datos desde archivos
   await repositorioMazos.cargar()

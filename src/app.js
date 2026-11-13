@@ -4,12 +4,13 @@ import express from "express"
 import session from "express-session"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
+import { createRequire } from "node:module"
+import { config } from "./config.js"
 import { errorHandler, requestContext } from "./middlewares/errorHandler.middleware.js"
 import rutasMazos from "./routes/rutasMazos.js"
 import rutasCartas from "./routes/rutasCartas.js"
 import rutasImagenes from "./routes/rutasImagenes.js"
 import rutasUsuarios from "./routes/rutasUsuarios.js"
-import { createRequire } from "node:module"
 
 const app = express()
 
@@ -24,14 +25,14 @@ app.get("/api/salud", (req, res) => {
   res.json({
     estado: "ok",
     version,
-    entorno: process.env.NODE_ENV || "development", // ---> despues actualizar 
-    uptime: Math.round(process.uptime()), //muestra los segundos
+    entorno: config.env,
+    uptime: Math.round(process.uptime()), // muestra los segundos
   })
 })
 
 // La ruta /test (Test Runner) solo está disponible al ejecutar el servidor en modo desarrollo (npm run dev)
 app.use("/test", (req, res, next) => {
-  const esDesarrollo = process.env.NODE_ENV === "development" || process.execArgv.includes("--watch")
+  const esDesarrollo = config.env === "development" || process.execArgv.includes("--watch")
   if (!esDesarrollo) {
     return res.status(404).send("Not Found")
   }
@@ -46,17 +47,21 @@ app.use(express.static(path.join(__dirname, "..", "public")))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
+// Detrás del proxy HTTPS en producción: confiar en X-Forwarded-Proto
+if (config.production) app.set("trust proxy", 1)
+
 // Definir la cookie usada por el server
 app.use(session({
-    name: 'wiki.sid',
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        httpOnly: true,
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 1000,
-    },
+  name: "wiki.sid",
+  secret: config.sessionSecret,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: config.production,
+    maxAge: 60 * 60 * 1000,
+  },
 }))
 
 // Aca van los routes como normalmente
