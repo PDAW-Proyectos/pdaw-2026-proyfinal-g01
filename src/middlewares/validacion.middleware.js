@@ -10,6 +10,7 @@ const TRADUCCIONES_AJV = {
   minLength: (campo, params) => `El campo "${campo}" debe tener al menos ${params.limit} caracteres.`,
   pattern: (campo) => `El campo "${campo}" tiene un formato invalido o esta vacio.`,
   minimum: (campo, params) => `El campo "${campo}" debe ser mayor o igual a ${params.limit}.`,
+  maxLength: (campo, params) => `El campo "${campo}" no puede superar los ${params.limit} caracteres.`,
   maxItems: (campo, params) => `El campo "${campo}" no puede tener mas de ${params.limit} elementos.`,
   minProperties: (_, params) => `Se debe enviar al menos ${params.limit} campo para actualizar.`,
   enum: (campo, params) => `El campo "${campo}" debe ser uno de los siguientes valores: ${params.allowedValues.join(", ")}.`,

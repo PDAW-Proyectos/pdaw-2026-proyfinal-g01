@@ -85,6 +85,15 @@ export class ControladorUsuarios {
       next(error)
     }
   }
+
+  listar = async (req, res, next) => {
+  try {
+    const usuarios = this.#servicioUsuarios.obtenerUsuarios()
+    res.status(200).json(usuarios.map((u) => u.toDTO()))
+  } catch (error) {
+    next(error)
+  }
+}
 }
 
 

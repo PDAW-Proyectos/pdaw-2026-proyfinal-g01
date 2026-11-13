@@ -70,4 +70,8 @@ export class ServicioUsuarios {
 
     return true
   }
+
+  obtenerUsuarios() {
+  return this.#repositorioUsuarios.obtenerTodos()
+  }
 }

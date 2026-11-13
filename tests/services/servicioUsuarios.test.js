@@ -150,4 +150,24 @@ describe("ServicioUsuarios", () => {
       await expect(servicio.eliminarUsuario("admin", "admin")).rejects.toThrow(ConflictError)
     })
   })
+  describe("obtenerUsuarios", () => {
+    test("devuelve un arreglo vacío si no hay usuarios registrados", async () => {
+      const usuarios = await servicio.obtenerUsuarios()
+      expect(usuarios).toEqual([])
+    })
+
+    test("devuelve todos los usuarios registrados como instancias de Usuario", async () => {
+      await sembrarDb(rutaDbUsuarios, {
+        yugi: { nombre: "Yugi", username: "yugi", contraseña: "hash1", rol: "usuario" },
+        admin: { nombre: "Admin", username: "admin", contraseña: "hash2", rol: "admin" }
+      })
+      await repoUsuarios.cargar()
+
+      const usuarios = await servicio.obtenerUsuarios()
+
+      expect(usuarios).toHaveLength(2)
+      expect(usuarios[0]).toBeInstanceOf(Usuario)
+      expect(usuarios.map((u) => u.username)).toEqual(["yugi", "admin"])
+    })
+  })
 })

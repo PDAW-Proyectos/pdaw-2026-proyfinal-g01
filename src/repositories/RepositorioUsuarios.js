@@ -131,4 +131,11 @@ export class RepositorioUsuarios {
 
     return true
   }
+
+  /** Devuelve un arreglo con todos los usuarios registrados en el repositorio
+   * @returns {Usuario[]}
+   */
+  obtenerTodos() {
+    return Array.from(this.#usuarios.values())
+  }
 }

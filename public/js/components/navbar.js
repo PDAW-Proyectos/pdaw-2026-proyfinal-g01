@@ -7,19 +7,32 @@ async function cerrarSesion() {
   window.location.assign('login.html')
 }
 
+function renderNavbarAdmin(usuario) {
+  const spanAdmin = document.getElementById('admin-username')
+  const btnLogout = document.getElementById('btn-logout-admin')
+
+  if (spanAdmin) {
+    spanAdmin.textContent = `Admin: ${usuario.username}`
+  }
+
+  if (btnLogout) {
+    btnLogout.addEventListener('click', cerrarSesion)
+  }
+}
+
 function renderUsuarioLogueado(usuario) {
   navAuthContainer.replaceChildren()
 
   const inicial = usuario.username ? usuario.username.charAt(0).toUpperCase() : 'U'
 
-  // Vista mobile
+  // --- VISTA MOBILE (< xl) ---
   const btnLogoutMobile = document.createElement('button')
   btnLogoutMobile.type = 'button'
   btnLogoutMobile.className = 'btn btn-main btn-main-outline d-xl-none w-100'
   btnLogoutMobile.textContent = 'Cerrar sesión'
   btnLogoutMobile.addEventListener('click', cerrarSesion)
 
-  // Vista escritorio
+  // --- VISTA ESCRITORIO (>= xl) ---
   const dropdownDiv = document.createElement('div')
   dropdownDiv.className = 'dropdown d-none d-xl-block'
 
@@ -54,15 +67,10 @@ function renderUsuarioLogueado(usuario) {
   btnLogoutDesktop.addEventListener('click', cerrarSesion)
   liLogout.appendChild(btnLogoutDesktop)
 
-  ulMenu.appendChild(liUser)
-  ulMenu.appendChild(liDivider)
-  ulMenu.appendChild(liLogout)
+  ulMenu.append(liUser, liDivider, liLogout)
+  dropdownDiv.append(btnAvatar, ulMenu)
 
-  dropdownDiv.appendChild(btnAvatar)
-  dropdownDiv.appendChild(ulMenu)
-
-  navAuthContainer.appendChild(btnLogoutMobile)
-  navAuthContainer.appendChild(dropdownDiv)
+  navAuthContainer.append(btnLogoutMobile, dropdownDiv)
 }
 
 function renderUsuarioInvitado() {
@@ -82,8 +90,7 @@ function renderUsuarioInvitado() {
   linkRegistro.className = 'btn btn-main btn-main-primary'
   linkRegistro.textContent = 'Regístrate'
 
-  directButtonsGroup.appendChild(linkLogin)
-  directButtonsGroup.appendChild(linkRegistro)
+  directButtonsGroup.append(linkLogin, linkRegistro)
 
   // Dropdown "Acceder" SOLO para pantallas intermedias (entre xl y xxl)
   const dropdownDiv = document.createElement('div')
@@ -113,20 +120,27 @@ function renderUsuarioInvitado() {
   itemRegistro.textContent = 'Regístrate'
   liRegistro.appendChild(itemRegistro)
 
-  ulMenu.appendChild(liLogin)
-  ulMenu.appendChild(liRegistro)
+  ulMenu.append(liLogin, liRegistro)
+  dropdownDiv.append(btnDropdown, ulMenu)
 
-  dropdownDiv.appendChild(btnDropdown)
-  dropdownDiv.appendChild(ulMenu)
-
-  navAuthContainer.appendChild(directButtonsGroup)
-  navAuthContainer.appendChild(dropdownDiv)
+  navAuthContainer.append(directButtonsGroup, dropdownDiv)
 }
 
 async function verificarSesion() {
+  const usuario = await authService.obtenerUsuarioActual()
+  const enPanelAdmin = window.location.pathname.endsWith('admin.html')
+
+  if (usuario?.rol === 'admin') {
+    if (!enPanelAdmin) {
+      window.location.replace('admin.html')
+      return
+    }
+    renderNavbarAdmin(usuario)
+    return
+  }
+
   if (!navAuthContainer) return
 
-  const usuario = await authService.obtenerUsuarioActual()
   if (usuario) {
     renderUsuarioLogueado(usuario)
   } else {

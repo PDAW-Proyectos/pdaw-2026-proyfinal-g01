@@ -3,13 +3,12 @@ import { authService } from '../services/authService.js'
 const form = document.getElementById('form-registro')
 const btnSubmit = form.querySelector('button[type="submit"]')
 const statusDiv = document.getElementById('status-mensaje')
-const resumenErrores = document.getElementById('resumen-errores')
-const listaErrores = document.getElementById('lista-errores')
 
 function setError(name, message) {
   const field = form.elements[name]
   if (field) {
     field.setAttribute('aria-invalid', message ? 'true' : 'false')
+    field.classList.toggle('is-invalid', Boolean(message))
   }
   const errorElement = document.getElementById(`error-${name}`)
   if (errorElement) {
@@ -22,27 +21,12 @@ function setError(name, message) {
   }
 }
 
-function showSummary(errores) {
-  listaErrores.replaceChildren()
-  errores.forEach(({ campo, mensaje }) => {
-    const li = document.createElement('li')
-    const a = document.createElement('a')
-    a.href = `#${campo}`
-    a.textContent = mensaje
-    li.appendChild(a)
-    listaErrores.appendChild(li)
-  })
-  resumenErrores.hidden = false
-  resumenErrores.focus()
-}
-
 function clearErrors() {
   Array.from(form.elements).forEach((field) => {
     if (field.name) setError(field.name, null)
   })
   statusDiv.textContent = ''
   statusDiv.className = 'mb-3 fw-bold text-center'
-  resumenErrores.hidden = true
 }
 
 form.addEventListener('submit', async (event) => {
@@ -93,7 +77,9 @@ form.addEventListener('submit', async (event) => {
 
     if (err.fieldErrors?.length) {
       err.fieldErrors.forEach(({ campo, mensaje }) => setError(campo, mensaje))
-      showSummary(err.fieldErrors)
+      form.elements[err.fieldErrors[0].campo]?.focus()
+      statusDiv.classList.add('text-danger')
+      statusDiv.textContent = 'Por favor, revisa los datos ingresados.'
     } else {
       statusDiv.classList.add('text-danger')
       statusDiv.textContent = err.message

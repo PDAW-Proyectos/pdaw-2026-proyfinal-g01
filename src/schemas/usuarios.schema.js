@@ -9,15 +9,20 @@ export const esquemasUsuarios = {
     properties: {
       nombre: {
         type: "string",
+        minLength: 1,
+        maxLength: 50,
         pattern: PATRON_NO_VACIO
       },
       username: {
         type: "string",
+        minLength: 1,
+        maxLength: 30,
         pattern: PATRON_NO_VACIO
       },
       contraseña: {
         type: "string",
         minLength: 6,
+        maxLength: 30,
         pattern: PATRON_NO_VACIO
       }
     }
@@ -30,10 +35,14 @@ export const esquemasUsuarios = {
     properties: {
       username: {
         type: "string",
+        minLength: 1,
+        maxLength: 30,
         pattern: PATRON_NO_VACIO
       },
       contraseña: {
         type: "string",
+        minLength: 6,
+        maxLength: 30,
         pattern: PATRON_NO_VACIO
       }
     }
@@ -46,6 +55,8 @@ export const esquemasUsuarios = {
     properties: {
       username: {
         type: "string",
+        minLength: 1,
+        maxLength: 30,
         pattern: PATRON_NO_VACIO
       }
     }
