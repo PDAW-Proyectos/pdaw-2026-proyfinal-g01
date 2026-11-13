@@ -55,3 +55,18 @@ form.addEventListener('submit', async (event) => {
     btnSubmit.disabled = false
   }
 })
+
+//Show contraseña
+const password = document.getElementById("contraseña");
+
+function togglePassword(){
+
+    if (password.type === "password") {
+        password.type = "text";
+    } else {
+        password.type = "password";
+    }
+}
+
+const showPasswordButton = document.getElementById("show-password");
+showPasswordButton.addEventListener("click", togglePassword);

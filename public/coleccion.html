@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,194 +41,118 @@
 
     <!-- Main Layout -->
     <div class="main-layout">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <span class="sidebar-title">Mis mazos</span>
             </div>
-
-            <ul class="deck-list">
-                <li class="deck-item active">
-                    <span>Mazo 1</span>
-                    <span style="font-size: 0.8rem;">40/60</span>
-                </li>
-                <li class="deck-item">
-                    <span>Mazo 2</span>
-                    <span style="font-size: 0.8rem;">42/60</span>
-                </li>
-                <li class="deck-item">
-                    <span>Mazo 3</span>
-                    <span style="font-size: 0.8rem;">39/60</span>
-                </li>
-                <li class="deck-item">
-                    <span>Mazo 4</span>
-                    <span style="font-size: 0.8rem;">45/60</span>
-                </li>
+            <ul class="deck-list" id="deck-list" aria-label="Mis mazos">
+                <li class="deck-status">Cargando tus mazos...</li>
             </ul>
-
-            <button class="new-deck-btn">+ Nuevo mazo</button>
-
+            <button class="new-deck-btn" type="button" data-bs-toggle="modal" data-bs-target="#modalAddMazo">
+                + Nuevo mazo
+            </button>
             <div class="filters-section">
-                <h4>Filtros de Búsqueda</h4>
-
-                <div class="filter-group">
-                    <input type="text" placeholder="Buscar carta...">
-                </div>
-
-                <div class="filter-group">
-                    <select>
-                        <option>Tipo de Carta</option>
-                        <option>Link</option>
-                        <option>Monstruo</option>
-                        <option>Pendulo</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <select>
-                        <option>Raza</option>
-                        <option>Spellcaster</option>
-                        <option>Dragon</option>
-                        <option>Zombie</option>
-                        <option>Warrior</option>
-                    </select>
-                </div>
+                <h4>Cómo agregar cartas</h4>
+                <p>Busca y selecciona una carta; desde su detalle puedes agregarla o quitar una copia. El servidor elige Main o Extra Deck.</p>
             </div>
         </aside>
 
-        <!-- Deck Editor -->
-        <main class="deck-editor">
+        <main class="deck-editor" id="deck-editor" aria-busy="true">
             <div class="deck-header">
-                <h1 class="deck-title">Mazo 1</h1>
-                <div>
-                    <button class="btn btn-save">Guardar</button>
+                <div class="d-flex flex-column">
+                    <h1 class="deck-title" id="deck-title">Mis mazos</h1>
+                    <p class="deck-save-status" id="deck-save-status">Los cambios se guardan automáticamente.</p>
                 </div>
+                <a class="btn btn-outline" id="view-deck-details" target="_blank" rel="noopener noreferrer"
+                    aria-disabled="true" tabindex="-1">
+                    Ver detalles
+                </a>
             </div>
-
             <div class="deck-counters">
                 <div class="counter-item">
-                    <div class="counter-value">40<span style="color: var(--text-secondary);">/60</span></div>
+                    <div class="counter-value" id="main-counter">0<span>/60</span></div>
                     <div class="counter-label">Main Deck</div>
                 </div>
                 <div class="counter-item">
-                    <div class="counter-value">14<span style="color: var(--text-secondary);">/15</span></div>
+                    <div class="counter-value" id="extra-counter">0<span>/15</span></div>
                     <div class="counter-label">Extra Deck</div>
                 </div>
-                <div class="counter-item">
-                    <div class="counter-value">0<span style="color: var(--text-secondary);">/15</span></div>
-                    <div class="counter-label">Side Deck</div>
+            </div>
+
+            <div class="card-search-bar search-wrapper">
+                <div class="collection-search">
+                    <input
+                        type="search"
+                        class="search-input"
+                        id="search-input"
+                        placeholder="Buscar carta para agregar..."
+                        autocomplete="off"
+                        aria-label="Buscar carta para agregar"
+                        aria-controls="search-results"
+                        aria-expanded="false">
+                    <button class="btn btn-success" id="search-button" type="button">Buscar</button>
+                    <div class="search-dropdown" id="search-dropdown">
+                        <div class="search-loading" id="search-loading">Buscando cartas...</div>
+                        <div class="search-results" id="search-results" role="listbox"></div>
+                    </div>
                 </div>
             </div>
 
-            <div class="card-search-bar">
-                <input type="text" class="search-input" placeholder="Agregar carta al deck...">
-                <button class="btn btn-success">Agregar</button>
-            </div>
+            <h2 class="deck-section-title" id="main-heading">Main Deck (0)</h2>
+            <p class="recent-cards-label">Se muestran las 6 cartas añadidas más recientemente.</p>
+            <div class="cards-container" id="main-cards" aria-live="polite"></div>
 
-            <!-- Main Deck -->
-            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Main Deck (40)</h3>
-            <div class="cards-container">
-                <div class="deck-card">
-                    <img src="img/30397786.jpg" alt="Card">
-                    <div class="deck-card-name">Blue-Eyes White Dragon</div>
-                    <span class="deck-card-count">x3</span>
-                </div>
-                <div class="deck-card">
-                    <img src="img/53804307.jpg" alt="Card">
-                    <div class="deck-card-name">Sage with Eyes of Blue</div>
-                    <span class="deck-card-count">x2</span>
-                </div>
-                <div class="deck-card">
-                    <img src="img/80181649.jpg" alt="Card">
-                    <div class="deck-card-name">Honest</div>
-                    <span class="deck-card-count">x3</span>
-                </div>
-                <div class="deck-card">
-                    <img src="img/99788587.jpg" alt="Card">
-                    <div class="deck-card-name">Card of Safe Return</div>
-                    <span class="deck-card-count">x2</span>
-                </div>
-                <div class="deck-card">
-                    <img src="img/80181649.jpg" alt="Card">
-                    <div class="deck-card-name">Call of the Haunted</div>
-                    <span class="deck-card-count">x1</span>
-                </div>
-                <div class="deck-card">
-                    <img src="img/53804307.jpg" alt="Card">
-                    <div class="deck-card-name">Monster Reborn</div>
-                    <span class="deck-card-count">x1</span>
-                </div>
-            </div>
-
-            <!-- Extra Deck -->
-            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Extra Deck (14)</h3>
-            <div class="cards-container">
-                <div class="deck-card">
-                    <img src="img/21466326.jpg" alt="Card">
-                    <div class="deck-card-name">Blue-Eyes Alternative</div>
-                    <span class="deck-card-count">x1</span>
-                </div>
-                <div class="deck-card">
-                    <img src="img/53804307.jpg" alt="Card">
-                    <div class="deck-card-name">Number 101</div>
-                    <span class="deck-card-count">x1</span>
-                </div>
-                <div class="deck-card">
-                    <img src="img/99788587.jpg" alt="Card">
-                    <div class="deck-card-name">Accesscode Talker</div>
-                    <span class="deck-card-count">x3</span>
-                </div>
-            </div>
-
-            <div class="deck-actions">
-                <button class="btn btn-danger">Limpiar deck</button>
-            </div>
+            <h2 class="deck-section-title" id="extra-heading">Extra Deck (0)</h2>
+            <p class="recent-cards-label">Se muestran las 4 cartas añadidas más recientemente.</p>
+            <div class="cards-container" id="extra-cards" aria-live="polite"></div>
         </main>
 
-        <!-- Detail Panel -->
-        <aside class="detail-panel">
+        <aside class="detail-panel" id="selected-card-panel" aria-live="polite">
             <div class="card-preview">
-                <img src="img/30397786.jpg" alt="Selected Card">
+                <img id="selected-card-image" alt="" hidden>
             </div>
-
             <div class="card-details">
-                <h3>Blue-Eyes White Dragon</h3>
-                <div class="card-meta">
-                    <span>Dragón</span> |
-                    <span>LUZ</span> |
-                    <span>Nivel 8</span>
-                </div>
-                <p><strong>ATK:</strong> 3000 | <strong>DEF:</strong> 2500</p>
-
-                <div class="card-effect">
-                    Descripcion de la carta.
-                </div>
-
-                <div class="stat-bars">
-                    <div class="stat-bar">
-                        <div class="stat-label">
-                            <span>Ataque</span>
-                            <span>3000</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 85%;"></div>
-                        </div>
-                    </div>
-                    <div class="stat-bar">
-                        <div class="stat-label">
-                            <span>Defensa</span>
-                            <span>2500</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 70%;"></div>
-                        </div>
-                    </div>
+                <h2 id="selected-card-name">Detalle de carta</h2>
+                <p class="card-meta" id="selected-card-meta">Selecciona una carta para agregarla al mazo activo.</p>
+                <p class="card-effect" id="selected-card-description"></p>
+                <div class="selected-card-actions">
+                    <button class="btn btn-main btn-main-primary" id="add-selected-card" type="button" disabled>
+                        Agregar al mazo
+                    </button>
+                    <button class="btn btn-danger" id="remove-selected-card" type="button" hidden>
+                        Quitar una copia
+                    </button>
                 </div>
             </div>
-
-            <button class="btn btn-danger" style="width: 100%;">Quitar del deck</button>
         </aside>
     </div>
+
+    <!-- Modal: crear mazo -->
+    <div class="modal fade" id="modalAddMazo" tabindex="-1" aria-labelledby="modalAddMazoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header modal-header-mazo">
+                    <h5 class="modal-title" id="modalAddMazoLabel">Añadir nuevo mazo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <form id="create-deck-form">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label-mazo" for="newMazoName">Nombre del mazo</label>
+                            <input type="text" id="newMazoName" class="form-control-mazo" placeholder="Ej. Mazo Dragón" maxlength="80" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-main btn-main-outline" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-main btn-main-primary">Añadir mazo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--Toast-->
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -271,5 +195,6 @@
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="js/components/navbar.js"></script>
+    <script type="module" src="js/pages/coleccion.js"></script>
 </body>
 </html>

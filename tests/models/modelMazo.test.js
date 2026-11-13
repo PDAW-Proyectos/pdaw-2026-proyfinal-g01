@@ -34,6 +34,19 @@ describe("Mazo", () => {
       expect(mazo.extraDeck).toEqual([])
     })
 
+    test("migra listas antiguas de IDs y combina copias repetidas", () => {
+      const mazo = new Mazo(datosMazoBase({
+        mainDeck: [100, 100, 101],
+        extraDeck: [200]
+      }))
+
+      expect(mazo.mainDeck).toEqual([
+        { id: 100, cantidad: 2 },
+        { id: 101, cantidad: 1 }
+      ])
+      expect(mazo.extraDeck).toEqual([{ id: 200, cantidad: 1 }])
+    })
+
     test("lanza ValidationError si se inicializa con más de 60 cartas en mainDeck", () => {
       const main61 = Array.from({ length: MAX_MAIN_DECK + 1 }, (_, i) => ({ id: i + 1, cantidad: 1 }))
       expect(() => new Mazo(datosMazoBase({ mainDeck: main61 }))).toThrow(ValidationError)

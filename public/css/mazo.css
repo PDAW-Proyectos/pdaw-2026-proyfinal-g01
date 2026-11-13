@@ -261,6 +261,17 @@
     overflow: hidden;
 }
 
+.deck-load-status {
+    padding: 1rem;
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-secondary);
+}
+
+.deck-load-error {
+    color: #b42318;
+}
+
 .deck-zone-body {
     flex: 1;
     min-width: 0;
@@ -289,8 +300,31 @@
 /* Grid de miniaturas de cartas */
 .deck-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    grid-template-columns: repeat(8, minmax(100px, 1fr));
     gap: 1rem;
+    overflow-x: auto;
+}
+
+.deck-empty {
+    grid-column: 1 / -1;
+    color: var(--text-secondary);
+}
+
+.deck-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.deck-pagination[hidden] {
+    display: none;
+}
+
+.pagination-status {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
 }
 
 .deck-cards-grid .card-item img {
@@ -385,8 +419,8 @@
     box-shadow: var(--shadow-sm);
     border-radius: 0;
     padding: 1.5rem;
-    flex: 0 0 320px;
-    max-width: 320px;
+    flex: 1;
+    max-width: none;
 }
 
 .deck-data h2 {
