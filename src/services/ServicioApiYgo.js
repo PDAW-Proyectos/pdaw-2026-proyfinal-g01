@@ -85,11 +85,17 @@ async function descargarCartasDeMazo(nombreMazo) {
   let data = await respuestaYgm.json()
   let cartas = data[0]?.deckBreakdownTCG?.cards
 
+  // Primer fallback por si las cartas del tcg no estan disponibles.
+  if (!Array.isArray(cartas) || cartas.length === 0) {
+    cartas = data[0]?.deckBreakdownOCG?.cards
+  }
+
+  // Segundo fallback por si las cartas del ocg no estan disponibles.
   if (!Array.isArray(cartas) || cartas.length === 0) {
     const respuestaMdm = await realizarPeticion(url_query_mazos(URL_MDM_MAZOS, nombreMazo), "application/json")
     data = await respuestaMdm.json()
-    const mainDeck = data[0]?.deckBreakdown?.sampleDeck?.main ?? []
-    const extraDeck = data[0]?.deckBreakdown?.sampleDeck?.extra ?? []
+    const mainDeck = data.deckBreakdown?.sampleDeck?.main ?? []
+    const extraDeck = data.deckBreakdown?.sampleDeck?.extra ?? []
     cartas = [...mainDeck, ...extraDeck]
   }
 
