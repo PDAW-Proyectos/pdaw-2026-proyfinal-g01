@@ -1,3 +1,5 @@
+import { config } from "../config.js"
+
 const NIVELES = { debug: 10, info: 20, warn: 30, error: 40 }
 
 // Algunas claves extra por si las dudas
@@ -32,9 +34,9 @@ export function redact(valor) {
 }
 
 /** Crea un logger estructurado en formato JSON de una linea por evento.
- * @param {string} [nivelConfigurado=process.env.LOG_LEVEL ?? "info"]
+ * @param {string} [nivelConfigurado=config.logLevel]
  */
-export function createLogger(nivelConfigurado = process.env.LOG_LEVEL ?? "info") {
+export function createLogger(nivelConfigurado = config.logLevel) {
   const nivelMinimo = NIVELES[nivelConfigurado.toLowerCase()] ?? NIVELES.info
 
   function registrar(level, msg, meta = {}) {
