@@ -137,7 +137,7 @@ describe("ServicioApiYgo", () => {
   })
 
   describe("descargarMazosPopulares", () => {
-    test("descarga el top de mazos y sus cartas desde YuGiOhMeta con fallback a MasterDuelMeta", async () => {
+    test("descarga el top de mazos y sus cartas desde YuGiOhMeta con fallback a OCG y MasterDuelMeta", async () => {
       const fetchSpy = jest
         .spyOn(global, "fetch")
         // 1. Lista de top mazos en MasterDuelMeta
@@ -147,7 +147,8 @@ describe("ServicioApiYgo", () => {
           headers: { get: () => "application/json; charset=utf-8" },
           json: async () => [
             { _id: "1", name: "Dracotail", tournamentPower: 14.8, tournamentPowerTrend: 1.2 },
-            { _id: "2", name: "Snake-Eye Fiendsmith", tournamentPower: 11.4, tournamentPowerTrend: -0.5 }
+            { _id: "2", name: "Blue-Eyes", tournamentPower: 12.1, tournamentPowerTrend: 0.4 },
+            { _id: "3", name: "Snake-Eye Fiendsmith", tournamentPower: 11.4, tournamentPowerTrend: -0.5 }
           ]
         })
         // 2. Cartas de "Dracotail" encontradas en YuGiOhMeta (deckBreakdownTCG.cards)
@@ -165,28 +166,42 @@ describe("ServicioApiYgo", () => {
             }
           ]
         })
-        // 3. "Snake-Eye Fiendsmith" sin datos en YuGiOhMeta -> activa fallback
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          headers: { get: () => "application/json" },
-          json: async () => []
-        })
-        // 4. Fallback MasterDuelMeta (sampleDeck.main + sampleDeck.extra)
+        // 3. "Blue-Eyes" sin deckBreakdownTCG -> primer fallback a deckBreakdownOCG.cards en YuGiOhMeta
         .mockResolvedValueOnce({
           ok: true,
           status: 200,
           headers: { get: () => "application/json" },
           json: async () => [
             {
-              deckBreakdown: {
-                sampleDeck: {
-                  main: [{ card: { name: "Snake-Eye Ash" }, amount: 3 }],
-                  extra: [{ card: { name: "Promethean Princess" }, amount: 1 }]
-                }
+              deckBreakdownTCG: { cards: [] },
+              deckBreakdownOCG: {
+                cards: [
+                  { card: { name: "Maxx \"C\"" }, at: 2 }
+                ]
               }
             }
           ]
+        })
+        // 4. "Snake-Eye Fiendsmith" sin TCG ni OCG en YuGiOhMeta -> activa segundo fallback
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          headers: { get: () => "application/json" },
+          json: async () => []
+        })
+        // 5. Segundo fallback MasterDuelMeta (sampleDeck.main + sampleDeck.extra)
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          headers: { get: () => "application/json" },
+          json: async () => ({
+            deckBreakdown: {
+              sampleDeck: {
+                main: [{ card: { name: "Snake-Eye Ash" }, amount: 3 }],
+                extra: [{ card: { name: "Promethean Princess" }, amount: 1 }]
+              }
+            }
+          })
         })
 
       const resultado = await descargarMazosPopulares()
@@ -197,6 +212,10 @@ describe("ServicioApiYgo", () => {
           cartas: [{ name: "Ash Blossom & Joyous Spring", amount: 3 }]
         },
         {
+          nombre: "Blue-Eyes",
+          cartas: [{ name: "Maxx \"C\"", amount: 2 }]
+        },
+        {
           nombre: "Snake-Eye Fiendsmith",
           cartas: [
             { name: "Snake-Eye Ash", amount: 3 },
@@ -204,8 +223,21 @@ describe("ServicioApiYgo", () => {
           ]
         }
       ])
+      expect(fetchSpy).toHaveBeenCalledTimes(5)
+      expect(fetchSpy).toHaveBeenCalledWith(
+        "https://www.yugiohmeta.com/api/v1/deck-types?name=Blue-Eyes&limit=1&aggregate=aboveThresh",
+        expect.any(Object)
+      )
       expect(fetchSpy).toHaveBeenCalledWith(
         "https://www.yugiohmeta.com/api/v1/deck-types?name=Snake-Eye%20Fiendsmith&limit=1&aggregate=aboveThresh",
+        expect.any(Object)
+      )
+      expect(fetchSpy).toHaveBeenCalledWith(
+        "https://www.masterduelmeta.com/api/v1/deck-types?name=Snake-Eye%20Fiendsmith&limit=1&aggregate=aboveThresh",
+        expect.any(Object)
+      )
+      expect(fetchSpy).not.toHaveBeenCalledWith(
+        "https://www.masterduelmeta.com/api/v1/deck-types?name=Blue-Eyes&limit=1&aggregate=aboveThresh",
         expect.any(Object)
       )
     })
