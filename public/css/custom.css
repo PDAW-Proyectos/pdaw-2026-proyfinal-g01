@@ -1,0 +1,38 @@
+@font-face {
+  font-family: "Orbitron";
+  src: url("../fonts/Orbitron-VariableFont_wght.ttf") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 1. Make password bullets match regular letter size without shrinking the placeholder */
+input[type="password"]:not(:placeholder-shown) {
+  font-family: system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.12em;
+}
+
+.container-vh-full {
+  min-height: 100vh;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-separator {
+  width: 100%;
+  height: 100px;
+}
+
+.max-width-450px {
+  max-width: 450px !important;
+  width: 100% !important;
+}
+
+/* 2. Prevent .btn min-height from stretching .form-adorn taller than standard inputs */
+.form-adorn>.btn {
+  --bs-btn-min-height: auto;
+  line-height: 1;
+}
