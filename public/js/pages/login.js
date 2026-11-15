@@ -1,9 +1,12 @@
 import { authService } from '../services/authService.js'
+import { marcarBotonExito, inicializarTogglePassword } from '../modules/uti.js'
 
 const form = document.getElementById('form-login')
 const btnSubmit = form.querySelector('button[type="submit"]')
 const textoOriginalBtn = btnSubmit.textContent
 const statusDiv = document.getElementById('status-mensaje')
+
+inicializarTogglePassword('show-password', 'contraseña')
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault()
@@ -20,12 +23,7 @@ form.addEventListener('submit', async (event) => {
     await authService.login(data)
 
     redirigiendo = true
-    btnSubmit.classList.remove('theme-primary', 'btn-solid')
-    btnSubmit.classList.add('btn-success', 'fw-bold', 'opacity-100', 'shadow')
-
-    const iconoCheck = document.createElement('i')
-    iconoCheck.classList.add('bi', 'bi-check-circle-fill', 'me-2')
-    btnSubmit.replaceChildren(iconoCheck, 'Iniciando sesión...')
+    marcarBotonExito(btnSubmit, 'Iniciando sesión...')
 
     setTimeout(() => {
       window.location.assign('index.html')
@@ -47,15 +45,3 @@ form.addEventListener('submit', async (event) => {
   }
 })
 
-// Show contraseña
-const password = document.getElementById('contraseña')
-const showPasswordButton = document.getElementById('show-password')
-
-showPasswordButton?.addEventListener('click', () => {
-  const esOculta = password.type === 'password'
-  password.type = esOculta ? 'text' : 'password'
-
-  const icono = showPasswordButton.querySelector('i')
-  icono?.classList.toggle('bi-eye', !esOculta)
-  icono?.classList.toggle('bi-eye-slash', esOculta)
-})

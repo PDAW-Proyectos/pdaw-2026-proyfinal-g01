@@ -1,31 +1,9 @@
 import { authService } from '../services/authService.js'
+import { setError, clearErrors, marcarBotonExito } from '../modules/utilidadFormularios.js'
 
 const form = document.getElementById('form-registro')
 const btnSubmit = form.querySelector('button[type="submit"]')
 const textoOriginalBtn = btnSubmit.textContent
-
-function setError(name, message) {
-  const field = form.elements[name]
-  if (field) {
-    field.setAttribute('aria-invalid', message ? 'true' : 'false')
-    field.classList.toggle('is-invalid', Boolean(message))
-  }
-  const errorElement = document.getElementById(`error-${name}`)
-  if (errorElement) {
-    if (message) {
-      errorElement.classList.add('text-danger', 'd-block')
-    } else {
-      errorElement.classList.remove('text-danger', 'd-block')
-    }
-    errorElement.textContent = message ?? ''
-  }
-}
-
-function clearErrors() {
-  Array.from(form.elements).forEach((field) => {
-    if (field.name) setError(field.name, null)
-  })
-}
 
 function validarFormulario(data) {
   const errores = []
@@ -61,7 +39,7 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault()
 
   btnSubmit.disabled = true
-  clearErrors()
+  clearErrors(form)
 
   let redirigiendo = false
 
@@ -86,13 +64,7 @@ form.addEventListener('submit', async (event) => {
     await authService.registro(datos)
 
     redirigiendo = true
-    btnSubmit.textContent = '¡Cuenta creada!'
-    btnSubmit.classList.remove('theme-primary', 'btn-solid')
-    btnSubmit.classList.add('btn-success', 'fw-bold', 'opacity-100', 'shadow')
-
-    const iconoCheck = document.createElement('i')
-    iconoCheck.classList.add('bi', 'bi-check-circle-fill', 'me-2')
-    btnSubmit.replaceChildren(iconoCheck, '¡Usuario creado!')
+    marcarBotonExito(btnSubmit, '¡Usuario creado!')
 
     setTimeout(() => {
       window.location.assign('login.html')
@@ -103,7 +75,7 @@ form.addEventListener('submit', async (event) => {
     }
 
     if (err.fieldErrors?.length) {
-      err.fieldErrors.forEach(({ campo, mensaje }) => setError(campo, mensaje))
+      err.fieldErrors.forEach(({ campo, mensaje }) => setError(form, campo, mensaje))
       form.elements[err.fieldErrors[0].campo]?.focus()
     } else {
       alert(err.message || 'Error al crear la cuenta.')
