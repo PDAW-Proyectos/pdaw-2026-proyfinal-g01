@@ -2,72 +2,60 @@ import { authService } from '../services/authService.js'
 
 const form = document.getElementById('form-login')
 const btnSubmit = form.querySelector('button[type="submit"]')
+const textoOriginalBtn = btnSubmit.textContent
 const statusDiv = document.getElementById('status-mensaje')
-
-function setError(name, message) {
-  const field = form.elements[name]
-  if (field) {
-    field.setAttribute('aria-invalid', message ? 'true' : 'false')
-  }
-  const errorElement = document.getElementById(`error-${name}`)
-  if (errorElement) {
-    errorElement.textContent = message ?? ''
-  }
-}
-
-function clearErrors() {
-  Array.from(form.elements).forEach((field) => {
-    if (field.name) setError(field.name, null)
-  })
-  statusDiv.textContent = ''
-}
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault()
 
   btnSubmit.disabled = true
-  clearErrors()
+  btnSubmit.textContent = 'Verificando...'
+  statusDiv.textContent = ''
 
-  statusDiv.textContent = 'Verificando credenciales...'
-  statusDiv.classList.add('text-info')
+  let redirigiendo = false
 
   try {
     const data = Object.fromEntries(new FormData(form))
 
     await authService.login(data)
 
-    statusDiv.textContent = '¡Inicio de sesión exitoso! Redirigiendo...'
-    statusDiv.classList.remove('fg-danger')
-    statusDiv.classList.add('fg-success')
+    redirigiendo = true
+    btnSubmit.classList.remove('theme-primary', 'btn-solid')
+    btnSubmit.classList.add('btn-success', 'fw-bold', 'opacity-100', 'shadow')
 
-    window.location.assign('index.html')
+    const iconoCheck = document.createElement('i')
+    iconoCheck.classList.add('bi', 'bi-check-circle-fill', 'me-2')
+    btnSubmit.replaceChildren(iconoCheck, 'Iniciando sesión...')
+
+    setTimeout(() => {
+      window.location.assign('index.html')
+    }, 1000)
   } catch (err) {
-    statusDiv.textContent = ''
-    statusDiv.classList.remove('fg-success')
-    statusDiv.classList.add('fg-danger')
-
-    if (err.fieldErrors?.length) {
-      err.fieldErrors.forEach(({ campo, mensaje }) => setError(campo, mensaje))
-      statusDiv.textContent = 'Por favor, revisa los datos ingresados.'
+    if (!err.status || err.status >= 500) {
+      alert('No se pudo conectar con el servidor. Intenta más tarde.')
     } else {
-      statusDiv.textContent = err.message
+      statusDiv.className = 'text-center mb-3 fg-danger'
+      statusDiv.textContent = err.fieldErrors?.length
+        ? 'Por favor, revisa los datos ingresados.'
+        : 'Usuario o contraseña incorrecta.'
     }
   } finally {
-    btnSubmit.disabled = false
+    if (!redirigiendo) {
+      btnSubmit.disabled = false
+      btnSubmit.textContent = textoOriginalBtn
+    }
   }
 })
 
-//Show contraseña
-const password = document.getElementById("contraseña");
+// Show contraseña
+const password = document.getElementById('contraseña')
+const showPasswordButton = document.getElementById('show-password')
 
-function togglePassword(){
+showPasswordButton?.addEventListener('click', () => {
+  const esOculta = password.type === 'password'
+  password.type = esOculta ? 'text' : 'password'
 
-    if (password.type === "password") {
-        password.type = "text";
-    } else {
-        password.type = "password";
-    }
-}
-
-const showPasswordButton = document.getElementById("show-password");
-showPasswordButton.addEventListener("click", togglePassword);
+  const icono = showPasswordButton.querySelector('i')
+  icono?.classList.toggle('bi-eye', !esOculta)
+  icono?.classList.toggle('bi-eye-slash', esOculta)
+})
