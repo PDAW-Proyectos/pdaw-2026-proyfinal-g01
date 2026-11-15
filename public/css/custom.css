@@ -26,6 +26,21 @@ input[type="password"]:not(:placeholder-shown) {
   height: 100px;
 }
 
+.btn-close-custom {
+  width: 24px !important;
+  height: 24px !important;
+  max-width: 24px !important;
+  max-height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  --btn-border-width: 0px !important;
+  margin-left: auto !important;
+}
+
+.w-30 {
+  width: 30% !important;
+}
+
 .max-width-450px {
   max-width: 450px !important;
   width: 100% !important;

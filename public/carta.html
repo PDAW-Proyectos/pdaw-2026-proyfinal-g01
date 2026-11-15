@@ -6,51 +6,65 @@
     <title>YuGiKi - Carta</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/all.css">
-    <link rel="stylesheet" href="css/carta.css">
+    <link rel="stylesheet" href="css/custom.css">
 </head>
-<body>
-    <!-- Header con Bootstrap Navbar -->
-    <nav class="navbar navbar-expand-xl navbar-custom sticky-top">
+<body class="d-flex flex-column">
+    <!-- Header con Bootstrap 6 Navbar + Drawer -->
+    <nav class="navbar xl:navbar-expand navbar-custom sticky-top border-bottom border-2 border-primary bg-white">
         <div class="container-fluid">
-            <a href="index.html" class="navbar-brand">YuGiKi</a>
+            <a href="index.html" class="navbar-brand"><span class="fg-primary fw-bolder text-2xl">YuGiKi!</span></a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+            <button class="btn-icon btn-lg navbar-toggler border-0 fg-primary" type="button" data-bs-toggle="drawer" data-bs-target="#navbarDrawer" aria-controls="navbarDrawer" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="bi bi-list fs-2xl lh-1" aria-hidden="true"></i>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="text-center navbar-nav me-auto mb-2 mb-lg-0 ms-3">
-                    <li class="nav-item">
-                        <a href="index.html" class="nav-link nav-link-custom active">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link nav-link-custom">Cartas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="coleccion.html" class="nav-link nav-link-custom">Coleccion</a>
-                    </li>
-                </ul>
+            <dialog class="drawer drawer-end bg-white" tabindex="-1" id="navbarDrawer" aria-labelledby="navbarDrawerLabel">
+                <div class="drawer-header">
+                    <h5 class="drawer-title" id="navbarDrawerLabel">Menú</h5>
+                    <button type="button" class="btn-solid btn-close-custom theme-primary" data-bs-dismiss="drawer" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button>
+                </div>
 
-                <!-- Nav Bar dinamica (botones - login y registro) -->
-                <div id="nav-auth"
-                    class="d-flex justify-content-center align-items-center gap-2 flex-wrap my-3 my-xl-0"></div>
-            </div>
-            </div>
+                <div class="drawer-body">
+                    <ul class="text-center navbar-nav me-auto mb-2 xl:mb-0 ms-xl-3">
+                        <li class="nav-item">
+                            <a href="index.html" class="nav-link nav-link-custom active" aria-current="page">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link nav-link-custom">Cartas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="coleccion.html" class="nav-link nav-link-custom">Coleccion</a>
+                        </li>
+                    </ul>
+
+                    <!-- Nav Bar dinamica (botones - login y registro) -->
+                    <div id="nav-auth"
+                        class="d-flex justify-content-center align-items-center gap-2 flex-wrap my-3 xl:my-0"></div>
+                </div>
+            </dialog>
         </div>
     </nav>
 
     <!-- Detalle de la carta -->
-    <main class="detail-section" id="detail-page" aria-busy="true">
+    <main class="container-vh-full p-4 bg-body fg-body" id="detail-page" aria-busy="true">
         <div class="container-custom">
             <p id="detail-status" role="status" aria-live="polite">Cargando carta...</p>
             <div class="detail-card-box" id="detail-card" hidden>
                 <!-- Sección superior: imagen + nombre/descripción/precio -->
                 <div class="detail-top">
-                    <!-- Imagen -->
-                    <div class="detail-img-col">
-                        <img id="detail-image" alt="" class="detail-img">
+                    <!-- Imagen con hover-lift y disparador de Dialog -->
+                    <img id="detail-image" alt="Imagen de la carta" class="w-30 border border-2 border-primary">
+                    <div class="h-fit w-fit">
+                        <button
+                            type="button"
+                            class="p-0 border-0 bg-transparent hover-lift"
+                            data-bs-toggle="dialog"
+                            data-bs-target="#cardImageDialog"
+                            aria-label="Ver imagen de la carta en grande">
+                        </button>
                     </div>
 
                     <!-- Info -->
@@ -87,6 +101,17 @@
             </div>
         </div>
     </main>
+
+    <!-- Dialog para imagen en grande con backdrop blur (igual que el drawer) -->
+    <dialog class="dialog bg-transparent border-0 shadow-none p-0 text-center" id="cardImageDialog" aria-label="Vista ampliada de la carta">
+        <div class="d-flex justify-content-end mb-2">
+            <button type="button" class="btn-solid btn-close-custom theme-primary" data-bs-dismiss="dialog" aria-label="Cerrar imagen">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+        </div>
+        <img id="modal-detail-image" alt="Imagen ampliada de la carta" class="img-fluid border border-2 border-primary shadow-lg">
+    </dialog>
+
 
     <!-- Footer -->
     <footer class="footer">
@@ -127,8 +152,17 @@
             </div>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV03r20Y0CN7uqx1tQogjPL" crossorigin="anonymous"></script>
     <script type="module" src="js/pages/carta.js"></script>
     <script type="module" src="js/components/navbar.js"></script>
+    <script>
+        // Sincroniza el src/alt de la carta al abrir el dialog en grande
+        document.getElementById('cardImageDialog').addEventListener('show.bs.dialog', () => {
+            const cardImg = document.getElementById('detail-image');
+            const modalImg = document.getElementById('modal-detail-image');
+            modalImg.src = cardImg.src;
+            modalImg.alt = cardImg.alt;
+        });
+    </script>
 </body>
 </html>
