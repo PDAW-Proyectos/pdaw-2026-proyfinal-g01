@@ -20,7 +20,6 @@ function clearErrors() {
     if (field.name) setError(field.name, null)
   })
   statusDiv.textContent = ''
-  statusDiv.className = 'mb-3 fw-bold'
 }
 
 form.addEventListener('submit', async (event) => {
@@ -38,12 +37,14 @@ form.addEventListener('submit', async (event) => {
     await authService.login(data)
 
     statusDiv.textContent = '¡Inicio de sesión exitoso! Redirigiendo...'
-    statusDiv.classList.replace('text-info', 'text-success')
+    statusDiv.classList.remove('fg-danger')
+    statusDiv.classList.add('fg-success')
 
     window.location.assign('index.html')
   } catch (err) {
     statusDiv.textContent = ''
-    statusDiv.classList.replace('text-info', 'text-danger')
+    statusDiv.classList.remove('fg-success')
+    statusDiv.classList.add('fg-danger')
 
     if (err.fieldErrors?.length) {
       err.fieldErrors.forEach(({ campo, mensaje }) => setError(campo, mensaje))
