@@ -12,3 +12,8 @@ body {
     color: var( #1a1a2e);
     line-height: 1.6;
 }
+
+/*Para que en registro la barra de seguridad de la contraseña, no ocupe un espacio si no se usa*/
+#contraseña:placeholder-shown + .strength-bar {
+  display: none;
+}
