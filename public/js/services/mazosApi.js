@@ -5,20 +5,22 @@ function normalizarListaCartas(entradas) {
     throw new Error("La API de mazos devolvió una lista inválida.")
   }
 
-  return entradas.flatMap(({ carta, cantidad }) => {
-    if (
-      !carta ||
-      typeof carta !== "object" ||
-      !Number.isSafeInteger(carta.id) ||
-      typeof carta.name !== "string" ||
-      !Number.isSafeInteger(cantidad) ||
-      cantidad < 1
-    ) {
-      throw new Error("La API de mazos devolvió una carta inválida.")
-    }
+  return entradas
+    .filter((entrada) => entrada?.carta !== null)
+    .flatMap(({ carta, cantidad }) => {
+      if (
+        !carta ||
+        typeof carta !== "object" ||
+        !Number.isSafeInteger(carta.id) ||
+        typeof carta.name !== "string" ||
+        !Number.isSafeInteger(cantidad) ||
+        cantidad < 1
+      ) {
+        throw new Error("La API de mazos devolvió una carta inválida.")
+      }
 
-    return Array.from({ length: cantidad }, () => carta)
-  })
+      return Array.from({ length: cantidad }, () => carta)
+    })
 }
 
 function normalizarMazo(mazo) {
@@ -57,6 +59,43 @@ export async function listarMazosPropios() {
     throw new Error("La API de mazos devolvió una lista inválida.")
   }
   return respuesta.datos.map(normalizarMazo)
+}
+
+/**
+ * Obtiene los mazos competitivos populares (/api/mazos/populares).
+ * @returns {Promise<Array<Object>>}
+ */
+export async function listarMazosPopulares() {
+  const respuesta = await api("/api/mazos/populares")
+  if (!Array.isArray(respuesta) || respuesta.length === 0) {
+    throw new Error("La API de mazos populares devolvió una lista inválida.")
+  }
+  return respuesta
+}
+
+/**
+ * Obtiene un mazo popular con los datos de sus cartas para mostrar su detalle público.
+ * @param {number|string} idMazo
+ * @returns {Promise<Object>}
+ */
+export async function obtenerMazoPopularPorId(idMazo) {
+  const id = Number(idMazo)
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    throw new Error("El ID del mazo debe ser un entero positivo.")
+  }
+
+  const respuesta = await api(`/api/mazos/populares/${encodeURIComponent(id)}`)
+  if (
+    !respuesta ||
+    typeof respuesta !== "object" ||
+    Number(respuesta.id) !== id ||
+    !Array.isArray(respuesta.mainDeck) ||
+    !Array.isArray(respuesta.extraDeck)
+  ) {
+    throw new Error("La API de mazos populares devolvió un detalle inválido.")
+  }
+
+  return normalizarMazo(respuesta)
 }
 
 /**

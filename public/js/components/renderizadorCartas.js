@@ -1,14 +1,9 @@
-import { enlazarNavegacionCarta } from "../modules/navegacionCarta.js"
-
-const formatoPrecio = new Intl.NumberFormat("es-AR", {
-  style: "currency",
-  currency: "USD"
-})
+import { crearUrlDetalleCarta } from "../modules/navegacionCarta.js"
 
 function obtenerElemento(id) {
   const elemento = document.getElementById(id)
   if (!elemento) {
-    throw new Error(`No se encontro el elemento requerido #${id}.`)
+    throw new Error(`No se encontró el elemento requerido #${id}.`)
   }
   return elemento
 }
@@ -47,68 +42,181 @@ export function obtenerPrecioMaximo(carta) {
     Number.isFinite(precio) && precio > maximo ? precio : maximo, 0)
 }
 
-/**
- * Presenta la carta más cara en el bloque destacado.
- * @param {Object} carta
- * @param {number} precio
- */
-export function renderizarCartaDestacada(carta, precio) {
-  const bloque = document.querySelector(".featured-card")
-  if (!bloque) {
-    throw new Error("No se encontro el bloque de la carta destacada.")
+function obtenerCartaPortadaMazo(mazo) {
+  const entradas = [...(mazo.extraDeck ?? []), ...(mazo.mainDeck ?? [])]
+    .filter((entrada) => entrada?.carta && Number.isInteger(Number(entrada.carta.id)))
+
+  const primeraPalabra = mazo.nombre?.trim().split(/\s+/)[0]?.toLocaleLowerCase()
+  if (primeraPalabra) {
+    const coincidencia = entradas.find(({ carta }) =>
+      carta.name?.toLocaleLowerCase().includes(primeraPalabra)
+    )
+    if (coincidencia) return coincidencia.carta
   }
 
-  const imagen = obtenerElemento("featured-card-image")
-  imagen.src = obtenerUrlImagen(carta, "full")
-  imagen.alt = carta.name
-  obtenerElemento("featured-card-name").textContent = carta.name
-  obtenerElemento("featured-card-description").textContent =
-    carta.desc || `${carta.race} / ${carta.type}`
-  obtenerElemento("featured-card-price").textContent =
-    `Precio máximo disponible: ${formatoPrecio.format(precio)}`
-  obtenerElemento("featured-card-status").textContent = ""
-  enlazarNavegacionCarta(bloque, carta)
-  bloque.setAttribute("aria-busy", "false")
+  return entradas[0]?.carta ?? null
+}
+
+function contarCartasMazo(mazo) {
+  return [...(mazo.mainDeck ?? []), ...(mazo.extraDeck ?? [])].reduce(
+    (total, entrada) => total + (Number(entrada?.cantidad) || 0),
+    0
+  )
+}
+
+function inicializarCarruselBootstrap(elemento) {
+  globalThis.bootstrap?.Carousel?.getOrCreateInstance(elemento)
 }
 
 /**
- * Renderiza las cartas mediante clones de la etiqueta <template>.
- * @param {Array<Object>} cartas
- * @returns {number} Cantidad de cartas renderizadas.
+ * Renderiza el carrusel principal (Hero) con hasta 5 cartas destacadas.
+ * @param {Array<Object>} cards
  */
-export function renderizarCartasPopulares(cartas) {
-  const plantilla = obtenerElemento("popular-card-template")
-  const grilla = obtenerElemento("popular-cards-grid")
+export function renderHeroCarousel(cards) {
+  const carouselEl = obtenerElemento("heroCardsCarousel")
+  const inner = obtenerElemento("hero-carousel-inner")
+  const status = obtenerElemento("hero-carousel-status")
+  const template = obtenerElemento("hero-slide-template")
+  const slides = cards.slice(0, 5)
   const fragmento = document.createDocumentFragment()
 
-  for (const carta of cartas) {
-    const columna = plantilla.content.cloneNode(true)
-    const imagen = columna.querySelector(".popular-card-image")
-    imagen.src = obtenerUrlImagen(carta, "small")
-    imagen.alt = carta.name
-    columna.querySelector(".card-item-name").textContent = carta.name
-    columna.querySelector(".card-item-type").textContent =
-      `${carta.race} / ${carta.type}`
-    enlazarNavegacionCarta(columna.querySelector(".card-item"), carta)
-    fragmento.append(columna)
-  }
+  slides.forEach((card, index) => {
+    const clone = template.content.cloneNode(true)
+    const item = clone.querySelector(".carousel-item")
+    if (index === 0) item.classList.add("active")
 
-  grilla.replaceChildren(fragmento)
-  obtenerElemento("popular-cards-status").textContent = ""
-  return cartas.length
+    const img = clone.querySelector(".hero-card-img")
+    img.src = obtenerUrlImagen(card, "full")
+    img.alt = card.name
+
+    clone.querySelector(".hero-card-title").textContent = card.name
+    clone.querySelector(".hero-card-desc").textContent =
+      card.desc || [card.race, card.type].filter(Boolean).join(" / ") || "Sin descripción disponible."
+    clone.querySelector(".hero-card-link").href = crearUrlDetalleCarta(card)
+
+    fragmento.append(clone)
+  })
+
+  inner.replaceChildren(fragmento)
+
+  const indicators = document.querySelectorAll("#hero-carousel-indicators [data-bs-slide-to]")
+  indicators.forEach((boton, index) => {
+    boton.hidden = index >= slides.length
+    boton.classList.toggle("active", index === 0)
+    if (index === 0) {
+      boton.setAttribute("aria-current", "true")
+    } else {
+      boton.removeAttribute("aria-current")
+    }
+  })
+
+  status.hidden = true
+  carouselEl.hidden = false
+  inicializarCarruselBootstrap(carouselEl)
+}
+
+/**
+ * Renderiza el slider de hasta 10 cartas populares.
+ * @param {Array<Object>} cards
+ */
+export function renderCardSlider(cards) {
+  const sliderEl = obtenerElemento("popularCardsSlider")
+  const inner = obtenerElemento("popular-cards-inner")
+  const status = obtenerElemento("popular-cards-status")
+  const template = obtenerElemento("card-slide-template")
+  const fragmento = document.createDocumentFragment()
+
+  cards.slice(0, 10).forEach((card, index) => {
+    const clone = template.content.cloneNode(true)
+    const item = clone.querySelector(".carousel-item")
+    if (index === 0) item.classList.add("active")
+
+    const img = clone.querySelector(".card-slide-img")
+    img.src = obtenerUrlImagen(card, "small")
+    img.alt = card.name
+
+    clone.querySelector(".card-slide-name").textContent = card.name
+    clone.querySelector(".card-slide-type").textContent =
+      [card.race, card.type].filter(Boolean).join(" / ")
+    clone.querySelector(".card-slide-link").href = crearUrlDetalleCarta(card)
+
+    fragmento.append(clone)
+  })
+
+  inner.replaceChildren(fragmento)
+  status.hidden = true
+  inicializarCarruselBootstrap(sliderEl)
+}
+
+/**
+ * Renderiza el slider de hasta 10 mazos destacados desde /api/mazos/populares.
+ * @param {Array<Object>} decks
+ */
+export function renderDeckSlider(decks) {
+  const sliderEl = obtenerElemento("featuredDecksSlider")
+  const inner = obtenerElemento("featured-decks-inner")
+  const status = obtenerElemento("featured-decks-status")
+  const template = obtenerElemento("deck-slide-template")
+  const fragmento = document.createDocumentFragment()
+
+  decks.slice(0, 10).forEach((deck, index) => {
+    const clone = template.content.cloneNode(true)
+    const item = clone.querySelector(".carousel-item")
+    if (index === 0) item.classList.add("active")
+
+    const img = clone.querySelector(".deck-slide-img")
+    const cartaPortada = obtenerCartaPortadaMazo(deck)
+    if (cartaPortada) {
+      img.src = obtenerUrlImagen(cartaPortada, "small")
+      img.alt = deck.nombre
+    } else {
+      img.hidden = true
+    }
+
+    clone.querySelector(".deck-slide-name").textContent = deck.nombre
+    clone.querySelector(".deck-slide-count").textContent = `${contarCartasMazo(deck)} cartas`
+    clone.querySelector(".deck-slide-author").textContent = `Por ${deck.username}`
+    clone.querySelector(".deck-slide-link").href =
+      `mazo.html?id=${encodeURIComponent(deck.id)}&popular=true`
+
+    fragmento.append(clone)
+  })
+
+  inner.replaceChildren(fragmento)
+  status.hidden = true
+  inicializarCarruselBootstrap(sliderEl)
+}
+
+export function renderizarErrorHero(mensaje = "No se pudieron cargar las cartas destacadas.") {
+  const carouselEl = document.getElementById("heroCardsCarousel")
+  if (carouselEl) carouselEl.hidden = true
+
+  const status = document.getElementById("hero-carousel-status")
+  if (status) {
+    status.textContent = mensaje
+    status.hidden = false
+  }
+}
+
+export function renderizarErrorCartasPopulares(mensaje = "No se pudieron cargar las cartas populares.") {
+  const status = document.getElementById("popular-cards-status")
+  if (status) {
+    status.textContent = mensaje
+    status.hidden = false
+  }
+}
+
+export function renderizarErrorMazosDestacados(mensaje = "No se pudieron cargar los mazos destacados.") {
+  const status = document.getElementById("featured-decks-status")
+  if (status) {
+    status.textContent = mensaje
+    status.hidden = false
+  }
 }
 
 /** Informa en la página cuando no es posible cargar los datos. */
 export function renderizarErrorDeCartas() {
-  const bloque = document.querySelector(".featured-card")
-  if (bloque) {
-    bloque.setAttribute("aria-busy", "false")
-  }
-
-  obtenerElemento("featured-card-name").textContent =
-    "Carta destacada no disponible"
-  obtenerElemento("featured-card-status").textContent =
-    "No se pudo cargar la carta destacada."
-  obtenerElemento("popular-cards-status").textContent =
-    "No se pudieron cargar las cartas populares."
+  renderizarErrorHero()
+  renderizarErrorCartasPopulares()
+  renderizarErrorMazosDestacados()
 }
