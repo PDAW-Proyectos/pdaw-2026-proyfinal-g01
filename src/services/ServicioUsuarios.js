@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs"
 import { RepositorioUsuarios } from "../repositories/RepositorioUsuarios.js"
 import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
 import { AuthenticationError, ConflictError } from "../utils/errors.js"
+import { paginar } from '../utils/paginacion.js'
 
 export class ServicioUsuarios {
   #repositorioUsuarios
@@ -71,7 +72,32 @@ export class ServicioUsuarios {
     return true
   }
 
-  obtenerUsuarios() {
-  return this.#repositorioUsuarios.obtenerTodos()
+  async obtenerUsuarios({ username = '', pagina = 1, limite = 10 } = {}) {
+  const registros = this.#repositorioUsuarios.obtenerTodos()
+  //Verifico si u es una instancia de la clase Usuario comprobando que tenga definido el método toDTO.
+  let usuarios = registros.map((u) => (typeof u.toDTO === 'function' ? u.toDTO() : u))
+
+  //filtro por nombre
+  const termino = username.trim().toLowerCase()
+  if (termino) {
+    usuarios = usuarios.filter((u) =>
+      (u.username ?? '').toLowerCase().includes(termino)
+    )
+  }
+
+    if (usuarios.length === 0) {
+      return {
+        datos: [],
+        paginacion: {
+          paginaActual: 1,
+          totalPaginas: 0,
+          totalEntradas: 0,
+          tieneAnterior: false,
+          tieneSiguiente: false,
+        },
+      }
+    }
+
+    return paginar(usuarios, Number(limite), Number(pagina))
   }
 }

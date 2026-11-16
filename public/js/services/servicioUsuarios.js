@@ -15,5 +15,27 @@ export const servicioUsuarios = {
     return await api(`/api/usuarios/${encodeURIComponent(username)}`, {
       method: 'DELETE'
     })
+  },
+
+  async obtenerPaginados({ pagina = 1, limite = 10, username = '' } = {}) {
+  const params = new URLSearchParams({
+    pagina: String(pagina),
+    limite: String(limite),
+  })
+
+  if (username.trim()) {
+    params.set('username', username.trim())
   }
+
+  const response = await fetch(`/api/usuarios?${params.toString()}`, {
+    credentials: 'include',
+  })
+
+  const data = await response.json()
+  if (!response.ok) {
+    throw new Error(data.message || 'Error al obtener los usuarios.')
+  }
+
+  return data // { datos: [...], paginacion: { ... } }
+}
 }

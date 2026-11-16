@@ -1,5 +1,6 @@
 // Patron que exige al menos un caracter que no sea espacio en blanco
 const PATRON_NO_VACIO = "\\S"
+const PATRON_ENTERO_POSITIVO = "^[1-9]\\d*$"
 
 export const esquemasUsuarios = {
   registro: {
@@ -58,6 +59,25 @@ export const esquemasUsuarios = {
         minLength: 1,
         maxLength: 30,
         pattern: PATRON_NO_VACIO
+      }
+    }
+  },
+
+  consultaUsuarios: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      pagina: {
+        type: "string",
+        pattern: PATRON_ENTERO_POSITIVO
+      },
+      limite: {
+        type: "string",
+        pattern: PATRON_ENTERO_POSITIVO
+      },
+      username: {
+        type: "string",
+        maxLength: 30
       }
     }
   }

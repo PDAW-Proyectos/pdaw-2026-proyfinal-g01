@@ -7,7 +7,7 @@ import { esquemasUsuarios } from "../schemas/usuarios.schema.js"
 const router = Router()
 
 router.get("/me", requiereAutenticacion, controladorUsuarios.obtenerPerfil)
-router.get("/", requiereRol("admin"), controladorUsuarios.listar)
+router.get("/", requiereRol("admin"),validar(esquemasUsuarios.consultaUsuarios, "query") , controladorUsuarios.listar)
 router.post("/registro", validar(esquemasUsuarios.registro, "body"), controladorUsuarios.registrar)
 router.post("/login", validar(esquemasUsuarios.login, "body"), controladorUsuarios.login)
 router.post("/logout", requiereAutenticacion, controladorUsuarios.logout)

@@ -151,23 +151,84 @@ describe("ServicioUsuarios", () => {
     })
   })
   describe("obtenerUsuarios", () => {
-    test("devuelve un arreglo vacío si no hay usuarios registrados", async () => {
-      const usuarios = await servicio.obtenerUsuarios()
-      expect(usuarios).toEqual([])
+    test("devuelve datos vacíos y paginación en cero si no hay usuarios registrados", async () => {
+      const resultado = await servicio.obtenerUsuarios()
+
+      expect(resultado).toEqual({
+        datos: [],
+        paginacion: {
+          paginaActual: 1,
+          totalPaginas: 0,
+          totalEntradas: 0,
+          tieneAnterior: false,
+          tieneSiguiente: false
+        }
+      })
     })
 
-    test("devuelve todos los usuarios registrados como instancias de Usuario", async () => {
+    test("devuelve los usuarios registrados como DTOs con metadatos de paginación correspondientes", async () => {
       await sembrarDb(rutaDbUsuarios, {
         yugi: { nombre: "Yugi", username: "yugi", contraseña: "hash1", rol: "usuario" },
         admin: { nombre: "Admin", username: "admin", contraseña: "hash2", rol: "admin" }
       })
       await repoUsuarios.cargar()
 
-      const usuarios = await servicio.obtenerUsuarios()
+      const resultado = await servicio.obtenerUsuarios()
 
-      expect(usuarios).toHaveLength(2)
-      expect(usuarios[0]).toBeInstanceOf(Usuario)
-      expect(usuarios.map((u) => u.username)).toEqual(["yugi", "admin"])
+      expect(resultado.datos).toHaveLength(2)
+      expect(resultado.datos[0]).not.toBeInstanceOf(Usuario)
+      expect(resultado.datos[0].contraseña).toBeUndefined()
+      expect(resultado.datos.map((u) => u.username)).toEqual(["yugi", "admin"])
+      expect(resultado.paginacion).toEqual({
+        paginaActual: 1,
+        totalPaginas: 1,
+        totalEntradas: 2,
+        tieneAnterior: false,
+        tieneSiguiente: false
+      })
+    })
+
+    test("filtra usuarios por username sin distinguir mayúsculas o minúsculas", async () => {
+      await sembrarDb(rutaDbUsuarios, {
+        yugi: { nombre: "Yugi Muto", username: "yugi_moto", contraseña: "hash1", rol: "usuario" },
+        kaiba: { nombre: "Seto Kaiba", username: "seto_kaiba", contraseña: "hash2", rol: "usuario" }
+      })
+      await repoUsuarios.cargar()
+
+      const resultado = await servicio.obtenerUsuarios({ username: "KAIBA" })
+
+      expect(resultado.datos).toHaveLength(1)
+      expect(resultado.datos[0].username).toBe("seto_kaiba")
+      expect(resultado.paginacion.totalEntradas).toBe(1)
+    })
+
+    test("pagina correctamente según los parámetros pagina y limite", async () => {
+      await sembrarDb(rutaDbUsuarios, {
+        u1: { nombre: "U1", username: "user1", contraseña: "h", rol: "usuario" },
+        u2: { nombre: "U2", username: "user2", contraseña: "h", rol: "usuario" },
+        u3: { nombre: "U3", username: "user3", contraseña: "h", rol: "usuario" }
+      })
+      await repoUsuarios.cargar()
+
+      const pagina1 = await servicio.obtenerUsuarios({ pagina: 1, limite: 2 })
+      expect(pagina1.datos.map((u) => u.username)).toEqual(["user1", "user2"])
+      expect(pagina1.paginacion).toEqual({
+        paginaActual: 1,
+        totalPaginas: 2,
+        totalEntradas: 3,
+        tieneAnterior: false,
+        tieneSiguiente: true
+      })
+
+      const pagina2 = await servicio.obtenerUsuarios({ pagina: 2, limite: 2 })
+      expect(pagina2.datos.map((u) => u.username)).toEqual(["user3"])
+      expect(pagina2.paginacion).toEqual({
+        paginaActual: 2,
+        totalPaginas: 2,
+        totalEntradas: 3,
+        tieneAnterior: true,
+        tieneSiguiente: false
+      })
     })
   })
 })
