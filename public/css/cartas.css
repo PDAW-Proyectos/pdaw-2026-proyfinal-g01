@@ -416,3 +416,90 @@
     font-size: 0.9rem;
     font-weight: 700;
 }
+
+
+/* =========================================
+   SKELETON LOADING - TARJETAS
+========================================= */
+
+.card-skeleton {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 0px;
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+}
+
+/* Imagen simulada */
+.skeleton-image,
+.card-image.is-loading {
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    #f3f4f6 25%,
+    #e5e7eb 50%,
+    #f3f4f6 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite linear;
+}
+
+.skeleton-image {
+  aspect-ratio: 2 / 3;
+}
+
+.card-image.is-loading {
+  color: transparent;
+}
+
+/* Contenido inferior */
+.skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+}
+
+/* Líneas de texto */
+.skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    #f3f4f6 25%,
+    #e5e7eb 50%,
+    #f3f4f6 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite linear;
+}
+
+.skeleton-name {
+  width: 80%;
+  height: 16px;
+}
+
+.skeleton-type {
+  width: 55%;
+}
+
+/* Animación de brillo */
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
+/* Accesibilidad: reducir movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-image,
+  .skeleton-line,
+  .card-image.is-loading {
+    animation: none;
+  }
+}

@@ -1,6 +1,7 @@
 import { obtenerPaginaCartas } from "../services/cartaApi.js"
 import { renderizarCartas } from "../components/tarjetasCartas.js"
 import { inicializarControlesCartas } from "../components/controlesCartas.js"
+import { mostrarSkeletons } from "../components/skeletonCartas.js"
 
 const grid = document.getElementById("cardsGrid")
 const plantilla = document.getElementById("card-template")
@@ -11,6 +12,7 @@ const botonSiguiente = document.getElementById("next-page")
 const selectAlfabetico = document.getElementById("selectAlfabetico")
 const selectPrecio = document.getElementById("selectPrecio")
 
+const CARTAS_POR_PAGINA = 20
 
 let paginaActual = 1
 let paginacionActual
@@ -26,44 +28,73 @@ const controles = inicializarControlesCartas({
   botonSiguiente,
   estadoPaginacion,
 
-  //onCambiarPagina permite que los controles comuniquen sus acciones a cartas.js, 
+  //onCambiarOrden permite que los controles comuniquen sus acciones a cartas.js, 
   // sin tener que conocer cómo se realizan las solicitudes al backend.
-  onCambiarPagina: (valor, siguiente = false) => {
-    if (siguiente) {
-      cargarPagina(paginaActual + valor)
-    } else if (valor === -1) {
+  onCambiarOrden: () => cargarPagina(1),
+
+  onPaginaAnterior: () => {
+    if (paginacionActual?.tieneAnterior) {
       cargarPagina(paginaActual - 1)
-    } else {
-      cargarPagina(valor)
+    }
+  },
+
+  onPaginaSiguiente: () => {
+    if (paginacionActual?.tieneSiguiente) {
+      cargarPagina(paginaActual + 1)
     }
   }
 })
 
 /**
- * Carga una página del backend (20 cartas por página), ordenada globalmente por
- * el servidor. El estado de paginación devuelto por la API habilita los botones
- * anterior/siguiente y permite recorrer el catálogo completo.
- * @param {number} pagina
+ * Obtiene una página de cartas desde el backend.
+ *
+ * Mientras se realiza la solicitud, muestra tarjetas skeleton.
+ * Cuando llegan los datos, reemplaza los skeletons por las
+ * tarjetas reales.
+ *
+ * También evita que una solicitud anterior sobrescriba
+ * los resultados de una solicitud más reciente.
+ *
+ * @param {number} pagina - Número de página solicitada.
+ * @returns {Promise<void>}
  */
 async function cargarPagina(pagina) {
   const idSolicitud = ++solicitudActual
   cargando = true
   grid.setAttribute("aria-busy", "true")
   estado.textContent = "Cargando cartas..."
-  controles.actualizarPaginacion(paginacionActual, cargando)
+
+  // Mostrar skeletons mientras se espera la respuesta.
+  mostrarSkeletons(grid, CARTAS_POR_PAGINA)
+  controles.actualizarPaginacion(
+    paginacionActual,
+    cargando
+  )
 
   try {
-    const resultado = await obtenerPaginaCartas(pagina, controles.obtenerOrden())
+    const resultado = await obtenerPaginaCartas(
+      pagina,
+      controles.obtenerOrden()
+    )
+
+    // Ignorar respuestas de solicitudes anteriores.
     if (idSolicitud !== solicitudActual) return
 
+    // Reemplazar skeletons por cartas reales.
     renderizarCartas(resultado.datos, grid, plantilla)
+
     paginaActual = resultado.paginacion.paginaActual
     paginacionActual = resultado.paginacion
     estado.textContent = ""
+
   } catch (error) {
     if (idSolicitud !== solicitudActual) return
+
     console.error("No se pudieron cargar las cartas:", error)
-    estado.textContent = "No se pudieron cargar las cartas. Intentá nuevamente."
+    grid.replaceChildren()
+    estado.textContent =
+      "No se pudieron cargar las cartas. Intentá nuevamente."
+
   } finally {
     if (idSolicitud === solicitudActual) {
       cargando = false

@@ -5,7 +5,9 @@ export function inicializarControlesCartas({
   botonAnterior,
   botonSiguiente,
   estadoPaginacion,
-  onCambiarPagina
+  onCambiarOrden,
+  onPaginaAnterior,
+  onPaginaSiguiente
 }){
     function obtenerOrden() {
         return selectAlfabetico.value !== "none"
@@ -54,7 +56,7 @@ export function inicializarControlesCartas({
         selectPrecio.value = "none"
         }
 
-        onCambiarPagina(1)
+        onCambiarOrden()
     })
 
     // Orden por precio.
@@ -63,17 +65,17 @@ export function inicializarControlesCartas({
         selectAlfabetico.value = "none"
         }
 
-        onCambiarPagina(1)
+        onCambiarOrden()
     })
 
     // Página anterior.
     botonAnterior.addEventListener("click", () => {
-        onCambiarPagina(-1)
+        onPaginaAnterior()
     })
 
     // Página siguiente.
     botonSiguiente.addEventListener("click", () => {
-        onCambiarPagina(1, true)
+        onPaginaSiguiente()
     })
 
     return {

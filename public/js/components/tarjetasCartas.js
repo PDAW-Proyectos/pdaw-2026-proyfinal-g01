@@ -27,14 +27,23 @@ function crearCarta(carta, plantilla) {
 
   elemento.dataset.id = carta.id
   elemento.setAttribute("aria-label", `${carta.name}, mostrar detalles`)
-  imagen.src = obtenerUrlImagen(carta, "small")
   imagen.alt = carta.name
+  imagen.classList.add("is-loading")
+  imagen.addEventListener("load", () => {
+    imagen.classList.remove("is-loading")
+  }, { once: true })
   imagen.addEventListener("error", () => {
+    imagen.classList.remove("is-loading")
     const marcador = document.createElement("div")
     marcador.className = "img-placeholder"
     marcador.textContent = carta.name
     imagen.replaceWith(marcador)
   }, { once: true })
+  imagen.src = obtenerUrlImagen(carta, "small")
+
+  if (imagen.complete && imagen.naturalWidth > 0) {
+    imagen.classList.remove("is-loading")
+  }
 
   tarjeta.querySelector(".card-front-name").textContent = carta.name
   tarjeta.querySelector(".card-front-type").textContent =
