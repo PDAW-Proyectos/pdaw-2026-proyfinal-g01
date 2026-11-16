@@ -1,5 +1,5 @@
 import { authService } from '../services/authService.js'
-import { marcarBotonExito, inicializarTogglePassword } from '../modules/uti.js'
+import { marcarBotonExito, inicializarTogglePassword } from '../modules/utilidadFormularios.js'
 
 const form = document.getElementById('form-login')
 const btnSubmit = form.querySelector('button[type="submit"]')

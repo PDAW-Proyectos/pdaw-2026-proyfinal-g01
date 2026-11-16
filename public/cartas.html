@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YuGiKi - Cartas</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/all.css">
+    <link rel="stylesheet" href="css/cartas.css">
+</head>
+<body>
+    <!-- Header con Bootstrap Navbar -->
+    <nav class="navbar navbar-expand-xl navbar-custom sticky-top">
+        <div class="container-fluid">
+            <a href="index.html" class="navbar-brand">YuGiKi</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="text-center navbar-nav me-auto mb-2 mb-lg-0 ms-3">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link nav-link-custom active">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="cartas.html" class="nav-link nav-link-custom">Cartas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="coleccion.html" class="nav-link nav-link-custom">Coleccion</a>
+                    </li>
+                </ul>
+
+                <!-- Nav Bar dinamica (botones - login y registro) -->
+                <div id="nav-auth" class="d-flex align-items-center justify-content-center gap-2 my-2 my-xl-0"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Catálogo de cartas -->
+    <main class="py-4">
+        <div class="container-custom">
+            <h1 class="section-title">Cartas</h1>
+
+            <!-- Selects de ordenamiento -->
+            <div class="toolbar mb-4">
+                <select class="filter-select" id="selectAlfabetico" aria-label="Ordenar alfabéticamente">
+                    <option value="none" selected>Ordenar alfabéticamente</option>
+                    <option value="nombre-asc">Nombre: A - Z</option>
+                    <option value="nombre-desc">Nombre: Z - A</option>
+                </select>
+
+                <select class="filter-select" id="selectPrecio" aria-label="Ordenar por precio">
+                    <option value="none" selected>Ordenar por precio</option>
+                    <option value="precio-asc">Precio: menor a mayor</option>
+                    <option value="precio-desc">Precio: mayor a menor</option>
+                </select>
+            </div>
+
+            <p class="cards-status" id="cards-status" role="status" aria-live="polite"></p>
+            <div class="cards-grid" id="cardsGrid" aria-busy="true"></div>
+            <nav class="cards-pagination" aria-label="Paginación del catálogo">
+                <button class="pagination-button" id="previous-page" type="button" disabled>
+                    <
+                </button>
+                <span class="pagination-status" id="pagination-status" aria-live="polite"></span>
+                <button class="pagination-button" id="next-page" type="button" disabled>
+                    >
+                </button>
+            </nav>
+        </div>
+    </main>
+
+    <template id="card-template">
+        <article class="card-flip" tabindex="0">
+            <div class="card-flip-inner">
+                <div class="card-face card-front">
+                    <img class="card-image" alt="" loading="lazy">
+                    <div class="card-front-info">
+                        <div class="card-front-info-row">
+                            <div style="min-width:0;">
+                                <div class="card-front-name"></div>
+                                <div class="card-front-type"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <ul class="back-attr-list"></ul>
+                    <a href="carta.html" class="btn-details">Ver detalles</a>
+                </div>
+            </div>
+        </article>
+    </template>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container-custom">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h3>Navegación</h3>
+                    <ul>
+                        <li><a href="index.html">Inicio</a></li>
+                        <li><a href="cartas.html">Cartas</a></li>
+                        <li><a href="coleccion.html">Coleccion</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h3>Recursos</h3>
+                    <ul>
+                        <li><a href="#">Banlist Oficial</a></li>
+                        <li><a href="#">Eventos</a></li>
+                        <li><a href="#">Torneos</a></li>
+                        <li><a href="#">Guías</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h3>Soporte</h3>
+                    <ul>
+                        <li><a href="#">Ayuda</a></li>
+                        <li><a href="#">Contacto</a></li>
+                        <li><a href="salud.html">Estado API</a></li>
+                        <li><a href="#">Reportar Problema</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h3>Síguenos</h3>
+                    <ul>
+                        <li><a href="#">Discord</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="js/pages/cartas.js"></script>
+    <script type="module" src="js/components/navbar.js"></script>
+</body>
+</html>
