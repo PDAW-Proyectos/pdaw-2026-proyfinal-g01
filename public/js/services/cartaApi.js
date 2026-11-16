@@ -20,6 +20,25 @@ export async function obtenerCartas() {
 }
 
 /**
+ * Obtiene las 10 cartas más populares desde el backend (/api/cartas/populares).
+ * @returns {Promise<Array<Object>>}
+ */
+export async function obtenerCartasPopulares() {
+  const respuesta = await fetch("/api/cartas/populares")
+
+  if (!respuesta.ok) {
+    throw new Error(`La API de cartas populares respondio con HTTP ${respuesta.status}.`)
+  }
+
+  const cartas = await respuesta.json()
+  if (!Array.isArray(cartas) || cartas.length === 0) {
+    throw new Error("La API de cartas populares no devolvio una lista de cartas.")
+  }
+
+  return cartas
+}
+
+/**
  * Obtiene desde el backend los datos completos de una carta por su ID.
  * @param {number|string} id
  * @returns {Promise<Object>}

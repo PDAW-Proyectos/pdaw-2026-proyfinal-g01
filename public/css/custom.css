@@ -61,6 +61,12 @@ input[type="password"]:not(:placeholder-shown) {
   transition: transform 0.2s ease;
 }
 
+/* Make the navbar drawer backdrop match the dark blurred search dialog backdrop */
+#navbarDrawer::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+}
+
 .navbar-list-icon {
   font-size: 2rem;
 }
@@ -89,6 +95,42 @@ input[type="password"]:not(:placeholder-shown) {
 
 .search-trigger-placeholder {
   display: none;
+}
+
+/* Responsive multi-item sliders for 10 cards & 10 decks */
+.multi-item-slider {
+  --carousel-items: 2;
+  --carousel-items-gap: 0.75rem;
+  --carousel-items-peek: 1.5rem;
+}
+
+@media (width >= 768px) {
+  .multi-item-slider {
+    --carousel-items: 3;
+    --carousel-items-gap: 1rem;
+    --carousel-items-peek: 2rem;
+  }
+}
+
+@media (width >= 1024px) {
+  .multi-item-slider {
+    --carousel-items: 4;
+  }
+}
+
+@media (width >= 1280px) {
+  .multi-item-slider {
+    --carousel-items: 5;
+  }
+}
+
+/* Clamp long card descriptions in the Hero carousel */
+.hero-desc-clamp {
+  display: -webkit-box;
+  line-clamp: 4;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Expanded search bar on XL viewports (>= 1280px) */

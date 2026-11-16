@@ -5,7 +5,7 @@ import { paginar } from "../utils/paginacion.js"
 import { descargarCartas } from "./ServicioApiYgo.js"
 
 const CARTAS_POR_PAGINA = 20
-const CANTIDAD_POPULARES = 10
+const CANTIDAD_POPULARES = 15
 
 export class ServicioCartas {
   #repositorioCartas
