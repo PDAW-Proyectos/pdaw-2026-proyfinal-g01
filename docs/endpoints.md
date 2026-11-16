@@ -117,7 +117,7 @@ Todas las respuestas incluyen la cabecera `X-Request-Id` con el identificador ú
   "paginacion": {
     "paginaActual": 1,
     "totalPaginas": 5,
-    "totalCartas": 92,
+    "totalEntradas": 92,
     "tieneAnterior": false,
     "tieneSiguiente": true
   }
@@ -197,7 +197,7 @@ Todas las respuestas incluyen la cabecera `X-Request-Id` con el identificador ú
   "paginacion": {
     "paginaActual": 1,
     "totalPaginas": 1,
-    "totalMazos": 1,
+    "totalEntradas": 1,
     "tieneAnterior": false,
     "tieneSiguiente": false
   }

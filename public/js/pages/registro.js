@@ -1,51 +1,51 @@
 import { authService } from '../services/authService.js'
+import { setError, clearErrors, marcarBotonExito } from '../modules/utilidadFormularios.js'
 
 const form = document.getElementById('form-registro')
 const btnSubmit = form.querySelector('button[type="submit"]')
-const statusDiv = document.getElementById('status-mensaje')
+const textoOriginalBtn = btnSubmit.textContent
 
-function setError(name, message) {
-  const field = form.elements[name]
-  if (field) {
-    field.setAttribute('aria-invalid', message ? 'true' : 'false')
-    field.classList.toggle('is-invalid', Boolean(message))
-  }
-  const errorElement = document.getElementById(`error-${name}`)
-  if (errorElement) {
-    if (message) {
-      errorElement.classList.add('text-danger', 'd-block')
-    } else {
-      errorElement.classList.remove('text-danger', 'd-block')
-    }
-    errorElement.textContent = message ?? ''
-  }
-}
+function validarFormulario(data) {
+  const errores = []
 
-function clearErrors() {
-  Array.from(form.elements).forEach((field) => {
-    if (field.name) setError(field.name, null)
-  })
-  statusDiv.textContent = ''
-  statusDiv.className = 'mb-3 fw-bold text-center'
+  if (!data.nombre?.trim()) {
+    errores.push({ campo: 'nombre', mensaje: 'Ingresa tu nombre.' })
+  }
+
+  if (!data.username?.trim()) {
+    errores.push({ campo: 'username', mensaje: 'Ingresa un usuario.' })
+  }
+
+  if (!data.contraseña) {
+    errores.push({ campo: 'contraseña', mensaje: 'Ingresa una contraseña.' })
+  } else if (data.contraseña.length < 6) {
+    errores.push({ campo: 'contraseña', mensaje: 'Mínimo 6 caracteres.' })
+  }
+
+  if (!data['confirm-password']) {
+    errores.push({ campo: 'confirm-password', mensaje: 'Confirma tu contraseña.' })
+  } else if (data.contraseña !== data['confirm-password']) {
+    errores.push({ campo: 'confirm-password', mensaje: 'No coinciden.' })
+  }
+
+  if (!data.terminos) {
+    errores.push({ campo: 'terminos', mensaje: 'Debes aceptar los términos.' })
+  }
+
+  return errores
 }
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault()
 
   btnSubmit.disabled = true
-  clearErrors()
+  clearErrors(form)
+
+  let redirigiendo = false
 
   try {
     const data = Object.fromEntries(new FormData(form))
-    const erroresCliente = []
-
-    // Validación en el cliente
-    if (data.contraseña !== data['confirm-password']) {
-      erroresCliente.push({ campo: 'confirm-password', mensaje: 'Las contraseñas no coinciden.' })
-    }
-    if (!data.terminos) {
-      erroresCliente.push({ campo: 'terminos', mensaje: 'Debe aceptar los Términos y Condiciones.' })
-    }
+    const erroresCliente = validarFormulario(data)
 
     if (erroresCliente.length > 0) {
       const errorObj = new Error('Errores de validación en el cliente')
@@ -53,38 +53,37 @@ form.addEventListener('submit', async (event) => {
       throw errorObj
     }
 
-    delete data['confirm-password']
-    delete data['terminos']
+    const datos = {
+      nombre: data.nombre.trim(),
+      username: data.username.trim(),
+      contraseña: data.contraseña,
+    }
 
-    statusDiv.textContent = 'Creando cuenta...'
-    statusDiv.classList.add('text-info')
+    btnSubmit.textContent = 'Creando cuenta...'
 
-    await authService.registro(data)
+    await authService.registro(datos)
 
-    statusDiv.textContent = '¡Cuenta creada con éxito! Redirigiendo al login...'
-    statusDiv.classList.replace('text-info', 'text-success')
+    redirigiendo = true
+    marcarBotonExito(btnSubmit, '¡Usuario creado!')
 
     setTimeout(() => {
       window.location.assign('login.html')
     }, 1500)
   } catch (err) {
-    statusDiv.textContent = ''
-    statusDiv.classList.remove('text-info')
-
     if (err.status === 409) {
-      err.fieldErrors = [{ campo: 'username', mensaje: err.message }]
+      err.fieldErrors = [{ campo: 'username', mensaje: 'El usuario ya existe.' }]
     }
 
     if (err.fieldErrors?.length) {
-      err.fieldErrors.forEach(({ campo, mensaje }) => setError(campo, mensaje))
+      err.fieldErrors.forEach(({ campo, mensaje }) => setError(form, campo, mensaje))
       form.elements[err.fieldErrors[0].campo]?.focus()
-      statusDiv.classList.add('text-danger')
-      statusDiv.textContent = 'Por favor, revisa los datos ingresados.'
     } else {
-      statusDiv.classList.add('text-danger')
-      statusDiv.textContent = err.message
+      alert(err.message || 'Error al crear la cuenta.')
     }
   } finally {
-    btnSubmit.disabled = false
+    if (!redirigiendo) {
+      btnSubmit.disabled = false
+      btnSubmit.textContent = textoOriginalBtn
+    }
   }
 })

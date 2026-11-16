@@ -53,7 +53,7 @@ export function filtrarCartas(cartas, filtros = {}) {
 
   // Creacion de array de funciones que filtran los valores
   for (const [campo, valor] of Object.entries(filtros)) {
-    if (valor === undefined || valor === null || valor === "") continue
+    if (valor === undefined || valor === "") continue
 
     const crearPredicado = CREADORES_FILTRO[campo]
     if (crearPredicado) {

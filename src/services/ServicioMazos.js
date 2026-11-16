@@ -1,6 +1,7 @@
 import { RepositorioMazos, MAX_MAZOS } from "../repositories/RepositorioMazos.js"
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
 import { NotFoundError, AuthorizationError } from "../utils/errors.js"
+import { paginar } from "../utils/paginacion.js"
 
 /** La clase ServicioMazos maneja el RepositorioMazos y ademas lee del
  * RepositorioCartas para conseguir el resto de la informacion. */
@@ -67,26 +68,11 @@ export class ServicioMazos {
       }
     }
 
-    const paginaActual = Number(page) || 1
-    const totalMazos = idsMazos.length
-    const totalPaginas = Math.ceil(totalMazos / MAX_MAZOS)
-
-    if (paginaActual > totalPaginas) {
-      throw new NotFoundError(`La pagina ${paginaActual} no existe. Total de paginas: ${totalPaginas}.`)
-    }
-
-    const inicio = (paginaActual - 1) * MAX_MAZOS
-    const datos = idsMazos.slice(inicio, inicio + MAX_MAZOS).map((id) => this.obtenerMazo(id))
+    const { datos: idsPagina, paginacion } = paginar(idsMazos, MAX_MAZOS, page)
 
     return {
-      datos,
-      paginacion: {
-        paginaActual,
-        totalPaginas,
-        totalMazos,
-        tieneAnterior: paginaActual > 1,
-        tieneSiguiente: paginaActual < totalPaginas
-      }
+      datos: idsPagina.map((id) => this.obtenerMazo(id)),
+      paginacion
     }
   }
 

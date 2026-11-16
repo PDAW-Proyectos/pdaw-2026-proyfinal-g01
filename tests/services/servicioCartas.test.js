@@ -242,7 +242,7 @@ describe("ServicioCartas", () => {
       expect(resultado.paginacion).toEqual({
         paginaActual: 1,
         totalPaginas: 1,
-        totalCartas: 4,
+        totalEntradas: 4,
         tieneAnterior: false,
         tieneSiguiente: false
       })

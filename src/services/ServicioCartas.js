@@ -1,6 +1,7 @@
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
 import { NotFoundError } from "../utils/errors.js"
 import { filtrarCartas } from "../utils/filtroCartas.js"
+import { paginar } from "../utils/paginacion.js"
 import { descargarCartas } from "./ServicioApiYgo.js"
 
 const CARTAS_POR_PAGINA = 20
@@ -72,27 +73,7 @@ export class ServicioCartas {
       throw new NotFoundError("No se encontraron cartas que coincidan con los criterios de busqueda.")
     }
 
-    const paginaActual = Number(filtros.page) || 1
-    const totalCartas = resultados.length
-    const totalPaginas = Math.ceil(totalCartas / CARTAS_POR_PAGINA)
-
-    if (paginaActual > totalPaginas) {
-      throw new NotFoundError(`La pagina ${paginaActual} no existe. Total de paginas: ${totalPaginas}.`)
-    }
-
-    const inicio = (paginaActual - 1) * CARTAS_POR_PAGINA
-    const datos = resultados.slice(inicio, inicio + CARTAS_POR_PAGINA)
-
-    return {
-      datos,
-      paginacion: {
-        paginaActual,
-        totalPaginas,
-        totalCartas,
-        tieneAnterior: paginaActual > 1,
-        tieneSiguiente: paginaActual < totalPaginas
-      }
-    }
+    return paginar(resultados, CARTAS_POR_PAGINA, filtros.page)
   }
 
   /** Obtiene una carta especifica a partir de su ID.
