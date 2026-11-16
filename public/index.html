@@ -139,22 +139,22 @@
     </dialog>
 
     <!-- Hero Section: Carousel de 5 Cartas Destacadas -->
-    <section class="py-4 bg-1 border-bottom border-2 border-primary">
+    <section class="py-4 bg-primary fg-white border-bottom border-2 border-primary">
         <div class="container">
-            <p id="hero-carousel-status" class="text-center fg-2" role="status" aria-live="polite">Cargando cartas destacadas...</p>
+            <p id="hero-carousel-status" class="text-center fg-white" role="status" aria-live="polite">Cargando cartas destacadas...</p>
 
             <div id="heroCardsCarousel" class="carousel carousel-overlay slide" data-bs-autoplay="true" data-bs-ends="loop" hidden>
-                <div class="carousel-inner bg-body border border-2 border-primary p-4 md:p-5" id="hero-carousel-inner">
+                <div class="carousel-inner bg-primary border border-2 border-white p-4 md:p-5" id="hero-carousel-inner">
                     <!-- 5 slides renderizados dinámicamente desde #hero-slide-template -->
                 </div>
 
                 <!-- Controles e indicadores inferiores -->
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="d-flex gap-2">
-                        <button class="btn-outline theme-primary btn-icon btn-sm" type="button" data-bs-target="#heroCardsCarousel" data-bs-slide="prev" aria-label="Anterior">
+                        <button class="btn-outline hero-control-btn btn-icon btn-sm" type="button" data-bs-target="#heroCardsCarousel" data-bs-slide="prev" aria-label="Anterior">
                             <span class="carousel-icon-prev" aria-hidden="true"></span>
                         </button>
-                        <button class="btn-outline theme-primary btn-icon btn-sm" type="button" data-bs-target="#heroCardsCarousel" data-bs-slide="next" aria-label="Siguiente">
+                        <button class="btn-outline hero-control-btn btn-icon btn-sm" type="button" data-bs-target="#heroCardsCarousel" data-bs-slide="next" aria-label="Siguiente">
                             <span class="carousel-icon-next" aria-hidden="true"></span>
                         </button>
                     </div>
@@ -173,15 +173,15 @@
             <template id="hero-slide-template">
                 <div class="carousel-item">
                     <div class="row g-4 align-items-center">
-                        <!-- Imagen a la izquierda con borde primario -->
+                        <!-- Imagen a la izquierda con borde blanco -->
                         <div class="col-12 md:col-4 d-flex justify-content-center">
-                            <img class="hero-card-img img-fluid border border-2 border-primary shadow" alt="" style="max-height: 340px;">
+                            <img class="hero-card-img img-fluid border border-2 border-white shadow" alt="" style="max-height: 340px;">
                         </div>
                         <!-- Título, descripción y botón a la derecha -->
                         <div class="col-12 md:col-8 d-flex flex-column align-items-start gap-3">
-                            <h1 class="hero-card-title h2 fw-bold fg-primary mb-0"></h1>
-                            <p class="hero-card-desc fg-body mb-2 hero-desc-clamp"></p>
-                            <a href="#" class="hero-card-link btn-outline theme-primary btn-lg text-uppercase fw-semibold mt-auto">
+                            <h1 class="hero-card-title h2 fw-bold fg-white mb-0"></h1>
+                            <p class="hero-card-desc fg-white mb-2 hero-desc-clamp"></p>
+                            <a href="#" class="hero-card-link btn-solid hero-cta-btn btn-lg text-uppercase fw-semibold mt-auto">
                                 Ver detalles
                             </a>
                         </div>

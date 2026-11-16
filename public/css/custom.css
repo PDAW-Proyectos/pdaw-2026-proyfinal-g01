@@ -127,10 +127,38 @@ input[type="password"]:not(:placeholder-shown) {
 /* Clamp long card descriptions in the Hero carousel */
 .hero-desc-clamp {
   display: -webkit-box;
-  line-clamp: 4;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Hero section white CTA, controls & indicators on primary background */
+.hero-cta-btn {
+  --btn-bg: #ffffff;
+  --btn-color: var(--primary-fg, #6d4aff);
+  --btn-border-color: #ffffff;
+  --btn-hover-bg: rgba(255, 255, 255, 0.9);
+  --btn-hover-color: var(--primary-fg-emphasis, #5330e6);
+  --btn-hover-border-color: #ffffff;
+  --btn-active-bg: rgba(255, 255, 255, 0.82);
+  --btn-active-color: var(--primary-fg-emphasis, #5330e6);
+  --btn-active-border-color: #ffffff;
+}
+
+.hero-control-btn {
+  --btn-bg: transparent;
+  --btn-color: #ffffff;
+  --btn-border-color: rgba(255, 255, 255, 0.75);
+  --btn-hover-bg: #ffffff;
+  --btn-hover-color: var(--primary-fg, #6d4aff);
+  --btn-hover-border-color: #ffffff;
+  --btn-active-bg: rgba(255, 255, 255, 0.9);
+  --btn-active-color: var(--primary-fg, #6d4aff);
+  --btn-active-border-color: #ffffff;
+}
+
+#heroCardsCarousel {
+  --carousel-indicator-bg: #ffffff;
 }
 
 /* Expanded search bar on XL viewports (>= 1280px) */
