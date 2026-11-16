@@ -1,0 +1,209 @@
+@font-face {
+  font-family: "Orbitron";
+  src: url("../fonts/Orbitron-VariableFont_wght.ttf") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Password bullet spacing */
+input[type="password"]:not(:placeholder-shown) {
+  font-family: system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.12em;
+}
+
+.login-separator {
+  width: 100%;
+  height: 100px;
+}
+
+.btn-close-custom {
+  width: 24px !important;
+  height: 24px !important;
+  max-width: 24px !important;
+  max-height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  --btn-border-width: 0px !important;
+  margin-left: auto !important;
+}
+
+/* Card dimensions */
+.detail-card {
+  width: 271px;
+  height: 395px;
+}
+
+.max-w-450px {
+  max-width: 450px !important;
+  width: 100% !important;
+}
+
+.max-w-768px {
+  max-width: 768px !important;
+  width: 100% !important;
+}
+
+.form-adorn>.btn {
+  --bs-btn-min-height: auto;
+  line-height: 1;
+}
+
+.nav-mazos-accordion > summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-mazos-accordion[open] > summary .bi-chevron-down {
+  transform: rotate(180deg);
+}
+
+.nav-mazos-accordion > summary .bi-chevron-down {
+  transition: transform 0.2s ease;
+}
+
+/* Make the navbar drawer backdrop match the dark blurred search dialog backdrop */
+#navbarDrawer::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+}
+
+.navbar-list-icon {
+  font-size: 2rem;
+}
+
+/* Navbar buttons hover & focus state */
+.navbar .navbar-toggler,
+.search-trigger-btn {
+  background-color: transparent;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.navbar .navbar-toggler:hover,
+.navbar .navbar-toggler:focus-visible,
+.search-trigger-btn:hover,
+.search-trigger-btn:focus-visible {
+  background-color: var(--bs-2, #f1f2f6);
+  border-color: var(--bs-primary, #6d4aff);
+  box-shadow: 0 0 0 0.2rem rgba(109, 74, 255, 0.2);
+  outline: none;
+}
+
+.search-trigger-icon {
+  font-size: 1.35rem;
+}
+
+.search-trigger-placeholder {
+  display: none;
+}
+
+/* Responsive multi-item sliders for 10 cards & 10 decks */
+.multi-item-slider {
+  --carousel-items: 2;
+  --carousel-items-gap: 0.75rem;
+  --carousel-items-peek: 1.5rem;
+}
+
+@media (width >= 768px) {
+  .multi-item-slider {
+    --carousel-items: 3;
+    --carousel-items-gap: 1rem;
+    --carousel-items-peek: 2rem;
+  }
+}
+
+@media (width >= 1024px) {
+  .multi-item-slider {
+    --carousel-items: 4;
+  }
+}
+
+@media (width >= 1280px) {
+  .multi-item-slider {
+    --carousel-items: 5;
+  }
+}
+
+/* Clamp long card descriptions in the Hero carousel */
+.hero-desc-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Hero section white CTA, controls & indicators on primary background */
+.hero-cta-btn {
+  --btn-bg: #ffffff;
+  --btn-color: var(--primary-fg, #6d4aff);
+  --btn-border-color: #ffffff;
+  --btn-hover-bg: rgba(255, 255, 255, 0.9);
+  --btn-hover-color: var(--primary-fg-emphasis, #5330e6);
+  --btn-hover-border-color: #ffffff;
+  --btn-active-bg: rgba(255, 255, 255, 0.82);
+  --btn-active-color: var(--primary-fg-emphasis, #5330e6);
+  --btn-active-border-color: #ffffff;
+}
+
+.hero-control-btn {
+  --btn-bg: transparent;
+  --btn-color: #ffffff;
+  --btn-border-color: rgba(255, 255, 255, 0.75);
+  --btn-hover-bg: #ffffff;
+  --btn-hover-color: var(--primary-fg, #6d4aff);
+  --btn-hover-border-color: #ffffff;
+  --btn-active-bg: rgba(255, 255, 255, 0.9);
+  --btn-active-color: var(--primary-fg, #6d4aff);
+  --btn-active-border-color: #ffffff;
+}
+
+#heroCardsCarousel {
+  --carousel-indicator-bg: #ffffff;
+}
+
+/* Expanded search bar on XL viewports (>= 1280px) */
+@media (width >= 1280px) {
+  .search-trigger-wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 320px;
+    z-index: 1;
+  }
+
+  .search-trigger-btn {
+    width: 100% !important;
+    height: 2.5rem !important;
+    min-height: 2.5rem !important;
+    aspect-ratio: auto !important;
+    padding: 0.375rem 0.75rem !important;
+    background-color: var(--bs-body-bg, #f8f9fa);
+    border: 1px solid var(--bs-primary-border-subtle, #c5b6ff);
+    color: var(--bs-secondary-color, #6c757d) !important;
+    font-size: 0.925rem;
+    font-weight: 400;
+    cursor: pointer;
+  }
+
+  .search-trigger-btn:hover,
+  .search-trigger-btn:focus-visible {
+    background-color: var(--bs-2, #f1f2f6);
+    border-color: var(--bs-primary, #6d4aff);
+    box-shadow: 0 0 0 0.2rem rgba(109, 74, 255, 0.2);
+  }
+
+  .search-trigger-icon {
+    font-size: 1rem;
+    color: var(--bs-primary, #6d4aff);
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  .search-trigger-placeholder {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs"
 import { RepositorioUsuarios } from "../repositories/RepositorioUsuarios.js"
 import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
-import { AuthenticationError, ConflictError, NotFoundError } from "../utils/errors.js"
-import { Usuario } from "../models/Usuario.js"
+import { AuthenticationError, ConflictError } from "../utils/errors.js"
+import { paginar } from '../utils/paginacion.js'
 
 export class ServicioUsuarios {
   #repositorioUsuarios
@@ -20,6 +20,7 @@ export class ServicioUsuarios {
     if (!(repositorioMazos instanceof RepositorioMazos)) {
       throw new TypeError("El servicio se tiene que crear con un RepositorioMazos")
     }
+
     this.#repositorioUsuarios = repositorioUsuarios
     this.#repositorioMazos = repositorioMazos
   }
@@ -30,27 +31,25 @@ export class ServicioUsuarios {
    * @param {string} datos.nombre
    * @param {string} datos.username
    * @param {string} datos.contraseña
-   * @returns {Promise<Usuario>}
+   * @returns {Promise<import("../models/Usuario.js").Usuario>}
    */
-  async registrar({ nombre, username, contraseña }) {
-    Usuario.validarContraseñaPlana(contraseña)
+  async registrarUsuario({ nombre, username, contraseña }) {
     const contraseñaHash = await bcrypt.hash(contraseña, 10)
 
     return await this.#repositorioUsuarios.agregar({
       nombre,
       username,
       contraseña: contraseñaHash,
-      rol: 'usuario',
-      mazos: []
+      rol: "usuario"
     })
   }
 
   /** Verifica las credenciales de un usuario.
    * @param {string} username
    * @param {string} contraseñaPlana
-   * @returns {Promise<Usuario>}
+   * @returns {Promise<import("../models/Usuario.js").Usuario>}
    */
-  async autenticar(username, contraseñaPlana) {
+  async autenticarUsuario(username, contraseñaPlana) {
     const usuario = this.#repositorioUsuarios.buscar(username)
     const valida = usuario !== null && await usuario.verificarContraseña(contraseñaPlana)
 
@@ -61,36 +60,44 @@ export class ServicioUsuarios {
     return usuario
   }
 
-
-  async eliminar(usuarioAEliminar, adminLogueado) {
-    if (usuarioAEliminar === adminLogueado) {
+  async eliminarUsuario(usuarioAEliminar, adminLogueado) {
+    const usernameLimpio = usuarioAEliminar.trim()
+    if (usernameLimpio === adminLogueado) {
       throw new ConflictError("No se puede eliminar tu propia cuenta de administrador.")
     }
-    const usuario = this.#repositorioUsuarios.buscar(usuarioAEliminar)
-    if (!usuario) {
-      throw new NotFoundError(`El usuario "${usuarioAEliminar}" no existe.`)
-    }
 
-    //borrado de los mazos en la base de datos
-    for (const idMazo of usuario.mazos) {
-      try {
-        await this.#repositorioMazos.eliminar(idMazo)
-      } catch {
-        //ignoro si el mazo ya no existe 
+    await this.#repositorioUsuarios.eliminar(usernameLimpio)
+    await this.#repositorioMazos.eliminarPorUsername(usernameLimpio)
+
+    return true
+  }
+
+  async obtenerUsuarios({ username = '', pagina = 1, limite = 10 } = {}) {
+  const registros = this.#repositorioUsuarios.obtenerTodos()
+  //Verifico si u es una instancia de la clase Usuario comprobando que tenga definido el método toDTO.
+  let usuarios = registros.map((u) => (typeof u.toDTO === 'function' ? u.toDTO() : u))
+
+  //filtro por nombre
+  const termino = username.trim().toLowerCase()
+  if (termino) {
+    usuarios = usuarios.filter((u) =>
+      (u.username ?? '').toLowerCase().includes(termino)
+    )
+  }
+
+    if (usuarios.length === 0) {
+      return {
+        datos: [],
+        paginacion: {
+          paginaActual: 1,
+          totalPaginas: 0,
+          totalEntradas: 0,
+          tieneAnterior: false,
+          tieneSiguiente: false,
+        },
       }
     }
 
-    return await this.#repositorioUsuarios.eliminar(usuarioAEliminar)
-  }
-
-obtenerMazosDeUsuario(username) {
-    const usuario = this.#repositorioUsuarios.buscar(username)
-    if (!usuario) {
-      throw new NotFoundError(`El usuario "${username}" no existe.`)
-    }
-    //retorna un arreglo de objetos mazo completos y si no tiene nada retorna un arreglo vacio
-    return usuario.mazos
-      .map(idMazo => this.#repositorioMazos.buscar(idMazo))
-      .filter(mazo => mazo !== null)
+    return paginar(usuarios, Number(limite), Number(pagina))
   }
 }

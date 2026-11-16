@@ -1,33 +1,55 @@
 import { ServicioMazos } from "../services/ServicioMazos.js"
-import { ValidationError } from "../utils/errors.js"
+import { ServicioMazosPopulares } from "../services/ServicioMazosPopulares.js"
 
 export class ControladorMazos {
   #servicioMazos
+  #servicioMazosPopulares
 
   /**
    * @param {ServicioMazos} servicioMazos
-   * @throws TypeError si el parametro no es una instancia de ServicioMazos.
+   * @param {ServicioMazosPopulares} servicioMazosPopulares
+   * @throws TypeError si los parametros no son instancias validas.
    */
-  constructor(servicioMazos) {
+  constructor(servicioMazos, servicioMazosPopulares) {
     if (!(servicioMazos instanceof ServicioMazos)) {
       throw new TypeError("El controlador se tiene que crear con un ServicioMazos")
     }
+    if (!(servicioMazosPopulares instanceof ServicioMazosPopulares)) {
+      throw new TypeError("El controlador se tiene que crear con un ServicioMazosPopulares")
+    }
 
     this.#servicioMazos = servicioMazos
-  }
-
-  /** Verifica que el parametro o campo exista en la peticion. */
-  #validarParametro(valor, nombreCampo) {
-    if (valor === undefined || valor === null) {
-      throw new ValidationError(`Falta el parametro obligatorio "${nombreCampo}".`)
-    }
+    this.#servicioMazosPopulares = servicioMazosPopulares
   }
 
   listarMazos = (req, res, next) => {
     try {
-      const mazos = this.#servicioMazos.listarMazos()
+      const username = req.query.all === "true" ? undefined : req.session.username
+
+      const mazos = this.#servicioMazos.listarMazos(username, req.query.page)
 
       res.status(200).json(mazos)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  listarMazosPopulares = (req, res, next) => {
+    try {
+      const mazos = this.#servicioMazosPopulares.listarMazosPopulares()
+
+      res.status(200).json(mazos)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  obtenerMazoPopular = (req, res, next) => {
+    try {
+      const { id } = req.params
+      const mazo = this.#servicioMazosPopulares.obtenerMazoPopular(id)
+
+      res.status(200).json(mazo)
     } catch (error) {
       next(error)
     }
@@ -36,7 +58,6 @@ export class ControladorMazos {
   obtenerMazo = (req, res, next) => {
     try {
       const { id } = req.params
-      this.#validarParametro(id, "id")
       const mazo = this.#servicioMazos.obtenerMazo(id)
 
       res.status(200).json(mazo)
@@ -45,33 +66,15 @@ export class ControladorMazos {
     }
   }
 
-  obtenerMazoDetallado = (req, res, next) => {
-    try {
-      const { id } = req.params
-      this.#validarParametro(id, "id")
-      const mazoDetallado = this.#servicioMazos.obtenerMazoDetallado(id)
-
-      res.status(200).json(mazoDetallado)
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  obtenerPrecioTotal = (req, res, next) => {
-    try {
-      const { id } = req.params
-      this.#validarParametro(id, "id")
-      const precioTotal = this.#servicioMazos.precioTotal(id)
-
-      res.status(200).json({ id: Number(id), precioTotal })
-    } catch (error) {
-      next(error)
-    }
-  }
-
   crearMazo = async (req, res, next) => {
     try {
-      const nuevoMazo = await this.#servicioMazos.crearMazo(req.body)
+      // se obliga a que el dueño sea el usuario autenticado, evitando suplantacion
+      const datosMazo = {
+        ...req.body,
+        username: req.session.username
+      }
+
+      const nuevoMazo = await this.#servicioMazos.crearMazo(datosMazo)
 
       res.status(201).json(nuevoMazo)
     } catch (error) {
@@ -82,9 +85,9 @@ export class ControladorMazos {
   actualizarMazo = async (req, res, next) => {
     try {
       const { id } = req.params
-      this.#validarParametro(id, "id")
-      this.#validarParametro(req.body, "body")
-      const mazoActualizado = await this.#servicioMazos.actualizarMazo(id, req.body)
+      const username = req.session.username
+
+      const mazoActualizado = await this.#servicioMazos.actualizarMazo(id, req.body, username)
 
       res.status(200).json(mazoActualizado)
     } catch (error) {
@@ -95,8 +98,9 @@ export class ControladorMazos {
   eliminarMazo = async (req, res, next) => {
     try {
       const { id } = req.params
-      this.#validarParametro(id, "id")
-      await this.#servicioMazos.eliminarMazo(id)
+      const username = req.session.username
+
+      await this.#servicioMazos.eliminarMazo(id, username)
 
       res.status(204).send()
     } catch (error) {
@@ -107,10 +111,10 @@ export class ControladorMazos {
   agregarCarta = async (req, res, next) => {
     try {
       const { id } = req.params
-      const idCarta = req.body?.idCarta
-      this.#validarParametro(id, "id")
-      this.#validarParametro(idCarta, "idCarta")
-      const mazoActualizado = await this.#servicioMazos.agregarCarta(id, idCarta)
+      const { idCarta } = req.body
+      const username = req.session.username
+
+      const mazoActualizado = await this.#servicioMazos.agregarCarta(id, idCarta, username)
 
       res.status(200).json(mazoActualizado)
     } catch (error) {
@@ -121,9 +125,9 @@ export class ControladorMazos {
   eliminarCarta = async (req, res, next) => {
     try {
       const { id, idCarta } = req.params
-      this.#validarParametro(id, "id")
-      this.#validarParametro(idCarta, "idCarta")
-      const mazoActualizado = await this.#servicioMazos.eliminarCarta(id, idCarta)
+      const username = req.session.username
+
+      const mazoActualizado = await this.#servicioMazos.eliminarCarta(id, idCarta, username)
 
       res.status(200).json(mazoActualizado)
     } catch (error) {

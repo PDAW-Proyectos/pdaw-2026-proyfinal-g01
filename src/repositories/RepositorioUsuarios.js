@@ -24,13 +24,7 @@ export class RepositorioUsuarios {
   /** Mapa de usuarios con claves de username para rapido acceso
    * @returns {Map <string, Usuario>}
    */
-  get usuarios() {
-    const copia = new Map()
-    for (const [username, usuario] of this.#usuarios) {
-      copia.set(username, Usuario.fromJSON(usuario.toJSON()))
-    }
-    return copia
-  }
+  get usuarios() { return this.#usuarios }
 
   // Methods
   /** Calcula el total de usuarios en el repositorio
@@ -45,12 +39,7 @@ export class RepositorioUsuarios {
    * @returns {Usuario | null}
    */
   buscar(username) {
-    if (typeof username !== "string") {
-      return null
-    }
-    const usernameNormalizado = username.trim()
-    const usuario = this.#usuarios.get(usernameNormalizado)
-    return usuario ? Usuario.fromJSON(usuario.toJSON()) : null
+    return this.#usuarios.get(username) ?? null
   }
 
   /** Guarda todos los Usuarios a la base de datos, como objeto JSON */
@@ -64,9 +53,13 @@ export class RepositorioUsuarios {
 
   /** Carga los datos desde la base de datos iniciando el repositorio con objetos de clase Usuario */
   async cargar() {
+
     try {
       const contenido = await readFile(this.#ruta, "utf8")
       const data = JSON.parse(contenido)
+
+      //this.#usuarios.clear()
+
       Object.entries(data).forEach(([username, dataUsuario]) => {
         this.#usuarios.set(username, Usuario.fromJSON(dataUsuario))
       })
@@ -131,6 +124,14 @@ export class RepositorioUsuarios {
     this.#usuarios.delete(existe.username)
 
     await this.guardar()
+
     return true
+  }
+
+  /** Devuelve un arreglo con todos los usuarios registrados en el repositorio
+   * @returns {Usuario[]}
+   */
+  obtenerTodos() {
+    return Array.from(this.#usuarios.values())
   }
 }

@@ -1,6 +1,6 @@
 import { RepositorioImagenes } from "../repositories/RepositorioImagenes.js"
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
-import { descargarImagen } from "../clients/ClienteApiYgo.js"
+import { descargarImagen } from "./ServicioApiYgo.js"
 import { NotFoundError } from "../utils/errors.js"
 
 // No se debe poner a mas de 20 por segundo

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - YuGiKi</title>
+    <!-- Bootstrap CSS & Icons -->
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/all.css">
+    <link rel="stylesheet" href="css/custom.css">
+</head>
+
+<body class="d-flex flex-column">
+    <!-- Registro Container -->
+    <main class="min-vh-100 d-flex flex-column flex-grow-1 justify-content-center align-items-center p-4">
+        <div class="login-separator"><a href="index.html" class="text-decoration-none"><span class="fg-primary fw-bolder text-3xl">YuGiKi!</span></a></div>
+
+        <div class="w-100 flex-grow-1 d-flex justify-content-center align-items-center">
+            <div class="max-w-450px w-100 border border-primary p-6 shadow bg-white">
+                <h1 class="text-center fg-primary">Crear cuenta</h1>
+                <div class="d-flex align-items-center gap-3 my-4">
+                    <div class="border-top flex-grow-1"></div>
+                </div>
+
+                <p class="text-center">Regístrate para acceder a todas las funciones</p>
+
+                <form action="#" method="POST" id="form-registro" novalidate>
+                    <div class="form-field my-4">
+                        <label for="nombre" class="form-label">Nombre completo</label>
+                        <input
+                            type="text"
+                            class="form-control rounded-0"
+                            id="nombre"
+                            name="nombre"
+                            placeholder="Ingrese su nombre"
+                            required
+                            aria-describedby="ayuda-nombre error-nombre">
+                        <small id="ayuda-nombre" class="fg-2 d-block"></small>
+                        <small id="error-nombre" class="fg-danger d-block"></small>
+                    </div>
+
+                    <div class="form-field my-4">
+                        <label for="username" class="form-label">Nombre de usuario</label>
+                        <input
+                            type="text"
+                            class="form-control rounded-0"
+                            id="username"
+                            name="username"
+                            placeholder="ejemplo123"
+                            required
+                            aria-describedby="ayuda-username error-username">
+                        <small id="ayuda-username" class="fg-2 d-block"></small>
+                        <small id="error-username" class="fg-danger d-block"></small>
+                    </div>
+
+                    <div class="form-field my-4">
+                        <label for="contraseña" class="form-label">Contraseña</label>
+                        <input
+                            type="password"
+                            class="form-control rounded-0"
+                            id="contraseña"
+                            name="contraseña"
+                            placeholder="Mínimo 6 caracteres"
+                            minlength="6"
+                            required
+                            aria-describedby="ayuda-contraseña error-contraseña">
+                        <div class="strength-bar" data-bs-strength></div>
+                        <small id="ayuda-contraseña" class="fg-2 d-block"></small>
+                        <small id="error-contraseña" class="fg-danger d-block"></small>
+                    </div>
+
+                    <div class="form-field my-4">
+                        <label for="confirm-password" class="form-label">Confirmar contraseña</label>
+                        <input
+                            type="password"
+                            class="form-control rounded-0"
+                            id="confirm-password"
+                            name="confirm-password"
+                            placeholder="Repite tu contraseña"
+                            minlength="6"
+                            required
+                            aria-describedby="error-confirm-password">
+                        <small id="error-confirm-password" class="fg-danger d-block"></small>
+                    </div>
+
+                    <div class="my-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <input
+                                type="checkbox"
+                                class="check rounded-0"
+                                id="terminos"
+                                name="terminos"
+                                required
+                                aria-describedby="error-terminos">
+                            <label class="fg-2" for="terminos">
+                                Acepto los <a class="fw-bold text-decoration-none" href="#">Términos y Condiciones</a>
+                            </label>
+                        </div>
+                        <small id="error-terminos" class="fg-danger d-block"></small>
+                    </div>
+
+                    <button type="submit" class="btn w-100 theme-primary btn-solid rounded-0 my-4">Crear cuenta</button>
+                </form>
+
+                <div class="d-flex align-items-center gap-3 my-4">
+                    <div class="border-top flex-grow-1"></div>
+                    <span class="fg-2 small">o</span>
+                    <div class="border-top flex-grow-1"></div>
+                </div>
+
+                <div class="text-center mt-3">
+                    ¿Ya tienes una cuenta? <a class="fw-bold text-decoration-none" href="login.html">Inicia sesión aquí</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-separator"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark fg-light p-4">
+        <div class="container text-center">
+            <p class="mb-0 fs-sm">© 2026 YuGiKi!. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="module" src="js/components/navbar.js"></script>
+    <script type="module" src="js/pages/registro.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV03r20Y0CN7uqx1tQogjPL" crossorigin="anonymous"></script>
+</body>
+
+</html>

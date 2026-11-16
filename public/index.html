@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YuGiKi!</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/all.css">
+    <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+    <!-- Header navbar -->
+    <nav class="navbar sticky-top border-bottom border-2 border-primary bg-white">
+        <div class="container-fluid position-relative">
+            <a href="index.html" class="navbar-brand">
+                <span class="fg-primary fw-bolder text-2xl">YuGiKi!</span>
+            </a>
+
+            <!-- Controles derechos -->
+            <div class="d-flex align-items-center gap-1">
+                <div class="search-trigger-wrapper">
+                    <button
+                        type="button"
+                        class="btn-icon btn-lg fg-primary search-trigger-btn"
+                        data-bs-toggle="dialog"
+                        data-bs-target="#searchDialog"
+                        aria-label="Buscar cartas">
+                        <span class="search-trigger-placeholder">Buscar cartas...</span>
+                        <i class="bi bi-search search-trigger-icon lh-1" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                <button
+                    class="btn-icon btn-lg navbar-toggler fg-primary"
+                    type="button"
+                    data-bs-toggle="drawer"
+                    data-bs-target="#navbarDrawer"
+                    aria-controls="navbarDrawer"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <i class="bi bi-list navbar-list-icon lh-1" aria-hidden="true"></i>
+                </button>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- Navbar Drawer -->
+    <dialog class="drawer drawer-end" tabindex="-1" id="navbarDrawer" aria-labelledby="navbarDrawerLabel">
+        <div class="drawer-header">
+            <h5 class="drawer-title fs-xl fw-bold" id="navbarDrawerLabel">Menú</h5>
+            <button type="button" class="btn-solid btn-close-custom theme-primary" data-bs-dismiss="drawer" aria-label="Cerrar">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div class="mx-3 border-bottom border-primary"></div>
+
+        <!-- d-flex flex-column + fs-lg para agrandar fuente y empujar nav-auth al fondo -->
+        <div class="drawer-body d-flex flex-column fs-lg">
+            <ul class="navbar-nav w-100 mb-3">
+                <!-- Inicio -->
+                <li class="nav-item w-100">
+                    <a href="index.html" class="nav-link d-flex justify-content-between align-items-center w-100 active" aria-current="page">
+                        <span>Inicio</span>
+                        <i class="bi bi-house-door" aria-hidden="true"></i>
+                    </a>
+                </li>
+
+                <!-- Cartas -->
+                <li class="nav-item w-100">
+                    <a href="#" class="nav-link d-flex justify-content-between align-items-center w-100">
+                        <span>Cartas</span>
+                        <i class="bi bi-suit-spade" aria-hidden="true"></i>
+                    </a>
+                </li>
+
+                <!-- Mazos (Acordeón nativo de Bootstrap 6) -->
+                <li class="nav-item w-100">
+                    <details class="nav-mazos-accordion w-100">
+                        <summary class="nav-link d-flex justify-content-between align-items-center w-100 list-unstyled" style="cursor: pointer;">
+                            <span>Mazos</span>
+                            <span class="d-inline-flex align-items-center gap-2">
+                                <i class="bi bi-chevron-down fs-sm" aria-hidden="true"></i>
+                                <i class="bi bi-collection" aria-hidden="true"></i>
+                            </span>
+                        </summary>
+                        <ul class="navbar-nav p-3 border-start border-2 border-primary ms-4 my-1 fs-md">
+                            <li class="nav-item w-100">
+                                <a href="mis-mazos.html" class="nav-link d-flex justify-content-between align-items-center w-100">
+                                    <span>Mis creaciones</span>
+                                    <i class="bi bi-person-lines-fill" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item w-100">
+                                <a href="mazos-comunidad.html" class="nav-link d-flex justify-content-between align-items-center w-100">
+                                    <span>De la comunidad</span>
+                                    <i class="bi bi-people" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </details>
+                </li>
+            </ul>
+        </div>
+
+        <div class="mx-3 border-bottom border-primary"></div>
+
+        <!-- mt-auto empuja nav-auth al fondo del drawer -->
+        <div id="nav-auth" class="drawer-footer justify-content-center border-0"></div>
+    </dialog>
+
+    <!-- Dialog de Búsqueda (estilo documentación oficial de Bootstrap) -->
+    <dialog class="dialog dialog-lg dialog-slide-down mt-12 mb-auto" id="searchDialog" aria-labelledby="searchDialogLabel">
+        <div class="dialog-header border-0">
+            <div class="form-control form-adorn border-0 shadow-none py-2 px-4 me-4" role="search">
+                <div class="form-adorn-icon fg-primary me-2" aria-hidden="true">
+                    <i class="bi bi-search fs-lg"></i>
+                </div>
+                <input
+                    type="search"
+                    class="form-ghost fs-lg"
+                    id="navbarSearchInput"
+                    placeholder="Buscar cartas..."
+                    aria-label="Buscar cartas"
+                    autofocus>
+            </div>
+            <button type="button" class="btn-solid btn-close-custom theme-primary ms-2" data-bs-dismiss="dialog" aria-label="Cerrar búsqueda">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="border-bottom border-primary border-2 mx-2"></div>
+        <div class="dialog-body" id="searchResults">
+            <p class="fg-2 text-center my-4">Escribe para comenzar a buscar cartas...</p>
+        </div>
+    </dialog>
+
+    <!-- Hero Section: Carousel de 5 Cartas Destacadas -->
+    <section class="py-4 bg-primary fg-white border-bottom border-2 border-primary">
+        <div class="container">
+            <p id="hero-carousel-status" class="text-center fg-white" role="status" aria-live="polite">Cargando cartas destacadas...</p>
+
+            <div id="heroCardsCarousel" class="carousel carousel-overlay slide" data-bs-autoplay="true" data-bs-ends="loop" hidden>
+                <div class="carousel-inner bg-primary border border-2 border-white p-4 md:p-5" id="hero-carousel-inner">
+                    <!-- 5 slides renderizados dinámicamente desde #hero-slide-template -->
+                </div>
+
+                <!-- Controles e indicadores inferiores -->
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="d-flex gap-2">
+                        <button class="btn-outline hero-control-btn btn-icon btn-sm" type="button" data-bs-target="#heroCardsCarousel" data-bs-slide="prev" aria-label="Anterior">
+                            <span class="carousel-icon-prev" aria-hidden="true"></span>
+                        </button>
+                        <button class="btn-outline hero-control-btn btn-icon btn-sm" type="button" data-bs-target="#heroCardsCarousel" data-bs-slide="next" aria-label="Siguiente">
+                            <span class="carousel-icon-next" aria-hidden="true"></span>
+                        </button>
+                    </div>
+
+                    <div class="carousel-indicators position-static m-0" id="hero-carousel-indicators">
+                        <button type="button" data-bs-target="#heroCardsCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Carta 1"></button>
+                        <button type="button" data-bs-target="#heroCardsCarousel" data-bs-slide-to="1" aria-label="Carta 2"></button>
+                        <button type="button" data-bs-target="#heroCardsCarousel" data-bs-slide-to="2" aria-label="Carta 3"></button>
+                        <button type="button" data-bs-target="#heroCardsCarousel" data-bs-slide-to="3" aria-label="Carta 4"></button>
+                        <button type="button" data-bs-target="#heroCardsCarousel" data-bs-slide-to="4" aria-label="Carta 5"></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template de cada slide del Hero (estructura idéntica a la imagen) -->
+            <template id="hero-slide-template">
+                <div class="carousel-item">
+                    <div class="row g-4 align-items-center">
+                        <!-- Imagen a la izquierda con borde blanco -->
+                        <div class="col-12 md:col-4 d-flex justify-content-center">
+                            <img class="hero-card-img img-fluid border border-2 border-white shadow" alt="" style="max-height: 340px;">
+                        </div>
+                        <!-- Título, descripción y botón a la derecha -->
+                        <div class="col-12 md:col-8 d-flex flex-column align-items-start gap-3">
+                            <h1 class="hero-card-title h2 fw-bold fg-white mb-0"></h1>
+                            <p class="hero-card-desc fg-white mb-2 hero-desc-clamp"></p>
+                            <a href="#" class="hero-card-link btn-solid hero-cta-btn btn-lg text-uppercase fw-semibold mt-auto">
+                                Ver detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </section>
+
+    <!-- Main Content: Sliders de 10 Cartas y 10 Mazos -->
+    <main class="flex-grow-1 py-5">
+        <div class="container vstack gap-5">
+
+            <!-- Slider 1: 10 Cartas Populares -->
+            <section aria-labelledby="popular-cards-heading">
+                <p id="popular-cards-status" class="fg-2" role="status" aria-live="polite">Cargando cartas populares...</p>
+
+                <div id="popularCardsSlider" class="carousel slide multi-item-slider" data-bs-ends="stop">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 id="popular-cards-heading" class="h3 fw-bold mb-0">Cartas Populares</h2>
+                        <div class="d-flex gap-2">
+                            <button class="btn-outline theme-primary btn-icon btn-sm" type="button" data-bs-target="#popularCardsSlider" data-bs-slide="prev" aria-label="Cartas anteriores">
+                                <span class="carousel-icon-prev" aria-hidden="true"></span>
+                            </button>
+                            <button class="btn-outline theme-primary btn-icon btn-sm" type="button" data-bs-target="#popularCardsSlider" data-bs-slide="next" aria-label="Siguientes cartas">
+                                <span class="carousel-icon-next" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="carousel-inner" id="popular-cards-inner">
+                        <!-- 10 items renderizados desde #card-slide-template -->
+                    </div>
+                </div>
+
+                <template id="card-slide-template">
+                    <div class="carousel-item">
+                        <article class="card h-100 border border-primary hover-lift">
+                            <img class="card-slide-img card-img-top" alt="" loading="lazy">
+                            <div class="card-body p-3">
+                                <h3 class="card-slide-name h6 fw-bold mb-1 text-truncate"></h3>
+                                <p class="card-slide-type fs-xs fg-2 mb-0 text-truncate"></p>
+                                <a href="#" class="card-slide-link stretched-link" aria-label="Ver detalles de la carta"></a>
+                            </div>
+                        </article>
+                    </div>
+                </template>
+            </section>
+
+            <!-- Slider 2: 10 Mazos Destacados -->
+            <section aria-labelledby="featured-decks-heading">
+                <p id="featured-decks-status" class="fg-2" role="status" aria-live="polite">Cargando mazos...</p>
+
+                <div id="featuredDecksSlider" class="carousel slide multi-item-slider" data-bs-ends="stop">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 id="featured-decks-heading" class="h3 fw-bold mb-0">Mazos Destacados</h2>
+                        <div class="d-flex gap-2">
+                            <button class="btn-outline theme-primary btn-icon btn-sm" type="button" data-bs-target="#featuredDecksSlider" data-bs-slide="prev" aria-label="Mazos anteriores">
+                                <span class="carousel-icon-prev" aria-hidden="true"></span>
+                            </button>
+                            <button class="btn-outline theme-primary btn-icon btn-sm" type="button" data-bs-target="#featuredDecksSlider" data-bs-slide="next" aria-label="Siguientes mazos">
+                                <span class="carousel-icon-next" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="carousel-inner" id="featured-decks-inner">
+                        <!-- 10 items renderizados desde #deck-slide-template -->
+                    </div>
+                </div>
+
+                <template id="deck-slide-template">
+                    <div class="carousel-item">
+                        <article class="card h-100 border border-primary hover-lift">
+                            <img class="deck-slide-img card-img-top" alt="" loading="lazy">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center gap-2">
+                                    <h3 class="deck-slide-name h6 fw-bold mb-0 text-truncate"></h3>
+                                    <span class="deck-slide-count badge theme-primary"></span>
+                                </div>
+                                <p class="deck-slide-author fs-xs fg-2 mb-0 text-truncate"></p>
+                                <a href="#" class="deck-slide-link stretched-link" aria-label="Ver mazo"></a>
+                            </div>
+                        </article>
+                    </div>
+                </template>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark fg-light p-4">
+        <div class="d-flex gap-2 justify-content-around text-center">
+            <div>
+                <h3>Recursos</h3>
+                <ul class="list-unstyled">
+                    <li><a class="text-decoration-none fg-light" href="https://www.yugioh-card.com/eu/es/events/">Eventos</a></li>
+                    <li><a class="text-decoration-none fg-light" href="https://www.yugioh-card.com/eu/play/tcg-beginners-guide/">Guías</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Soporte</h3>
+                <ul class="list-unstyled">
+                    <li><a class="text-decoration-none fg-light" href="salud.html">Estado API</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Síguenos</h3>
+                <ul class="list-unstyled">
+                    <li><a class="text-decoration-none fg-light" href="https://discord.gg/KcSbkspf8">Discord</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="w-100 text-center border-top">
+            <p class="mb-0 fs-sm">© 2026 YuGiKi!. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV03r20Y0CN7uqx1tQogjPL" crossorigin="anonymous"></script>
+    <script type="module" src="js/components/navbar.js"></script>
+    <script type="module" src="js/pages/index.js"></script>
+</body>
+</html>

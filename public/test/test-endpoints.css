@@ -1,0 +1,112 @@
+body {
+  background-color: #f8fafc;
+  color: #1e293b;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+.header-panel {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 20px 0;
+  margin-bottom: 24px;
+}
+
+.badge-pass {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.badge-fail {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.badge-method {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.method-get { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+.method-post { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.method-patch { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+.method-delete { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+
+.test-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all 0.15s ease;
+}
+
+.test-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+}
+
+.test-card.passed { border-left: 5px solid #16a34a; }
+.test-card.failed { border-left: 5px solid #dc2626; }
+
+.test-header {
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  background: #ffffff;
+}
+
+.test-header:hover {
+  background: #f8fafc;
+}
+
+.test-body {
+  padding: 14px 18px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
+pre {
+  margin: 4px 0 0 0;
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  padding: 10px 12px;
+  border-radius: 6px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.stat-val {
+  font-size: 1.9rem;
+  font-weight: 800;
+}

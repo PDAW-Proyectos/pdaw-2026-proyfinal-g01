@@ -1,18 +1,17 @@
-import { RepositorioMazos } from "../repositories/RepositorioMazos.js"
+import { RepositorioMazos, MAX_MAZOS } from "../repositories/RepositorioMazos.js"
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
-import { NotFoundError, ValidationError } from "../utils/errors.js"
+import { NotFoundError, AuthorizationError } from "../utils/errors.js"
+import { paginar } from "../utils/paginacion.js"
 
-const TIPOS_EXTRA_DECK = ["fusion", "synchro", "xyz", "link", "fusion_pendulum", "synchro_pendulum", "xyz_pendulum"]
-
+/** La clase ServicioMazos maneja el RepositorioMazos y ademas lee del
+ * RepositorioCartas para conseguir el resto de la informacion. */
 export class ServicioMazos {
   #repositorioMazos
   #repositorioCartas
 
-  /** Inicia el servicio con el repositorio dado, maneja el RepositorioMazos y ademas lee del
-   * RepositorioCartas para conseguir el resto de la informacion.
+  /** Inicia el servicio con los repositorios dados.
    * @param {RepositorioMazos} repositorioMazos
    * @param {RepositorioCartas} repositorioCartas
-   * @throws TypeError si el parametro no de la clase usada por el servicio.
    */
   constructor(repositorioMazos, repositorioCartas) {
     // Validaciones
@@ -28,88 +27,122 @@ export class ServicioMazos {
   }
 
   // Methods
-  listarMazos(idMazos) {
-    if (!idMazos) {
-      return Array.from(this.#repositorioMazos.mazos.values())
+  #verificarDueñoYObtenerMazo(idMazo, username) {
+    const mazo = this.#repositorioMazos.buscar(Number(idMazo))
+
+    if (!mazo) {
+      throw new NotFoundError(`El Mazo asociado al id "${idMazo}" no se encontro.`)
     }
 
-    if (!Array.isArray(idMazos)) {
-      throw new ValidationError("Los ids tienen que ser un Array")
+    if (mazo.username !== username) {
+      throw new AuthorizationError("No tienes permisos para modificar este mazo.")
     }
-    return idMazos.map((id) => this.obtenerMazo(id))
+
+    return mazo
   }
 
+  #hidratarListaCartas(lista) {
+    return lista.map(({ id, cantidad }) => ({
+      carta: this.#repositorioCartas.buscar(id)?.toDTO() ?? null,
+      cantidad
+    }))
+  }
+
+  /** Lista los mazos de un usuario si se pasa el username, si no, lista todos los mazos paginados.
+   * @param {string} [username]
+   * @param {number|string} [page=1]
+   * @returns {{ datos: Array <Object>, paginacion: Object }}
+   */
+  listarMazos(username, page = 1) {
+    let idsMazos
+
+    if (username) {
+      idsMazos = this.#repositorioMazos.buscarPorUsername(username)
+      if (!idsMazos) {
+        throw new NotFoundError("El Usuario no tiene ningun mazo creado.")
+      }
+    } else {
+      idsMazos = Array.from(this.#repositorioMazos.mazos.keys())
+      if (idsMazos.length === 0) {
+        throw new NotFoundError("No hay mazos creados.")
+      }
+    }
+
+    const { datos: idsPagina, paginacion } = paginar(idsMazos, MAX_MAZOS, page)
+
+    return {
+      datos: idsPagina.map((id) => this.obtenerMazo(id)),
+      paginacion
+    }
+  }
+
+  /** Busca y obtiene el mazo devolviendo con las cartas cargadas, si el mismo existe.
+   * @param {string} idMazo
+   * @returns {Object}
+   */
   obtenerMazo(idMazo) {
     const mazo = this.#repositorioMazos.buscar(Number(idMazo))
     if (!mazo) {
       throw new NotFoundError(`El Mazo asociado al id "${idMazo}" no se encontro.`)
     }
 
-    return mazo
-  }
+    const cartasMainDeck = this.#hidratarListaCartas(mazo.mainDeck)
+    const cartasExtraDeck = this.#hidratarListaCartas(mazo.extraDeck)
 
-  obtenerMazoDetallado(idMazo) {
-    const mazo = this.obtenerMazo(idMazo)
+    let precioTotal = 0;
+    [...cartasMainDeck, ...cartasExtraDeck].forEach(({ carta, cantidad }) => {
+      precioTotal += (carta?.card_price ?? 0) * cantidad
+    })
+
     return {
       id: mazo.id,
+      username: mazo.username,
       nombre: mazo.nombre,
-      mainDeck: mazo.mainDeck.map(id => this.#repositorioCartas.buscar(id)),
-      extraDeck: mazo.extraDeck.map(id => this.#repositorioCartas.buscar(id)),
+      mainDeck: cartasMainDeck,
+      extraDeck: cartasExtraDeck,
       valido: mazo.valido(),
-      precioTotal: this.precioTotal(idMazo)
+      precioTotal: Number(precioTotal.toFixed(2))
     }
-  }
-
-  precioTotal(idMazo) {
-    const mazo = this.obtenerMazo(idMazo)
-    let total = 0;
-    [...mazo.mainDeck, ...mazo.extraDeck].forEach(id => {
-      const carta = this.#repositorioCartas.buscar(id)
-      const primerPrecio = carta?.card_prices?.[0]
-      const precioEbay = Number(primerPrecio?.ebay_price ?? 0)
-      const precioAmazon = Number(primerPrecio?.amazon_price ?? 0)
-      total += Math.max(precioEbay, precioAmazon)
-    })
-    return Number(total.toFixed(2))
   }
 
   async crearMazo(data) {
     return await this.#repositorioMazos.agregar({
+      username: data.username,
       nombre: data.nombre,
       mainDeck: data.mainDeck,
       extraDeck: data.extraDeck
     })
   }
 
-  async actualizarMazo(idMazo, data) {
-     return await this.#repositorioMazos.actualizar({
-       ...data,
-       id: Number(idMazo),
-     })
+  async actualizarMazo(idMazo, data, username) {
+    this.#verificarDueñoYObtenerMazo(idMazo, username)
+    return await this.#repositorioMazos.actualizar({
+      ...data,
+      id: Number(idMazo),
+      username: username // se asegura de no perder o cambiar el dueño
+    })
   }
 
-  async eliminarMazo(idMazo) {
-     return await this.#repositorioMazos.eliminar(Number(idMazo))
+  async eliminarMazo(idMazo, username) {
+    this.#verificarDueñoYObtenerMazo(idMazo, username)
+    await this.#repositorioMazos.eliminar(Number(idMazo))
+    return true
   }
 
-  async agregarCarta(idMazo, idCarta) {
-    const mazo = this.obtenerMazo(idMazo)
+  async agregarCarta(idMazo, idCarta, username) {
+    const mazo = this.#verificarDueñoYObtenerMazo(idMazo, username)
 
-    // Todavia no tengo la clase RepositorioCartas para saber bien como implementarlo
     const carta = this.#repositorioCartas.buscar(Number(idCarta))
     if (!carta) {
       throw new NotFoundError(`La carta asociada al id "${idCarta}" no existe.`)
     }
 
-    const banInfo = carta.banlist_info?.ban_tcg ?? "none"
-    const destino = TIPOS_EXTRA_DECK.includes(carta.frameType) ? "extra" : "main"
-
-    mazo.agregarCarta(carta.id, banInfo, destino)
+    mazo.agregarCarta(carta)
     return await this.#repositorioMazos.actualizar(mazo.toJSON())
   }
 
-  async eliminarCarta(idMazo, idCarta) {
-    const mazo = this.obtenerMazo(idMazo)
+  async eliminarCarta(idMazo, idCarta, username) {
+    const mazo = this.#verificarDueñoYObtenerMazo(idMazo, username)
 
     const eliminada = mazo.eliminarCarta(Number(idCarta))
     if (!eliminada) {

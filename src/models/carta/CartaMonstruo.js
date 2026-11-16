@@ -52,4 +52,17 @@ export class CartaMonstruo extends Carta {
       attribute: this.#attribute
     }
   }
+
+  /** Transforma los atributos de la carta monstruo en un DTO para enviar al cliente.
+   * @returns {Object}
+   */
+  toDTO() {
+    return {
+      ...super.toDTO(),
+      atk: this.#atk,
+      def: this.#def,
+      level: this.#level,
+      attribute: this.#attribute
+    }
+  }
 }
