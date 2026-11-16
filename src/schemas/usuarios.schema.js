@@ -60,5 +60,24 @@ export const esquemasUsuarios = {
         pattern: PATRON_NO_VACIO
       }
     }
+  },
+
+  consultaUsuarios: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      pagina: {
+        type: "string",
+        pattern: "^[1-9]\\d*$"
+      },
+      limite: {
+        type: "string",
+        pattern: "^[1-9]\\d*$"
+      },
+      username: {
+        type: "string",
+        maxLength: 30
+      }
+    }
   }
 }
