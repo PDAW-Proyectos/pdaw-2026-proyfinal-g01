@@ -88,8 +88,9 @@ export class ControladorUsuarios {
 
   listar = async (req, res, next) => {
   try {
-    const usuarios = this.#servicioUsuarios.obtenerUsuarios()
-    res.status(200).json(usuarios.map((u) => u.toDTO()))
+    const { username = '', pagina = 1, limite = 10 } = req.query
+    const resultado = await this.#servicioUsuarios.obtenerUsuarios({ username, pagina, limite })
+    res.status(200).json(resultado)
   } catch (error) {
     next(error)
   }

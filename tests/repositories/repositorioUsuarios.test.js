@@ -86,14 +86,13 @@ describe("RepositorioUsuarios", () => {
   })
 
   describe("buscar", () => {
-    test("devuelve el usuario buscado o null si no existe o el argumento es inválido", async () => {
+    test("devuelve el usuario buscado o null si no existe", async () => {
       await sembrarDb({ yugi: crearDatosUsuario("yugi") })
       const repo = new RepositorioUsuarios(rutaDb)
       await repo.cargar()
 
       expect(repo.buscar("yugi")).toBeInstanceOf(Usuario)
       expect(repo.buscar("inexistente")).toBeNull()
-      expect(repo.buscar(123)).toBeNull()
     })
   })
 

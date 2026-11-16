@@ -39,10 +39,6 @@ export class RepositorioUsuarios {
    * @returns {Usuario | null}
    */
   buscar(username) {
-    if (typeof username !== "string") {
-      return null
-    }
-
     return this.#usuarios.get(username) ?? null
   }
 

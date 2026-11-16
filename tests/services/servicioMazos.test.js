@@ -96,7 +96,7 @@ describe("ServicioMazos", () => {
 
       const resultado = servicio.listarMazos()
       expect(resultado.datos).toHaveLength(2)
-      expect(resultado.paginacion.totalMazos).toBe(2)
+      expect(resultado.paginacion.totalEntradas).toBe(2)
     })
 
     test("lista solo los mazos del usuario especificado", async () => {

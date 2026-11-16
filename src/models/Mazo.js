@@ -24,17 +24,8 @@ function normalizarListaCartas(lista) {
   const cantidades = new Map()
 
   for (const entrada of lista) {
-    const id = typeof entrada === "number" ? entrada : entrada?.id
-    const cantidad = typeof entrada === "number" ? 1 : entrada?.cantidad
-    if (
-      !Number.isSafeInteger(id) ||
-      id <= 0 ||
-      !Number.isSafeInteger(cantidad) ||
-      cantidad <= 0
-    ) {
-      throw new ValidationError("La lista del mazo contiene una carta inválida.")
-    }
-
+    const id = typeof entrada === "number" ? entrada : entrada.id
+    const cantidad = typeof entrada === "number" ? 1 : entrada.cantidad
     cantidades.set(id, (cantidades.get(id) ?? 0) + cantidad)
   }
 

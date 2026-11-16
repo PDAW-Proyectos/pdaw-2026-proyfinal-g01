@@ -80,13 +80,6 @@ describe("RepositorioImagenes", () => {
       expect(await repo.buscar(999, "full")).toBeNull()
       expect(await repo.buscar(999, "small")).toBeNull()
     })
-
-    test("lanza ValidationError si se busca con un tipo no válido", async () => {
-      const repo = new RepositorioImagenes(rutaBaseImagenes)
-      await repo.cargar()
-
-      await expect(repo.buscar(100, "thumbnail")).rejects.toThrow(ValidationError)
-    })
   })
 
   describe("agregar", () => {

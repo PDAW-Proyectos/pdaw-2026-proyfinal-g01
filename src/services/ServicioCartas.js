@@ -1,10 +1,11 @@
 import { RepositorioCartas } from "../repositories/RepositorioCartas.js"
 import { NotFoundError } from "../utils/errors.js"
 import { filtrarCartas } from "../utils/filtroCartas.js"
+import { paginar } from "../utils/paginacion.js"
 import { descargarCartas } from "./ServicioApiYgo.js"
 
 const CARTAS_POR_PAGINA = 20
-const CANTIDAD_POPULARES = 10
+const CANTIDAD_POPULARES = 15
 
 export class ServicioCartas {
   #repositorioCartas
@@ -72,38 +73,7 @@ export class ServicioCartas {
       throw new NotFoundError("No se encontraron cartas que coincidan con los criterios de busqueda.")
     }
 
-    if (filtros.orden) {
-      const compararNombre = (a, b) => a.name.localeCompare(b.name, "es", { sensitivity: "base" })
-      const comparadores = {
-        "nombre-asc": compararNombre,
-        "nombre-desc": (a, b) => compararNombre(b, a),
-        "precio-asc": (a, b) => a.card_price - b.card_price || compararNombre(a, b),
-        "precio-desc": (a, b) => b.card_price - a.card_price || compararNombre(a, b)
-      }
-      resultados.sort(comparadores[filtros.orden])
-    }
-
-    const paginaActual = Number(filtros.page) || 1
-    const totalCartas = resultados.length
-    const totalPaginas = Math.ceil(totalCartas / CARTAS_POR_PAGINA)
-
-    if (paginaActual > totalPaginas) {
-      throw new NotFoundError(`La pagina ${paginaActual} no existe. Total de paginas: ${totalPaginas}.`)
-    }
-
-    const inicio = (paginaActual - 1) * CARTAS_POR_PAGINA
-    const datos = resultados.slice(inicio, inicio + CARTAS_POR_PAGINA)
-
-    return {
-      datos,
-      paginacion: {
-        paginaActual,
-        totalPaginas,
-        totalCartas,
-        tieneAnterior: paginaActual > 1,
-        tieneSiguiente: paginaActual < totalPaginas
-      }
-    }
+    return paginar(resultados, CARTAS_POR_PAGINA, filtros.page)
   }
 
   /** Obtiene una carta especifica a partir de su ID.

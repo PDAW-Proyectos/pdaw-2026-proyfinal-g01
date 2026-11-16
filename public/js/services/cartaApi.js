@@ -20,49 +20,22 @@ export async function obtenerCartas() {
 }
 
 /**
- * Obtiene una página del catálogo. La API devuelve 20 cartas por página y
- * metadatos de paginación; `orden` aplica sobre todo el catálogo antes de
- * seleccionar esa página.
- * @param {number} pagina
- * @param {"nombre-asc" | "nombre-desc" | "precio-asc" | "precio-desc"} [orden]
- * @returns {Promise<{datos: Array<Object>, paginacion: {
- *   paginaActual: number, totalPaginas: number, totalCartas: number,
- *   tieneAnterior: boolean, tieneSiguiente: boolean
- * }>}}
+ * Obtiene las 10 cartas más populares desde el backend (/api/cartas/populares).
+ * @returns {Promise<Array<Object>>}
  */
-export async function obtenerPaginaCartas(pagina = 1, orden) {
-  if (!Number.isSafeInteger(pagina) || pagina < 1) {
-    throw new Error("La página de cartas debe ser un entero positivo.")
-  }
+export async function obtenerCartasPopulares() {
+  const respuesta = await fetch("/api/cartas/populares")
 
-  const parametros = new URLSearchParams({ page: String(pagina) })
-  if (orden) {
-    parametros.set("orden", orden)
-  }
-
-  const respuesta = await fetch(`/api/cartas?${parametros.toString()}`)
   if (!respuesta.ok) {
-    throw new Error(`La API de cartas respondió con HTTP ${respuesta.status}.`)
+    throw new Error(`La API de cartas populares respondio con HTTP ${respuesta.status}.`)
   }
 
-  const resultado = await respuesta.json()
-  const { datos, paginacion } = resultado ?? {}
-  if (
-    !Array.isArray(datos) ||
-    !paginacion ||
-    !Number.isSafeInteger(paginacion.paginaActual) ||
-    paginacion.paginaActual < 1 ||
-    !Number.isSafeInteger(paginacion.totalPaginas) ||
-    paginacion.totalPaginas < paginacion.paginaActual ||
-    !Number.isSafeInteger(paginacion.totalCartas) ||
-    paginacion.totalCartas < 1 ||
-    typeof paginacion.tieneAnterior !== "boolean" ||
-    typeof paginacion.tieneSiguiente !== "boolean"
-  ) {
-    throw new Error("La API de cartas devolvió un formato de paginación inválido.")
+  const cartas = await respuesta.json()
+  if (!Array.isArray(cartas) || cartas.length === 0) {
+    throw new Error("La API de cartas populares no devolvio una lista de cartas.")
   }
 
-  return { datos, paginacion }
+  return cartas
 }
 
 /**

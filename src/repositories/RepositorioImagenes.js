@@ -2,8 +2,6 @@ import { mkdir ,readdir, rename, stat, unlink, writeFile } from "node:fs/promise
 import path from "node:path"
 import { ValidationError } from "../utils/errors.js"
 
-const TIPOS_IMAGENES = ["full", "small"]
-
 export class RepositorioImagenes {
   /** @type {string} */
   #rutaFull
@@ -75,15 +73,11 @@ export class RepositorioImagenes {
     await unlink(ruta).catch(() => {})
   }
 
-  #validarTipo(tipo) {
-    if (!TIPOS_IMAGENES.includes(tipo)) {
-      throw new ValidationError("El tipo de imagen buscado no existe.")
-    }
-
+  #obtenerDestino(tipo) {
     const setIds = tipo === "small" ? this.#imagenesSmall : this.#imagenesFull
     const carpeta = tipo === "small" ? this.#rutaSmall : this.#rutaFull
 
-    return {setIds, carpeta}
+    return { setIds, carpeta }
   }
 
   /** El buscar chequea que la imagen exista antes de devolverla porque es necesario porque
@@ -91,7 +85,7 @@ export class RepositorioImagenes {
    * @param {Number} id
    */
   async buscar(id, tipo) {
-    const { setIds, carpeta} = this.#validarTipo(tipo)
+    const { setIds, carpeta } = this.#obtenerDestino(tipo)
 
     if (!setIds.has(id)) return null
 
@@ -126,7 +120,7 @@ export class RepositorioImagenes {
    * @returns {Promise<string>} Ruta absoluta de la imagen guardada
    */
   async agregar(id, buffer, tipo) {
-    const { setIds, carpeta} = this.#validarTipo(tipo)
+    const { setIds, carpeta } = this.#obtenerDestino(tipo)
     const rutaArchivo = path.join(carpeta, `${id}.jpg`)
 
     // Si ya fue descargada previamente, no la volvemos a escribir
