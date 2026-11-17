@@ -73,6 +73,17 @@ export class ServicioCartas {
       throw new NotFoundError("No se encontraron cartas que coincidan con los criterios de busqueda.")
     }
 
+    if (filtros.orden) {
+      const compararNombre = (a, b) => a.name.localeCompare(b.name, "es", { sensitivity: "base" })
+      const comparadores = {
+        "nombre-asc": compararNombre,
+        "nombre-desc": (a, b) => compararNombre(b, a),
+        "precio-asc": (a, b) => a.card_price - b.card_price || compararNombre(a, b),
+        "precio-desc": (a, b) => b.card_price - a.card_price || compararNombre(a, b)
+      }
+      resultados.sort(comparadores[filtros.orden])
+    }
+
     return paginar(resultados, CARTAS_POR_PAGINA, filtros.page)
   }
 

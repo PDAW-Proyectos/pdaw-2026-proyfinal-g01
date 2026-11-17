@@ -25,7 +25,7 @@ export function inicializarControlesCartas({
         cargando || !paginacion?.tieneSiguiente
 
         estadoPaginacion.textContent = paginacion
-        ? `Página ${paginacion.paginaActual} de ${paginacion.totalPaginas} · ${paginacion.totalCartas} cartas`
+        ? `Página ${paginacion.paginaActual} de ${paginacion.totalPaginas} · ${paginacion.totalEntradas} cartas`
         : ""
     }
 

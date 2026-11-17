@@ -263,7 +263,7 @@
 }
 
 @media (min-width: 1200px) {
-    .cards-grid { grid-template-columns: repeat(5, 1fr); gap: 1rem; }
+    .cards-grid { grid-template-columns: repeat(5, 1fr); gap: 1rem; margin: 0 160px; }
 }
 
 /* ===== Animación de vuelta de carta ===== */
