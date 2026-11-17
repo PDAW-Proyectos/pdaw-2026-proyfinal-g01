@@ -1,3 +1,4 @@
+import { Carousel } from "../bootstrap/bootstrap.bundle.min.js"
 import { crearUrlDetalleCarta } from "../modules/navegacionCarta.js"
 
 function obtenerElemento(id) {
@@ -64,8 +65,11 @@ function contarCartasMazo(mazo) {
   )
 }
 
-function inicializarCarruselBootstrap(elemento) {
-  globalThis.bootstrap?.Carousel?.getOrCreateInstance(elemento)
+function inicializarCarruselBootstrap(elemento, opciones = {}) {
+  const ClaseCarrusel = Carousel ?? globalThis.bootstrap?.Carousel
+  if (!ClaseCarrusel) return
+  ClaseCarrusel.getInstance(elemento)?.dispose()
+  ClaseCarrusel.getOrCreateInstance(elemento, opciones)
 }
 
 /**
@@ -112,7 +116,7 @@ export function renderHeroCarousel(cards) {
 
   status.hidden = true
   carouselEl.hidden = false
-  inicializarCarruselBootstrap(carouselEl)
+  inicializarCarruselBootstrap(carouselEl, { autoplay: true })
 }
 
 /**
@@ -175,7 +179,6 @@ export function renderDeckSlider(decks) {
 
     clone.querySelector(".deck-slide-name").textContent = deck.nombre
     clone.querySelector(".deck-slide-count").textContent = `${contarCartasMazo(deck)} cartas`
-    clone.querySelector(".deck-slide-author").textContent = `Por ${deck.username}`
     clone.querySelector(".deck-slide-link").href =
       `mazo.html?id=${encodeURIComponent(deck.id)}&popular=true`
 
