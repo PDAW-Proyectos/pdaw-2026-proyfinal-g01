@@ -1,8 +1,7 @@
 import { buscarCartas } from "../services/cartaApi.js"
-import { obtenerUrlImagen } from "../components/renderizadorCartas.js"
-import { crearUrlDetalleCarta } from "./navegacionCarta.js"
 import {
   cerrarDropdownBusqueda,
+  crearRenderizadorDialogoBusqueda,
   mostrarCargaBusqueda,
   mostrarErrorBusqueda,
   renderizarResultadosBusqueda
@@ -13,6 +12,8 @@ const ESPERA_ENTRE_TECLAS_MS = 250
 const LONGITUD_MINIMA_BUSQUEDA = 2
 const LIMITE_RESULTADOS_DIALOGO = 10
 
+const entradasInicializadas = new WeakSet()
+
 function coincideTipo(carta, filtro) {
   if (filtro === "link") return carta.type?.toLowerCase().includes("link") ?? false
   if (filtro === "monster") return carta.type?.toLowerCase().includes("monster") ?? false
@@ -20,81 +21,79 @@ function coincideTipo(carta, filtro) {
   return true
 }
 
-function inicializarBusquedaDialogo(entrada, contenedorResultados) {
+/**
+ * Crea un controlador genérico de búsqueda con espera entre teclas,
+ * cancelación por AbortController y spinner diferido.
+ */
+export function crearControladorBusqueda({
+  entrada,
+  obtenerFiltros = (nombre) => ({ name: nombre }),
+  minCaracteres = LONGITUD_MINIMA_BUSQUEDA,
+  esperaMs = ESPERA_ENTRE_TECLAS_MS,
+  demoraCargaMs = DEMORA_SPINNER_MS,
+  filtrarResultados,
+  cancelarConEscape = false,
+  onVacio,
+  onInicioCarga,
+  onResultados,
+  onError,
+  onCancelar
+}) {
   let esperaEscritura
+  let temporizadorCarga
   let solicitudActiva
   let idBusqueda = 0
 
-  function mostrarMensaje(texto) {
-    const mensaje = document.createElement("p")
-    mensaje.className = "fg-2 text-center my-4"
-    mensaje.textContent = texto
-    contenedorResultados.replaceChildren(mensaje)
+  function limpiarTemporizadoresYSolicitud() {
+    clearTimeout(esperaEscritura)
+    clearTimeout(temporizadorCarga)
+    solicitudActiva?.abort()
+    solicitudActiva = undefined
   }
 
-  function renderizarResultadosDialogo(cartas) {
-    if (cartas.length === 0) {
-      mostrarMensaje("No se encontraron cartas.")
-      return
+  function cancelar({ notificar = false } = {}) {
+    limpiarTemporizadoresYSolicitud()
+    idBusqueda++
+    if (notificar) {
+      onCancelar?.()
     }
-
-    const lista = document.createElement("div")
-    lista.className = "list-group list-group-flush"
-
-    for (const carta of cartas.slice(0, LIMITE_RESULTADOS_DIALOGO)) {
-      const enlace = document.createElement("a")
-      enlace.href = crearUrlDetalleCarta(carta)
-      enlace.className = "list-group-item list-group-item-action d-flex align-items-center gap-3 py-2"
-
-      const imagen = document.createElement("img")
-      imagen.src = obtenerUrlImagen(carta, "small")
-      imagen.alt = ""
-      imagen.loading = "lazy"
-      imagen.style.width = "40px"
-      imagen.style.height = "auto"
-
-      const info = document.createElement("div")
-      info.className = "d-flex flex-column text-truncate"
-
-      const nombre = document.createElement("span")
-      nombre.className = "fw-semibold text-truncate"
-      nombre.textContent = carta.name
-
-      const tipo = document.createElement("small")
-      tipo.className = "fg-2 text-truncate"
-      tipo.textContent = [carta.race, carta.type].filter(Boolean).join(" / ")
-
-      info.append(nombre, tipo)
-      enlace.append(imagen, info)
-      lista.append(enlace)
-    }
-
-    contenedorResultados.replaceChildren(lista)
   }
 
   async function buscar() {
-    clearTimeout(esperaEscritura)
-    solicitudActiva?.abort()
+    limpiarTemporizadoresYSolicitud()
     const idActual = ++idBusqueda
     const nombre = entrada.value.trim()
 
-    if (nombre.length < LONGITUD_MINIMA_BUSQUEDA) {
-      mostrarMensaje("Escribe para comenzar a buscar cartas...")
+    if (nombre.length < minCaracteres) {
+      onVacio?.()
       return
     }
 
     const controlador = new AbortController()
     solicitudActiva = controlador
-    mostrarMensaje("Buscando cartas...")
+    temporizadorCarga = setTimeout(() => {
+      if (idActual === idBusqueda) {
+        onInicioCarga?.()
+      }
+    }, demoraCargaMs)
 
     try {
-      const cartas = await buscarCartas({ name: nombre }, { signal: controlador.signal })
+      const cartas = await buscarCartas(
+        obtenerFiltros(nombre),
+        { signal: controlador.signal }
+      )
+
       if (idActual !== idBusqueda) return
-      renderizarResultadosDialogo(cartas)
+
+      clearTimeout(temporizadorCarga)
+      const resultados = filtrarResultados ? filtrarResultados(cartas) : cartas
+      onResultados?.(resultados)
     } catch (error) {
       if (error.name === "AbortError" || idActual !== idBusqueda) return
+
+      clearTimeout(temporizadorCarga)
       console.error("No se pudo completar la búsqueda de cartas:", error)
-      mostrarMensaje("No se pudieron cargar los resultados. Inténtalo de nuevo.")
+      onError?.(error)
     } finally {
       if (idActual === idBusqueda) {
         solicitudActiva = undefined
@@ -103,118 +102,135 @@ function inicializarBusquedaDialogo(entrada, contenedorResultados) {
   }
 
   entrada.addEventListener("input", () => {
-    clearTimeout(esperaEscritura)
-    solicitudActiva?.abort()
-    idBusqueda++
-    esperaEscritura = setTimeout(buscar, ESPERA_ENTRE_TECLAS_MS)
+    cancelar({ notificar: true })
+    if (entrada.value.trim().length < minCaracteres) {
+      onVacio?.()
+      return
+    }
+    esperaEscritura = setTimeout(buscar, esperaMs)
   })
 
   entrada.addEventListener("keydown", (evento) => {
     if (evento.key === "Enter") {
       evento.preventDefault()
       void buscar()
+    } else if (cancelarConEscape && evento.key === "Escape") {
+      cancelar({ notificar: true })
     }
   })
+
+  return { buscar, cancelar }
 }
 
 /**
- * Conecta la búsqueda con el catálogo de cartas y su dropdown o diálogo modal.
- * Espera 250ms después de la escritura, cancela solicitudes obsoletas y muestra el spinner
- * solo si la consulta tarda más que el intervalo configurado.
+ * Conecta el diálogo modal de búsqueda (#searchDialog) con la búsqueda por nombre.
+ * Es idempotente: múltiples llamadas sobre la misma entrada no duplican listeners.
  */
-export function inicializarBusquedaCartas({ onSelect } = {}) {
+export function inicializarBusquedaDialogo({
+  dialog = document.getElementById("searchDialog"),
+  entrada = document.getElementById("navbarSearchInput"),
+  resultados = document.getElementById("searchResults"),
+  limite = LIMITE_RESULTADOS_DIALOGO,
+  onSelect
+} = {}) {
+  if (!entrada || !resultados) return null
+  if (entradasInicializadas.has(entrada)) return null
+  entradasInicializadas.add(entrada)
+
+  const renderizador = crearRenderizadorDialogoBusqueda(resultados, { limite, onSelect })
+
+  const controlador = crearControladorBusqueda({
+    entrada,
+    onVacio: () => renderizador.mostrarInicial(),
+    onInicioCarga: () => renderizador.mostrarCargando(),
+    onResultados: (cartas) => renderizador.mostrarResultados(cartas),
+    onError: () => renderizador.mostrarError()
+  })
+
+  if (dialog) {
+    dialog.addEventListener("shown.bs.dialog", () => {
+      entrada.focus()
+    })
+
+    dialog.addEventListener("hidden.bs.dialog", () => {
+      controlador.cancelar()
+      if (entrada.value.trim().length < LONGITUD_MINIMA_BUSQUEDA) {
+        renderizador.mostrarInicial()
+      }
+    })
+  }
+
+  return controlador
+}
+
+function inicializarBusquedaDropdown({ onSelect } = {}) {
   const entrada = document.getElementById("search-input")
   const boton = document.getElementById("search-button")
   const filtroTipo = document.getElementById("search-type-filter")
   const filtroRaza = document.getElementById("search-race-filter")
   const dropdown = document.getElementById("search-dropdown")
 
-  if (!entrada || !boton || !dropdown) {
-    const entradaDialogo = document.getElementById("navbarSearchInput")
-    const resultadosDialogo = document.getElementById("searchResults")
-    if (entradaDialogo && resultadosDialogo) {
-      inicializarBusquedaDialogo(entradaDialogo, resultadosDialogo)
-      return
+  if (!entrada || !boton || !dropdown) return null
+  if (entradasInicializadas.has(entrada)) return null
+  entradasInicializadas.add(entrada)
+
+  const controlador = crearControladorBusqueda({
+    entrada,
+    obtenerFiltros: (nombre) => ({
+      name: nombre,
+      race: filtroRaza?.value
+    }),
+    filtrarResultados: (cartas) =>
+      cartas.filter((carta) => coincideTipo(carta, filtroTipo?.value ?? "all")),
+    cancelarConEscape: true,
+    onVacio: () => cerrarDropdownBusqueda(),
+    onInicioCarga: () => mostrarCargaBusqueda(),
+    onResultados: (cartas) => renderizarResultadosBusqueda(cartas, onSelect),
+    onError: () => mostrarErrorBusqueda(),
+    onCancelar: () => cerrarDropdownBusqueda()
+  })
+
+  boton.addEventListener("click", () => {
+    void controlador.buscar()
+  })
+  filtroTipo?.addEventListener("change", () => {
+    void controlador.buscar()
+  })
+  filtroRaza?.addEventListener("change", () => {
+    void controlador.buscar()
+  })
+  document.addEventListener("click", (evento) => {
+    if (!dropdown.parentElement?.contains(evento.target)) {
+      controlador.cancelar({ notificar: true })
     }
+  })
+
+  return controlador
+}
+
+/**
+ * Conecta la búsqueda con el catálogo de cartas (dropdown o diálogo modal).
+ * Espera 250ms después de la escritura, cancela solicitudes obsoletas y muestra el spinner
+ * solo si la consulta tarda más que el intervalo configurado.
+ */
+export function inicializarBusquedaCartas({ onSelect } = {}) {
+  const tieneDropdown =
+    document.getElementById("search-input") &&
+    document.getElementById("search-button") &&
+    document.getElementById("search-dropdown")
+  const tieneDialogo =
+    document.getElementById("navbarSearchInput") &&
+    document.getElementById("searchResults")
+
+  if (!tieneDropdown && !tieneDialogo) {
     throw new Error("No se encontraron todos los controles de búsqueda de cartas.")
   }
 
-  let esperaEscritura
-  let temporizadorSpinner
-  let solicitudActiva
-  let idBusqueda = 0
-
-  function cancelarBusquedaActual() {
-    clearTimeout(esperaEscritura)
-    clearTimeout(temporizadorSpinner)
-    solicitudActiva?.abort()
-    solicitudActiva = undefined
+  if (tieneDropdown) {
+    inicializarBusquedaDropdown({ onSelect })
   }
 
-  async function buscar() {
-    cancelarBusquedaActual()
-    const idActual = ++idBusqueda
-    const nombre = entrada.value.trim()
-    cerrarDropdownBusqueda()
-
-    if (nombre.length < LONGITUD_MINIMA_BUSQUEDA) {
-      return
-    }
-
-    const controlador = new AbortController()
-    solicitudActiva = controlador
-    temporizadorSpinner = setTimeout(mostrarCargaBusqueda, DEMORA_SPINNER_MS)
-
-    try {
-      const cartas = await buscarCartas({
-        name: nombre,
-        race: filtroRaza?.value
-      }, { signal: controlador.signal })
-
-      if (idActual !== idBusqueda) return
-
-      clearTimeout(temporizadorSpinner)
-      const filtradas = cartas.filter((carta) =>
-        coincideTipo(carta, filtroTipo?.value ?? "all")
-      )
-      renderizarResultadosBusqueda(filtradas, onSelect)
-    } catch (error) {
-      if (error.name === "AbortError" || idActual !== idBusqueda) return
-
-      clearTimeout(temporizadorSpinner)
-      console.error("No se pudo completar la búsqueda de cartas:", error)
-      mostrarErrorBusqueda()
-    } finally {
-      if (idActual === idBusqueda) {
-        solicitudActiva = undefined
-      }
-    }
+  if (tieneDialogo) {
+    inicializarBusquedaDialogo({ onSelect })
   }
-
-  entrada.addEventListener("input", () => {
-    cancelarBusquedaActual()
-    idBusqueda++
-    cerrarDropdownBusqueda()
-    esperaEscritura = setTimeout(buscar, ESPERA_ENTRE_TECLAS_MS)
-  })
-  boton.addEventListener("click", buscar)
-  entrada.addEventListener("keydown", (evento) => {
-    if (evento.key === "Enter") {
-      evento.preventDefault()
-      buscar()
-    } else if (evento.key === "Escape") {
-      cancelarBusquedaActual()
-      idBusqueda++
-      cerrarDropdownBusqueda()
-    }
-  })
-  filtroTipo?.addEventListener("change", buscar)
-  filtroRaza?.addEventListener("change", buscar)
-  document.addEventListener("click", (evento) => {
-    if (!dropdown.parentElement?.contains(evento.target)) {
-      cancelarBusquedaActual()
-      idBusqueda++
-      cerrarDropdownBusqueda()
-    }
-  })
 }

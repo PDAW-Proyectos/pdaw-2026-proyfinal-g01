@@ -1,6 +1,46 @@
 import { authService } from '../services/authService.js'
+import { inicializarBusquedaDialogo } from '../modules/busquedaCartas.js'
 
 const navAuthContainer = document.getElementById('nav-auth')
+
+function obtenerPaginaActual() {
+  const ruta = window.location.pathname.split(/[?#]/)[0]
+  const archivo = ruta.split('/').pop()
+  return archivo || 'index.html'
+}
+
+function obtenerPaginaEnlace(enlace) {
+  const href = enlace.getAttribute('href')?.trim()
+  if (!href || href.startsWith('#')) return null
+  const rutaLimpia = href.split(/[?#]/)[0]
+  const archivo = rutaLimpia.split('/').pop()
+  return archivo || 'index.html'
+}
+
+/**
+ * Sincroniza el estado activo del selector de páginas de la navbar/drawer
+ * con la ruta actual y abre el acordeón padre si corresponde.
+ */
+export function actualizarSelectorPagina() {
+  const paginaActual = obtenerPaginaActual()
+  const enlaces = document.querySelectorAll('.navbar-nav .nav-link[href]')
+
+  for (const enlace of enlaces) {
+    const paginaEnlace = obtenerPaginaEnlace(enlace)
+    const esActual = paginaEnlace !== null && paginaEnlace === paginaActual
+
+    enlace.classList.toggle('active', esActual)
+    if (esActual) {
+      enlace.setAttribute('aria-current', 'page')
+      const acordeon = enlace.closest('details.nav-mazos-accordion')
+      if (acordeon) {
+        acordeon.open = true
+      }
+    } else {
+      enlace.removeAttribute('aria-current')
+    }
+  }
+}
 
 async function cerrarSesion() {
   await authService.logout()
@@ -20,7 +60,66 @@ function renderNavbarAdmin(usuario) {
   }
 }
 
+function renderUsuarioLogueadoDrawer(usuario) {
+  navAuthContainer.replaceChildren()
+
+  const inicial = usuario.username ? usuario.username.charAt(0).toUpperCase() : 'U'
+
+  const contenedor = document.createElement('div')
+  contenedor.className = 'd-flex flex-column gap-3 w-100'
+
+  const infoUsuario = document.createElement('div')
+  infoUsuario.className = 'd-flex align-items-center justify-content-center gap-2 min-w-0'
+
+  const avatar = document.createElement('span')
+  avatar.className = 'd-inline-flex align-items-center justify-content-center bg-primary fg-white fw-bold rounded-circle flex-shrink-0'
+  avatar.style.width = '36px'
+  avatar.style.height = '36px'
+  avatar.setAttribute('aria-hidden', 'true')
+  avatar.textContent = inicial
+
+  const saludo = document.createElement('span')
+  saludo.className = 'fw-semibold text-truncate'
+  saludo.textContent = `Hola, ${usuario.username}`
+
+  infoUsuario.append(avatar, saludo)
+
+  const btnLogout = document.createElement('button')
+  btnLogout.type = 'button'
+  btnLogout.className = 'btn-outline theme-danger w-100'
+  btnLogout.textContent = 'Cerrar sesión'
+  btnLogout.addEventListener('click', cerrarSesion)
+
+  contenedor.append(infoUsuario, btnLogout)
+  navAuthContainer.append(contenedor)
+}
+
+function renderUsuarioInvitadoDrawer() {
+  navAuthContainer.replaceChildren()
+
+  const grupoBotones = document.createElement('div')
+  grupoBotones.className = 'd-flex gap-2 w-100'
+
+  const linkLogin = document.createElement('a')
+  linkLogin.href = 'login.html'
+  linkLogin.className = 'btn-outline theme-primary flex-fill text-center'
+  linkLogin.textContent = 'Iniciar sesión'
+
+  const linkRegistro = document.createElement('a')
+  linkRegistro.href = 'registro.html'
+  linkRegistro.className = 'btn-solid theme-primary flex-fill text-center'
+  linkRegistro.textContent = 'Regístrate'
+
+  grupoBotones.append(linkLogin, linkRegistro)
+  navAuthContainer.append(grupoBotones)
+}
+
 function renderUsuarioLogueado(usuario) {
+  if (navAuthContainer.closest('.drawer')) {
+    renderUsuarioLogueadoDrawer(usuario)
+    return
+  }
+
   navAuthContainer.replaceChildren()
 
   const inicial = usuario.username ? usuario.username.charAt(0).toUpperCase() : 'U'
@@ -74,6 +173,11 @@ function renderUsuarioLogueado(usuario) {
 }
 
 function renderUsuarioInvitado() {
+  if (navAuthContainer.closest('.drawer')) {
+    renderUsuarioInvitadoDrawer()
+    return
+  }
+
   navAuthContainer.replaceChildren()
 
   // Botones directos para MOBILE (< xl) y ESCRITORIO grande (>= xxl)
@@ -148,4 +252,10 @@ async function verificarSesion() {
   }
 }
 
-verificarSesion()
+export function inicializarNavbar() {
+  actualizarSelectorPagina()
+  inicializarBusquedaDialogo()
+  void verificarSesion()
+}
+
+inicializarNavbar()
