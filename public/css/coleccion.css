@@ -373,9 +373,8 @@
 
 .search-input {
     flex: 1;
-    padding: 1rem;
+    padding: 6px 12px;
     border: 2px solid var(--border-color);
-    /* border-radius: 8px; */
     font-size: 1rem;
 }
 

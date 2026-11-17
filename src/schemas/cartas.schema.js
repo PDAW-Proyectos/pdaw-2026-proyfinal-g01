@@ -28,7 +28,11 @@ export const esquemasCartas = {
       level: { type: "string", pattern: PATRON_NUMERO_FILTRO },
       scale: { type: "string", pattern: PATRON_NUMERO_FILTRO },
       linkval: { type: "string", pattern: PATRON_NUMERO_FILTRO },
-      page: { type: "string", pattern: PATRON_ENTERO_POSITIVO }
+      page: { type: "string", pattern: PATRON_ENTERO_POSITIVO },
+      orden: {
+        type: "string",
+        enum: ["nombre-asc", "nombre-desc", "precio-asc", "precio-desc"]
+      }
     }
   }
 }

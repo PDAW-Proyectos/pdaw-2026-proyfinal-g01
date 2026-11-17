@@ -94,3 +94,49 @@ export async function buscarCartas(filtros, { signal } = {}) {
 
   return cartas
 }
+
+/**
+ * Obtiene una página del catálogo. La API devuelve 20 cartas por página y
+ * metadatos de paginación; `orden` aplica sobre todo el catálogo antes de
+ * seleccionar esa página.
+ * @param {number} pagina
+ * @param {"nombre-asc" | "nombre-desc" | "precio-asc" | "precio-desc"} [orden]
+ * @returns {Promise<{datos: Array<Object>, paginacion: {
+ *   paginaActual: number, totalPaginas: number, totalEntradas: number,
+ *   tieneAnterior: boolean, tieneSiguiente: boolean
+ * }>}}
+ */
+export async function obtenerPaginaCartas(pagina = 1, orden) {
+  if (!Number.isSafeInteger(pagina) || pagina < 1) {
+    throw new Error("La página de cartas debe ser un entero positivo.")
+  }
+
+  const parametros = new URLSearchParams({ page: String(pagina) })
+  if (orden) {
+    parametros.set("orden", orden)
+  }
+
+  const respuesta = await fetch(`/api/cartas?${parametros.toString()}`)
+  if (!respuesta.ok) {
+    throw new Error(`La API de cartas respondió con HTTP ${respuesta.status}.`)
+  }
+
+  const resultado = await respuesta.json()
+  const { datos, paginacion } = resultado ?? {}
+  if (
+    !Array.isArray(datos) ||
+    !paginacion ||
+    !Number.isSafeInteger(paginacion.paginaActual) ||
+    paginacion.paginaActual < 1 ||
+    !Number.isSafeInteger(paginacion.totalPaginas) ||
+    paginacion.totalPaginas < paginacion.paginaActual ||
+    !Number.isSafeInteger(paginacion.totalEntradas) ||
+    paginacion.totalEntradas < 1 ||
+    typeof paginacion.tieneAnterior !== "boolean" ||
+    typeof paginacion.tieneSiguiente !== "boolean"
+  ) {
+    throw new Error("La API de cartas devolvió un formato de paginación inválido.")
+  }
+
+  return { datos, paginacion }
+}
