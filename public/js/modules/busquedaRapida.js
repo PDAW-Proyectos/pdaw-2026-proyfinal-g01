@@ -1,23 +1,10 @@
 import { buscarCartas } from "../services/servicioCartas.js"
 import { leerFiltrosCartas } from "../utils/utilidadesCartas.js"
-import {
-  crearCartaBusquedaRapida,
-  renderizarErrorBusquedaRapida
-} from "../components/cartaBusquedaRapida.js"
-import { renderizarListaTabla } from "../components/listaTabla.js"
-import { mostrarSkeletons } from "../components/skeletonCarta.js"
 
 const ESPERA_MS = 250
 const MIN_CARACTERES = 2
 const LIMITE_RAPIDO = 10
 const entradasInicializadas = new WeakSet()
-
-function mostrarMensaje(contenedor, texto, clase = "fg-2 text-center my-4") {
-  const p = document.createElement("p")
-  p.className = clase
-  p.textContent = texto
-  contenedor.replaceChildren(p)
-}
 
 /**
  * Cierra el dropdown de búsqueda rápida y limpia sus resultados.
@@ -34,8 +21,8 @@ export function cerrarDropdownBusqueda(
 }
 
 /**
- * Inicializa un buscador rápido de cartas (para el diálogo del navbar o el dropdown del mazo).
- * Usa `cartaBusquedaRapida` junto con `listaTabla` para los resultados y `skeletonCarta` mientras carga.
+ * Asigna la funcionalidad de búsqueda rápida y filtrado a una barra de búsqueda ya presente
+ * en el HTML y devuelve el arreglo de cartas encontradas a `alRecibirResultados(cartas, resultados)`.
  */
 export function inicializarBusquedaRapida({
   entrada,
@@ -47,7 +34,10 @@ export function inicializarBusquedaRapida({
   limite = LIMITE_RAPIDO,
   minCaracteres = MIN_CARACTERES,
   esperaMs = ESPERA_MS,
-  onSelect
+  alLimpiar,
+  alIniciarCarga,
+  alRecibirResultados,
+  alOcurrirError
 } = {}) {
   if (!entrada || !resultados || entradasInicializadas.has(entrada)) return null
   entradasInicializadas.add(entrada)
@@ -62,7 +52,7 @@ export function inicializarBusquedaRapida({
     if (dropdown) {
       cerrarDropdownBusqueda(dropdown, resultados)
     } else {
-      mostrarMensaje(resultados, "Escribe para comenzar a buscar cartas...")
+      alLimpiar?.(resultados)
     }
   }
 
@@ -82,23 +72,19 @@ export function inicializarBusquedaRapida({
       dropdown.classList.add("active")
       resultados.classList.add("active")
     }
-    mostrarSkeletons(resultados, 3, { tamano: "list" })
+    alIniciarCarga?.(resultados)
 
     try {
       const cartas = await buscarCartas(parametros, { signal: abortController.signal })
       if (!Array.isArray(cartas)) {
-        renderizarErrorBusquedaRapida(resultados)
+        alOcurrirError?.(resultados)
         return
       }
 
-      renderizarListaTabla(resultados, cartas.slice(0, limite), {
-        crearFila: (carta) => crearCartaBusquedaRapida(carta, { onSelect }),
-        mensajeVacio: "No se encontraron cartas.",
-        claseCelda: "p-0 border-0"
-      })
+      alRecibirResultados?.(cartas.slice(0, limite), resultados)
     } catch (error) {
       if (error.name === "AbortError") return
-      renderizarErrorBusquedaRapida(resultados)
+      alOcurrirError?.(resultados, error)
     }
   }
 
@@ -142,7 +128,7 @@ export function inicializarBusquedaRapida({
 }
 
 /** Conecta el diálogo de búsqueda rápida de la navbar (#searchDialog). */
-export function inicializarBusquedaDialogo(opciones = {}) {
+export function inicializarBusquedaRapidaDialogo(opciones = {}) {
   return inicializarBusquedaRapida({
     dialog: document.getElementById("searchDialog"),
     entrada: document.getElementById("navbarSearchInput"),
@@ -152,7 +138,7 @@ export function inicializarBusquedaDialogo(opciones = {}) {
 }
 
 /** Conecta el dropdown de búsqueda rápida (por ejemplo en el constructor de mazos). */
-export function inicializarBusquedaDropdown(opciones = {}) {
+export function inicializarBusquedaRapidaDropdown(opciones = {}) {
   return inicializarBusquedaRapida({
     entrada: document.getElementById("search-input"),
     boton: document.getElementById("search-button"),

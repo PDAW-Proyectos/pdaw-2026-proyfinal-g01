@@ -1,8 +1,8 @@
-import { obtenerMaxCopiasCarta } from "../utils/utilidadesCartas.js"
+import { obtenerMaxCopiasCarta } from "../../utils/utilidadesCartas.js"
 
 /**
  * Crea los botones para incrementar, decrementar o eliminar una carta
- * ya presente dentro del constructor de mazos.
+ * ya presente dentro del constructor de mazos y les asigna sus eventos.
  *
  * @param {Object} carta
  * @param {Object} [opciones]

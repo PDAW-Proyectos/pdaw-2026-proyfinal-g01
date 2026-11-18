@@ -2,8 +2,8 @@ import {
   crearUrlDetalleCarta,
   obtenerAtributosCarta,
   obtenerSubtituloCarta
-} from "../utils/utilidadesCartas.js"
-import { renderizarImagenCarta } from "./imagenCarta.js"
+} from "../../utils/utilidadesCartas.js"
+import { renderizarImagenCarta } from "../imagenCarta.js"
 
 /**
  * Alterna el giro (flip) de una tarjeta de carta.
@@ -43,8 +43,8 @@ export function renderizarErrorCartaBusqueda(
 }
 
 /**
- * Crea una tarjeta de carta de tamaño `.small-card` con efecto flip para ver atributos.
- * Usa `renderizarImagenCarta` y `obtenerAtributosCarta` desde `utilidadesCartas.js`.
+ * Crea una tarjeta de carta de tamaño `.small-card` con efecto flip para ver atributos
+ * y le asigna sus eventos de giro y acción.
  * @param {Object} carta
  * @param {{onSelect?: (carta: Object) => void, textoAccion?: string}} [opciones]
  * @returns {HTMLElement}

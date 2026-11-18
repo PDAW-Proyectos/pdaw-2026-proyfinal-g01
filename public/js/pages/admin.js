@@ -1,10 +1,10 @@
-import { authService } from "../services/authService.js"
+import { authService } from "../services/servicioAutentificacion.js"
 import { servicioUsuarios } from "../services/servicioUsuarios.js"
 import { renderizarListaTabla } from "../components/listaTabla.js"
 import {
   actualizarContadorUsuarios,
   crearFilaUsuario
-} from "../components/renderizadorUsuarios.js"
+} from "../components/usuarioTablaAdmin.js"
 import {
   renderizarPaginacion,
   inicializarEventosPaginacion

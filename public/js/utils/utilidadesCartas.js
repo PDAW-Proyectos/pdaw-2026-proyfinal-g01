@@ -52,11 +52,12 @@ export function crearUrlDetalleCarta(carta) {
 
 /**
  * Vincula un elemento del DOM con la navegación hacia el detalle de una carta
- * mediante clic o tecla Enter.
+ * (`carta.html?id=...`) mediante clic o tecla Enter.
  * @param {HTMLElement} elemento
  * @param {Object} carta
  */
 export function enlazarNavegacionCarta(elemento, carta) {
+  if (!elemento || !carta) return
   const url = crearUrlDetalleCarta(carta)
   const esInteractivo = ["A", "BUTTON"].includes(elemento.tagName)
 

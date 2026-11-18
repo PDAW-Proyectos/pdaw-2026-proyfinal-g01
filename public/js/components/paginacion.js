@@ -69,6 +69,27 @@ function resolverElementosPaginacion(objetivo) {
   return { contenedor, info, lista }
 }
 
+/**
+ * Escucha los clics en los botones de paginación y ejecuta el callback con el número de página.
+ */
+export function inicializarEventosPaginacion(objetivo, alCambiarPagina) {
+  const { lista } = resolverElementosPaginacion(objetivo)
+  if (!lista || typeof alCambiarPagina !== "function") return
+
+  const registrarListener = !callbacksPaginacion.has(lista)
+  callbacksPaginacion.set(lista, alCambiarPagina)
+
+  if (registrarListener) {
+    lista.addEventListener("click", (evento) => {
+      const boton = evento.target.closest("[data-page]")
+      if (!boton || boton.disabled) return
+
+      const callback = callbacksPaginacion.get(lista)
+      callback?.(Number(boton.dataset.page))
+    })
+  }
+}
+
 /** Renderiza una paginación de Bootstrap 6 (`ul.pagination.theme-primary`) mostrando
  * la página actual y el total de páginas en el centro con botones "Anterior" y "Siguiente" a cada lado.
  */
@@ -120,23 +141,4 @@ export function renderizarPaginacion(
       ariaLabel: "Página siguiente"
     })
   )
-}
-
-/** Escucha los clics en los botones de paginación y ejecuta el callback con el número de página. */
-export function inicializarEventosPaginacion(objetivo, alCambiarPagina) {
-  const { lista } = resolverElementosPaginacion(objetivo)
-  if (!lista || typeof alCambiarPagina !== "function") return
-
-  const registrarListener = !callbacksPaginacion.has(lista)
-  callbacksPaginacion.set(lista, alCambiarPagina)
-
-  if (registrarListener) {
-    lista.addEventListener("click", (evento) => {
-      const boton = evento.target.closest("[data-page]")
-      if (!boton || boton.disabled) return
-
-      const callback = callbacksPaginacion.get(lista)
-      callback?.(Number(boton.dataset.page))
-    })
-  }
 }

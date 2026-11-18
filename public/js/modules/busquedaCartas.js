@@ -1,20 +1,11 @@
 import { buscarCartasPaginadas } from "../services/servicioCartas.js"
 import { leerFiltrosCartas } from "../utils/utilidadesCartas.js"
-import { renderizarCartasBusqueda, renderizarErrorCartaBusqueda } from "../components/cartaBusqueda.js"
-import { mostrarSkeletons } from "../components/skeletonCarta.js"
-import {
-  cerrarDropdownBusqueda,
-  inicializarBusquedaDialogo,
-  inicializarBusquedaDropdown,
-  inicializarBusquedaRapida
-} from "./busquedaCartasRapida.js"
 
 const ESPERA_MS = 250
-const CARTAS_POR_PAGINA = 20
 
 /**
- * Inicializa la búsqueda completa de cartas en un contenedor de grilla usando
- * `cartaBusqueda` (tarjetas `.small-card` con flip) y `skeletonCarta` mientras carga.
+ * Conecta los controles de búsqueda, filtrado y ordenamiento ya presentes en el HTML
+ * con el servicio de cartas paginadas y devuelve `{ datos, paginacion }` a través de callbacks.
  */
 export function crearBusquedaCartas({
   contenedor = document.getElementById("cardsGrid"),
@@ -22,13 +13,15 @@ export function crearBusquedaCartas({
   botonBuscar,
   filtros = {},
   contenedorFiltros,
-  estado = document.getElementById("cards-status"),
+  selectAlfabetico,
+  selectPrecio,
   obtenerOrden,
-  cantidadSkeletons = CARTAS_POR_PAGINA,
   esperaMs = ESPERA_MS,
   buscarAlIniciar = true,
-  onSelect,
-  onPaginacion
+  alIniciarCarga,
+  alRecibirResultados,
+  alOcurrirError,
+  alFinalizarCarga
 } = {}) {
   if (!contenedor) return null
 
@@ -38,6 +31,17 @@ export function crearBusquedaCartas({
   let temporizador
   let abortController
 
+  function resolverOrden() {
+    if (obtenerOrden) return obtenerOrden()
+    if (selectAlfabetico?.value && selectAlfabetico.value !== "none") {
+      return selectAlfabetico.value
+    }
+    if (selectPrecio?.value && selectPrecio.value !== "none") {
+      return selectPrecio.value
+    }
+    return undefined
+  }
+
   async function cargarPagina(pagina = 1) {
     clearTimeout(temporizador)
     abortController?.abort()
@@ -45,14 +49,11 @@ export function crearBusquedaCartas({
 
     const idSolicitud = ++solicitudActual
     contenedor.setAttribute("aria-busy", "true")
-    if (estado) estado.textContent = "Cargando cartas..."
-
-    mostrarSkeletons(contenedor, cantidadSkeletons)
-    onPaginacion?.(paginacionActual, true)
+    alIniciarCarga?.({ contenedor, paginacionActual })
 
     const parametros = leerFiltrosCartas(entrada, filtros, contenedorFiltros)
     parametros.page = pagina
-    const orden = obtenerOrden?.()
+    const orden = resolverOrden()
     if (orden) parametros.orden = orden
 
     try {
@@ -61,21 +62,17 @@ export function crearBusquedaCartas({
       })
       if (idSolicitud !== solicitudActual) return
 
-      renderizarCartasBusqueda(resultado.datos, contenedor, { onSelect })
       paginaActual = resultado.paginacion.paginaActual
       paginacionActual = resultado.paginacion
-      if (estado) estado.textContent = ""
+      alRecibirResultados?.(resultado.datos, resultado.paginacion, contenedor)
     } catch (error) {
       if (error.name === "AbortError" || idSolicitud !== solicitudActual) return
       console.error("No se pudieron cargar las cartas:", error)
-      renderizarErrorCartaBusqueda(contenedor)
-      if (estado) {
-        estado.textContent = "No se pudieron cargar las cartas. Intentá nuevamente."
-      }
+      alOcurrirError?.(error, contenedor)
     } finally {
       if (idSolicitud === solicitudActual) {
         contenedor.setAttribute("aria-busy", "false")
-        onPaginacion?.(paginacionActual, false)
+        alFinalizarCarga?.(paginacionActual, contenedor)
       }
     }
   }
@@ -101,6 +98,20 @@ export function crearBusquedaCartas({
     el.addEventListener("change", () => void cargarPagina(1))
   })
 
+  selectAlfabetico?.addEventListener("change", () => {
+    if (selectAlfabetico.value !== "none" && selectPrecio) {
+      selectPrecio.value = "none"
+    }
+    void cargarPagina(1)
+  })
+
+  selectPrecio?.addEventListener("change", () => {
+    if (selectPrecio.value !== "none" && selectAlfabetico) {
+      selectAlfabetico.value = "none"
+    }
+    void cargarPagina(1)
+  })
+
   if (buscarAlIniciar) {
     void cargarPagina(1)
   }
@@ -115,31 +126,4 @@ export function crearBusquedaCartas({
       if (paginacionActual?.tieneSiguiente) return cargarPagina(paginaActual + 1)
     }
   }
-}
-
-/**
- * Inicializa el buscador según los controles presentes en la página.
- */
-export function inicializarBusquedaCartas(opciones = {}) {
-  if (opciones.contenedor) {
-    return crearBusquedaCartas(opciones)
-  }
-
-  const tieneDropdown =
-    document.getElementById("search-input") &&
-    document.getElementById("search-button") &&
-    document.getElementById("search-dropdown")
-  const tieneDialogo =
-    document.getElementById("navbarSearchInput") &&
-    document.getElementById("searchResults")
-
-  if (tieneDropdown) inicializarBusquedaDropdown(opciones)
-  if (tieneDialogo) inicializarBusquedaDialogo(opciones)
-}
-
-export {
-  cerrarDropdownBusqueda,
-  inicializarBusquedaDialogo,
-  inicializarBusquedaDropdown,
-  inicializarBusquedaRapida
 }

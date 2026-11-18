@@ -1,8 +1,18 @@
-import { Dialog } from "../bootstrap/bootstrap.bundle.min.js"
 import { ApiError } from "../api.js"
-import { renderizarZonaCartasMazo } from "../components/cartaMazo.js"
-import { renderizarInformacionMazo } from "../components/informacionMazo.js"
+import {
+  crearCartaBusquedaRapida,
+  renderizarErrorBusquedaRapida
+} from "../components/carta/cartaBusquedaRapida.js"
+import { mostrarSkeletons } from "../components/carta/skeletonCarta.js"
 import { renderizarListaTabla } from "../components/listaTabla.js"
+import {
+  renderizarListaMazos,
+  renderizarMazoEditable
+} from "../components/mazo/mazoEditable.js"
+import {
+  cerrarDropdownBusqueda,
+  inicializarBusquedaRapidaDropdown
+} from "../modules/busquedaRapida.js"
 import {
   agregarCartaAlMazo,
   crearMazo,
@@ -11,13 +21,11 @@ import {
   quitarCartaDelMazo,
   verificarSesionMazos
 } from "../services/servicioMazos.js"
-import { obtenerElemento } from "../utils/dom.js"
 import {
-  LIMITE_EXTRA_DECK,
-  LIMITE_MAIN_DECK
-} from "../utils/utilidadesMazos.js"
-import { cerrarDropdownBusqueda } from "./busquedaCartasRapida.js"
-import { inicializarBusquedaCartas } from "./busquedaCartas.js"
+  cerrarDialogoBootstrap,
+  mostrarToast,
+  obtenerElemento
+} from "../utils/utilidadesDominio.js"
 
 const state = {
   mazos: [],
@@ -25,76 +33,8 @@ const state = {
   mutando: false
 }
 
-let temporizadorToast
-
-function mostrarToast(mensaje, esError = false) {
-  const toast = obtenerElemento("toast")
-  clearTimeout(temporizadorToast)
-  toast.textContent = mensaje
-  toast.classList.toggle("error", esError)
-  toast.classList.add("visible", "show")
-  temporizadorToast = setTimeout(() => {
-    toast.classList.remove("visible", "show", "error")
-  }, 3200)
-}
-
 function finalizarCargaColeccion() {
   obtenerElemento("deck-editor").setAttribute("aria-busy", "false")
-}
-
-function renderizarListaMazos(mazos, mazoActivo, onSelect) {
-  const lista = obtenerElemento("deck-list")
-  renderizarListaTabla(lista, mazos, {
-    crearFila: (mazo) => {
-      const esActivo = mazo.id === mazoActivo?.id
-      const seleccionar = document.createElement("button")
-      seleccionar.type = "button"
-      seleccionar.className = esActivo
-        ? "btn-solid theme-primary w-100 text-start text-truncate"
-        : "btn-outline theme-primary w-100 text-start text-truncate"
-      seleccionar.textContent = mazo.nombre
-      seleccionar.setAttribute("aria-pressed", String(esActivo))
-      seleccionar.addEventListener("click", () => onSelect(mazo))
-      return seleccionar
-    },
-    mensajeVacio: "Todavía no creaste mazos.",
-    claseVacio: "fg-2 fs-sm text-center py-3 border-0",
-    claseTabla: "table table-borderless align-middle mb-0 w-100",
-    claseCelda: "px-0 py-1 border-0"
-  })
-}
-
-function renderizarMazo(mazo, { mutando = false, onAdd, onRemove } = {}) {
-  finalizarCargaColeccion()
-  renderizarInformacionMazo(mazo, { mutando })
-
-  const mensajeSinMazo = "Crea o selecciona un mazo para agregar cartas."
-  renderizarZonaCartasMazo(obtenerElemento("main-cards"), mazo?.mainDeck ?? [], {
-    nombreMazo: mazo?.nombre,
-    limiteZona: LIMITE_MAIN_DECK,
-    mutando,
-    mensajeVacio: mazo ? "Todavía no agregaste cartas a esta sección." : mensajeSinMazo,
-    onAdd,
-    onRemove
-  })
-
-  renderizarZonaCartasMazo(obtenerElemento("extra-cards"), mazo?.extraDeck ?? [], {
-    nombreMazo: mazo?.nombre,
-    limiteZona: LIMITE_EXTRA_DECK,
-    mutando,
-    mensajeVacio: mazo ? "Todavía no agregaste cartas a esta sección." : mensajeSinMazo,
-    onAdd,
-    onRemove
-  })
-}
-
-function cerrarDialogoConfirmacion(dialogo) {
-  const ClaseDialogo = Dialog ?? globalThis.bootstrap?.Dialog
-  if (ClaseDialogo) {
-    ClaseDialogo.getOrCreateInstance(dialogo).hide()
-  } else {
-    dialogo.close?.()
-  }
 }
 
 function manejarError(error, accion) {
@@ -108,7 +48,7 @@ function manejarError(error, accion) {
 
 function renderizarVista() {
   renderizarListaMazos(state.mazos, state.mazoActivo, seleccionarMazo)
-  renderizarMazo(state.mazoActivo, {
+  renderizarMazoEditable(state.mazoActivo, {
     mutando: state.mutando,
     onAdd: agregarCarta,
     onRemove: quitarCarta
@@ -136,7 +76,7 @@ function establecerMutacion(mutando) {
   obtenerElemento("search-button").disabled = mutando
   obtenerElemento("create-deck-form").querySelector('[type="submit"]').disabled = mutando
   obtenerElemento("confirm-delete-deck").disabled = mutando
-  renderizarMazo(state.mazoActivo, {
+  renderizarMazoEditable(state.mazoActivo, {
     mutando,
     onAdd: agregarCarta,
     onRemove: quitarCarta
@@ -212,7 +152,7 @@ async function eliminarMazoActivo() {
   const nombreMazo = mazo.nombre
   await ejecutarMutacion(async () => {
     await eliminarMazo(mazo.id)
-    cerrarDialogoConfirmacion(obtenerElemento("deleteDeckDialog"))
+    cerrarDialogoBootstrap(obtenerElemento("deleteDeckDialog"))
     state.mazoActivo = null
     await cargarMazos()
     mostrarToast(`Se eliminó el mazo «${nombreMazo}».`)
@@ -224,14 +164,20 @@ function enlazarEventos() {
     .addEventListener("submit", crearMazoDesdeFormulario)
   obtenerElemento("confirm-delete-deck")
     .addEventListener("click", eliminarMazoActivo)
-  inicializarBusquedaCartas({ onSelect: agregarCarta })
+  inicializarBusquedaRapidaDropdown({
+    alIniciarCarga: (resultados) =>
+      mostrarSkeletons(resultados, 3, { tamano: "list" }),
+    alRecibirResultados: (cartas, resultados) =>
+      renderizarListaTabla(resultados, cartas, {
+        crearFila: (carta) => crearCartaBusquedaRapida(carta, { onSelect: agregarCarta }),
+        mensajeVacio: "No se encontraron cartas.",
+        claseCelda: "p-0 border-0"
+      }),
+    alOcurrirError: (resultados) => renderizarErrorBusquedaRapida(resultados)
+  })
 }
 
-/**
- * Comprueba la sesión y conecta los eventos de la página de colección.
- * Los errores de autenticación redirigen al login; los demás se comunican con toast.
- */
-export async function inicializarGestorColeccion() {
+async function inicializarColeccionMazos() {
   try {
     await verificarSesionMazos()
   } catch (error) {
@@ -252,3 +198,5 @@ export async function inicializarGestorColeccion() {
     finalizarCargaColeccion()
   }
 }
+
+void inicializarColeccionMazos()

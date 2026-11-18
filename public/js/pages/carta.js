@@ -1,4 +1,4 @@
-import { renderizarDetalleCarta, renderizarErrorDetalleCarta } from "../components/renderizadorDetalleCarta.js"
+import { renderizarDetalleCarta, renderizarErrorDetalleCarta } from "../components/carta/cartaDetalle.js"
 import { obtenerCartaPorId } from "../services/servicioCartas.js"
 
 async function inicializarDetalleCarta() {

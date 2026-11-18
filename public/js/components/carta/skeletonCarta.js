@@ -1,4 +1,4 @@
-import { renderizarImagenCarta } from "./imagenCarta.js"
+import { renderizarImagenCarta } from "../imagenCarta.js"
 
 /** Crea un elemento skeleton usando el dorso de carta de Yu-Gi-Oh! mientras carga. */
 export function crearSkeletonCarta({

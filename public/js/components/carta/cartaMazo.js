@@ -1,21 +1,22 @@
 import {
   enlazarNavegacionCarta,
   obtenerEstadoBanlist
-} from "../utils/utilidadesCartas.js"
-import { contarCartasZona } from "../utils/utilidadesMazos.js"
+} from "../../utils/utilidadesCartas.js"
+import { contarCartasZona } from "../../utils/utilidadesMazos.js"
 import { crearControlesCartaMazo } from "./controlesCartaMazo.js"
-import { renderizarImagenCarta } from "./imagenCarta.js"
+import { renderizarImagenCarta } from "../imagenCarta.js"
 
 /**
  * Crea una tarjeta de carta para un mazo en tamaño `small` con su cantidad de copias,
  * ícono de banlist y navegación a la página de detalle al hacer clic en la carta.
- * Si se proveen `onAdd` u `onRemove`, agrega los controles de `controlesCartaMazo`.
+ * Si `editable` es `true` o se proveen `onAdd`/`onRemove`, agrega `controlesCartaMazo` debajo.
  *
  * @param {{carta: Object, cantidad: number}} entrada
  * @param {Object} [opciones]
  * @param {string} [opciones.nombreMazo="el mazo"]
  * @param {number} [opciones.totalZona=0]
  * @param {number} [opciones.limiteZona=60]
+ * @param {boolean} [opciones.editable=false]
  * @param {boolean} [opciones.mutando=false]
  * @param {(carta: Object) => void} [opciones.onAdd]
  * @param {(carta: Object) => void} [opciones.onRemove]
@@ -27,6 +28,7 @@ export function crearCartaMazo(
     nombreMazo = "el mazo",
     totalZona = 0,
     limiteZona = 60,
+    editable = false,
     mutando = false,
     onAdd,
     onRemove
@@ -48,7 +50,7 @@ export function crearCartaMazo(
 
   tarjeta.append(contenedorImagen)
 
-  if (onAdd || onRemove) {
+  if (editable || onAdd || onRemove) {
     tarjeta.append(
       crearControlesCartaMazo(carta, {
         cantidad,
@@ -78,6 +80,7 @@ export function renderizarZonaCartasMazo(
   {
     nombreMazo = "el mazo",
     limiteZona = 60,
+    editable = false,
     mutando = false,
     mensajeVacio = "Todavía no agregaste cartas a esta sección.",
     onAdd,
@@ -101,6 +104,7 @@ export function renderizarZonaCartasMazo(
         nombreMazo,
         totalZona,
         limiteZona,
+        editable,
         mutando,
         onAdd,
         onRemove

@@ -1,9 +1,4 @@
-import {
-  renderUsuarioInvitadoDrawer,
-  renderUsuarioLogueadoDrawer
-} from "../components/usuarioNavbar.js"
-import { authService } from "../services/authService.js"
-import { inicializarBusquedaDialogo } from "./busquedaCartasRapida.js"
+import { authService } from "../services/servicioAutentificacion.js"
 
 function obtenerPaginaActual() {
   const ruta = window.location.pathname.split(/[?#]/)[0]
@@ -44,12 +39,29 @@ export function actualizarSelectorPagina() {
   }
 }
 
+/**
+ * Cierra la sesión actual en el backend y redirige al login.
+ */
 export async function cerrarSesion() {
   await authService.logout()
   window.location.assign("login.html")
 }
 
-async function verificarSesion() {
+/**
+ * Inicializa el comportamiento de la navbar ya renderizada en el HTML:
+ * marca el enlace activo, verifica la sesión del usuario, redirige al panel si es admin
+ * (o conecta su botón de logout), y ejecuta los callbacks correspondientes para `#nav-auth`.
+ *
+ * @param {Object} [callbacks]
+ * @param {(usuario: Object, onLogout: () => Promise<void>, contenedor: HTMLElement) => void} [callbacks.alMostrarUsuarioLogueado]
+ * @param {(contenedor: HTMLElement) => void} [callbacks.alMostrarUsuarioInvitado]
+ */
+export async function inicializarNavbarPrincipal({
+  alMostrarUsuarioLogueado,
+  alMostrarUsuarioInvitado
+} = {}) {
+  actualizarSelectorPagina()
+
   const usuario = await authService.obtenerUsuarioActual()
   const enPanelAdmin = window.location.pathname.endsWith("admin.html")
 
@@ -66,16 +78,8 @@ async function verificarSesion() {
   if (!navAuthContainer) return
 
   if (usuario) {
-    renderUsuarioLogueadoDrawer(usuario, cerrarSesion, navAuthContainer)
+    alMostrarUsuarioLogueado?.(usuario, cerrarSesion, navAuthContainer)
   } else {
-    renderUsuarioInvitadoDrawer(navAuthContainer)
+    alMostrarUsuarioInvitado?.(navAuthContainer)
   }
 }
-
-export function inicializarNavbar() {
-  actualizarSelectorPagina()
-  inicializarBusquedaDialogo()
-  void verificarSesion()
-}
-
-inicializarNavbar()

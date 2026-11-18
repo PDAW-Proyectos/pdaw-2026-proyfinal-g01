@@ -1,6 +1,21 @@
-import { enlazarNavegacionCarta } from "../utils/utilidadesCartas.js"
-import { renderizarImagenCarta } from "./imagenCarta.js"
-import { renderizarListaTabla } from "./listaTabla.js"
+import { enlazarNavegacionCarta } from "../../utils/utilidadesCartas.js"
+import { renderizarImagenCarta } from "../imagenCarta.js"
+import { renderizarListaTabla } from "../listaTabla.js"
+
+/**
+ * Renderiza un mensaje informativo dentro del contenedor de búsqueda rápida.
+ * @param {HTMLElement} contenedor
+ * @param {string} [mensaje="Escribe para comenzar a buscar cartas..."]
+ */
+export function renderizarMensajeBusquedaRapida(
+  contenedor,
+  mensaje = "Escribe para comenzar a buscar cartas..."
+) {
+  const mensajeEl = document.createElement("p")
+  mensajeEl.className = "fg-2 text-center my-4"
+  mensajeEl.textContent = mensaje
+  contenedor.replaceChildren(mensajeEl)
+}
 
 /**
  * Renderiza un mensaje de error en el contenedor de búsqueda rápida.
@@ -18,7 +33,8 @@ export function renderizarErrorBusquedaRapida(
 }
 
 /**
- * Crea un div simple para la búsqueda rápida con la imagen a la izquierda y el título a la derecha.
+ * Crea un div simple para la búsqueda rápida con la imagen a la izquierda y el título a la derecha,
+ * asignándole su funcionalidad de selección o navegación a la carta.
  * @param {Object} carta
  * @param {{onSelect?: (carta: Object) => void}} [opciones]
  * @returns {HTMLDivElement}

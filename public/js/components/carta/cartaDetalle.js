@@ -3,9 +3,9 @@ import {
   obtenerAtributosCarta,
   obtenerEstadoBanlist,
   obtenerSubtituloCarta
-} from "../utils/utilidadesCartas.js"
-import { obtenerElemento } from "../utils/dom.js"
-import { renderizarImagenCarta } from "./imagenCarta.js"
+} from "../../utils/utilidadesCartas.js"
+import { obtenerElemento } from "../../utils/utilidadesDominio.js"
+import { renderizarImagenCarta } from "../imagenCarta.js"
 
 function renderizarAtributos(carta) {
   const grilla = obtenerElemento("detail-attributes")

@@ -1,5 +1,3 @@
-import { renderizarListaTabla } from "./listaTabla.js"
-
 /**
  * Actualiza el contenedor que muestra la cantidad de usuarios.
  * @param {HTMLElement} contadorSpan
@@ -10,7 +8,7 @@ export function actualizarContadorUsuarios(contadorSpan, totalEntradas) {
 }
 
 /**
- * Crea una fila (`<tr>`) con los datos y acciones de un usuario.
+ * Crea una fila (`<tr>`) con los datos y acciones de un usuario para la tabla de administración.
  * @param {Object} usuario
  * @param {{usernameActual?: string}} [opciones]
  * @returns {HTMLTableRowElement}
@@ -50,25 +48,4 @@ export function crearFilaUsuario(usuario, { usernameActual } = {}) {
   tdAcciones.append(btnEliminar)
   tr.append(tdNombre, tdUsername, tdRol, tdAcciones)
   return tr
-}
-
-/**
- * Renderiza la tabla de usuarios utilizando `renderizarListaTabla`.
- * @param {HTMLElement} tablaBody
- * @param {Array<Object>} usuarios
- * @param {{usernameActual?: string, textoFiltro?: string}} [opciones]
- */
-export function renderizarTablaUsuarios(
-  tablaBody,
-  usuarios,
-  { usernameActual, textoFiltro = "" } = {}
-) {
-  renderizarListaTabla(tablaBody, usuarios, {
-    crearFila: (usuario) => crearFilaUsuario(usuario, { usernameActual }),
-    columnas: 4,
-    claseVacio: "text-center py-4 text-muted",
-    mensajeVacio: textoFiltro.trim()
-      ? "No se encontraron usuarios con ese username."
-      : "No hay usuarios registrados."
-  })
 }
