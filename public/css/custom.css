@@ -1,15 +1,27 @@
 @font-face {
-  font-family: "Orbitron";
-  src: url("../fonts/Orbitron-VariableFont_wght.ttf") format("woff2");
-  font-weight: 400 900;
-  font-style: normal;
-  font-display: swap;
+    font-family: "Orbitron";
+    src: url("../fonts/Orbitron-VariableFont_wght.ttf") format("woff2");
+    font-weight: 400 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+    font-family: "Orbitron", sans-serif;
+    font-optical-sizing: auto;
+    color: var( #1a1a2e);
+    line-height: 1.6;
 }
 
 /* Password bullet spacing */
 input[type="password"]:not(:placeholder-shown) {
   font-family: system-ui, -apple-system, sans-serif;
   letter-spacing: 0.12em;
+}
+
+/*Para que en registro la barra de seguridad de la contraseña, no ocupe un espacio si no se usa*/
+#contraseña:placeholder-shown + .strength-bar {
+  display: none;
 }
 
 .login-separator {
@@ -29,9 +41,25 @@ input[type="password"]:not(:placeholder-shown) {
 }
 
 /* Card dimensions */
-.detail-card {
+.full-card {
   width: 271px;
   height: 395px;
+}
+
+.banlist-badge {
+  width: 48px !important;
+  height: 48px !important;
+}
+
+.small-card {
+    width: 200px;
+    height: 292px;
+}
+
+.list-card {
+    width: 150px;
+    height: 219px;
+    object-fit: cover;
 }
 
 .max-w-450px {
@@ -40,6 +68,11 @@ input[type="password"]:not(:placeholder-shown) {
 }
 
 .max-w-768px {
+  max-width: 768px !important;
+  width: 100% !important;
+}
+
+.max-w-1368px {
   max-width: 768px !important;
   width: 100% !important;
 }
@@ -59,6 +92,97 @@ input[type="password"]:not(:placeholder-shown) {
 
 .nav-mazos-accordion > summary .bi-chevron-down {
   transition: transform 0.2s ease;
+}
+
+/* Navbar drawer active & hover page selector */
+#navbarDrawer .nav-link {
+  border-radius: var(--radius-5, 0.375rem);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+#navbarDrawer .nav-link:hover,
+#navbarDrawer .nav-link:focus-visible {
+  color: var(--primary-fg, #6d4aff);
+  background-color: rgba(109, 74, 255, 0.08);
+}
+
+#navbarDrawer .nav-link.active {
+  color: var(--primary-fg, #6d4aff);
+  background-color: rgba(109, 74, 255, 0.12);
+  font-weight: 600;
+}
+
+/* Prevent closed dialogs from expanding page height and keep search dialog scrollable within viewport */
+.dialog:not([open]):not(.hiding) {
+  display: none;
+}
+
+.dialog:not([open]).hiding {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+#searchDialog[open]:not(.hiding) {
+  max-height: calc(100dvh - 4rem);
+  overflow: visible;
+}
+
+#searchDialog .dialog-body {
+  min-height: 0;
+  overflow-y: auto;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
+#searchDialog .dialog-footer {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
+#searchFiltersCollapse.is-open,
+#catalogFiltersCollapse.is-open {
+  overflow: visible;
+}
+
+#searchDialog .dialog-header [role="search"],
+#searchFiltersToggleBtn,
+#searchFiltersApplyBtn,
+#searchFiltersClearBtn,
+.catalog-search-box,
+#catalogSortCombobox,
+#catalogFiltersToggleBtn,
+#catalogFiltersApplyBtn,
+#catalogFiltersClearBtn {
+  height: 2.75rem;
+  min-height: 2.75rem;
+}
+
+.catalog-search-box {
+  background-color: var(--bg-body, #f8f9fa);
+  border-color: var(--primary-border, #c5b6ff);
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.catalog-search-box:hover,
+.catalog-search-box:active,
+.catalog-search-box:focus-within {
+  background-color: var(--bg-2, #f1f2f6);
+  border-color: var(--primary-bg, #6d4aff);
+  box-shadow: 0 0 0 0.2rem rgba(109, 74, 255, 0.2);
+  outline: none;
+}
+
+#searchFiltersForm .form-control,
+#searchFiltersForm .combobox-toggle.show {
+  --control-bg: var(--bg-white, #ffffff);
+  background-color: var(--bg-white, #ffffff);
+}
+
+#catalogFiltersForm .form-control,
+#catalogFiltersForm .combobox-toggle.show {
+  --control-bg: var(--bg-body, #f8f9fa);
+  background-color: var(--bg-body, #f8f9fa);
 }
 
 /* Make the navbar drawer backdrop match the dark blurred search dialog backdrop */
@@ -97,37 +221,92 @@ input[type="password"]:not(:placeholder-shown) {
   display: none;
 }
 
-/* Responsive multi-item sliders for 10 cards & 10 decks */
+/*
+ * Multi-item sliders for 10 cards & 10 decks:
+ * - Each card has .small-card (200px) + 2px border = 202px
+ * - Shows 2 cards as soon as 2 items + prev/next buttons fit (>= 476px),
+ *   only falling back to 1 card below 476px.
+ * - .carousel-inner width is locked to an integer multiple of --card-item-width
+ *   so cards are never cut horizontally when scrolling or stepping prev/next.
+ */
 .multi-item-slider {
-  --carousel-items: 2;
-  --carousel-items-gap: 0.75rem;
-  --carousel-items-peek: 1.5rem;
+  --carousel-items-gap: 0px;
+  --carousel-items-peek: 0px;
+  --card-item-width: 222px;
+  --visible-cards: 1;
 }
 
-@media (width >= 768px) {
+@media (width >= 476px) {
   .multi-item-slider {
-    --carousel-items: 3;
-    --carousel-items-gap: 1rem;
-    --carousel-items-peek: 2rem;
+    --card-item-width: 210px;
+    --visible-cards: 2;
   }
 }
 
-@media (width >= 1024px) {
+@media (width >= 550px) {
   .multi-item-slider {
-    --carousel-items: 4;
+    --card-item-width: 226px;
+    --visible-cards: 2;
+  }
+}
+
+@media (width >= 800px) {
+  .multi-item-slider {
+    --card-item-width: 232px;
+    --visible-cards: 3;
+  }
+}
+
+@media (width >= 1040px) {
+  .multi-item-slider {
+    --card-item-width: 236px;
+    --visible-cards: 4;
   }
 }
 
 @media (width >= 1280px) {
   .multi-item-slider {
-    --carousel-items: 5;
+    --card-item-width: 236px;
+    --visible-cards: 5;
   }
+}
+
+@media (width >= 1520px) {
+  .multi-item-slider {
+    --card-item-width: 236px;
+    --visible-cards: 6;
+  }
+}
+
+.multi-item-slider .carousel-inner {
+  flex: 0 0 auto;
+  width: calc(var(--visible-cards) * var(--card-item-width));
+  max-width: 100%;
+}
+
+.multi-item-slider .carousel-item {
+  flex: 0 0 var(--card-item-width);
+  width: var(--card-item-width);
+  padding-block: 1.25rem 2.75rem;
+  padding-inline: calc((var(--card-item-width) - 202px) / 2);
+}
+
+.multi-item-slider .card {
+  width: 202px;
+  margin-inline: auto;
+  --hover-lift-box-shadow: 0 0.125rem 0.25rem 0 rgba(0, 0, 0, 0.05), 0 0.375rem 0.75rem -0.25rem rgba(0, 0, 0, 0.12), 0 0.75rem 1.125rem -0.375rem rgba(0, 0, 0, 0.1);
+}
+
+.multi-item-slider .card-body {
+  width: 100%;
+  color: var(--fg-body, #1a1a2e);
 }
 
 /* Clamp long card descriptions in the Hero carousel */
 .hero-desc-clamp {
   display: -webkit-box;
   -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -145,20 +324,87 @@ input[type="password"]:not(:placeholder-shown) {
   --btn-active-border-color: #ffffff;
 }
 
+@media (width >= 768px) {
+  .hero-card-link {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+  }
+}
+
 .hero-control-btn {
   --btn-bg: transparent;
   --btn-color: #ffffff;
-  --btn-border-color: rgba(255, 255, 255, 0.75);
-  --btn-hover-bg: #ffffff;
-  --btn-hover-color: var(--primary-fg, #6d4aff);
-  --btn-hover-border-color: #ffffff;
-  --btn-active-bg: rgba(255, 255, 255, 0.9);
-  --btn-active-color: var(--primary-fg, #6d4aff);
-  --btn-active-border-color: #ffffff;
+  --btn-border-width: 0px;
+  --btn-border-color: transparent;
+  --btn-hover-bg: rgba(255, 255, 255, 0.18);
+  --btn-hover-color: #ffffff;
+  --btn-hover-border-color: transparent;
+  --btn-active-bg: rgba(255, 255, 255, 0.28);
+  --btn-active-color: #ffffff;
+  --btn-active-border-color: transparent;
+  --carousel-control-icon-width: 1.5rem;
+  width: 2.25rem;
+  height: 7rem;
+  min-height: 7rem;
+  padding: 0;
+  border: 0;
+}
+
+.main-control-btn {
+  --theme-fg: var(--primary-fg, #6d4aff);
+  --btn-bg: transparent;
+  --btn-color: var(--primary-fg, #6d4aff);
+  --btn-disabled-color: var(--primary-fg, #6d4aff);
+  --btn-border-width: 0px;
+  --btn-border-color: transparent;
+  --btn-hover-bg: rgba(109, 74, 255, 0.12);
+  --btn-hover-color: var(--primary-fg-emphasis, #5330e6);
+  --btn-hover-border-color: transparent;
+  --btn-active-bg: rgba(109, 74, 255, 0.22);
+  --btn-active-color: var(--primary-fg-emphasis, #5330e6);
+  --btn-active-border-color: transparent;
+  --carousel-control-icon-width: 1.5rem;
+  color: var(--primary-fg, #6d4aff);
+  width: 1.5rem;
+  height: 7rem;
+  min-height: 7rem;
+  padding: 0;
+  border: 0;
+}
+
+@media (width >= 640px) {
+  .main-control-btn {
+    width: 2.25rem;
+  }
 }
 
 #heroCardsCarousel {
   --carousel-indicator-bg: #ffffff;
+  --carousel-indicator-width: 0.75rem;
+  --carousel-indicator-height: 0.75rem;
+  --carousel-indicator-spacer: 0.375rem;
+  --carousel-items: 1;
+  --carousel-items-gap: 0px;
+  --carousel-items-peek: 0px;
+}
+
+#hero-carousel-inner {
+  min-width: 0;
+  align-items: center;
+}
+
+#hero-carousel-inner .carousel-item {
+  overflow: hidden;
+}
+
+#hero-carousel-indicators [data-bs-target] {
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.35s ease, opacity 0.35s ease;
+}
+
+#hero-carousel-indicators [data-bs-target].active {
+  width: calc(var(--carousel-indicator-width) * 3);
+  background-color: var(--carousel-indicator-bg);
 }
 
 /* Expanded search bar on XL viewports (>= 1280px) */
@@ -205,5 +451,328 @@ input[type="password"]:not(:placeholder-shown) {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+
+/* =========================================================
+   Colección (mazosUsuario.html) y Mazos (mazoDetallado.html)
+   ========================================================= */
+.collection-page {
+  min-height: calc(100dvh - 4.25rem);
+}
+
+.collection-sticky-panel {
+  width: 100%;
+  max-width: 768px;
+  border: 0;
+}
+
+@media (width >= 1024px) {
+  .collection-sticky-panel {
+    flex: 1 1 0%;
+    width: 280px;
+    max-width: 280px;
+    min-width: 200px;
+    align-self: stretch;
+  }
+
+  .collection-aside-sticky {
+    position: sticky;
+    top: 5.5rem;
+    max-height: calc(100dvh - 6.75rem);
+    overflow-y: auto;
+  }
+
+  .collection-aside-left {
+    border-inline-end: 2px solid var(--primary-fg, #6d4aff);
+  }
+
+  .collection-aside-right {
+    border-inline-start: 2px solid var(--primary-fg, #6d4aff);
+  }
+
+  .collection-main-section {
+    flex: 3 1 768px;
+    min-width: 0;
+  }
+
+  /* Deck cards scale up from .list-card on mobile to .small-card on desktop */
+  .deck-card-img {
+    width: 200px;
+    height: 292px;
+    object-fit: initial;
+  }
+}
+
+.deck-search-trigger-btn {
+  width: 100% !important;
+  height: 2.5rem !important;
+  min-height: 2.5rem !important;
+  aspect-ratio: auto !important;
+  padding: 0.375rem 0.75rem !important;
+  background-color: var(--bs-body-bg, #f8f9fa);
+  border: 1px solid var(--bs-primary-border-subtle, #c5b6ff);
+  color: var(--bs-secondary-color, #6c757d) !important;
+  font-size: 0.925rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.deck-search-trigger-btn:hover:not(:disabled),
+.deck-search-trigger-btn:focus-visible {
+  background-color: var(--bs-2, #f1f2f6);
+  border-color: var(--bs-primary, #6d4aff);
+  box-shadow: 0 0 0 0.2rem rgba(109, 74, 255, 0.2);
+  outline: none;
+}
+
+.deck-search-trigger-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.deck-search-trigger-placeholder {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deck-search-trigger-icon {
+  font-size: 1rem;
+  color: var(--bs-primary, #6d4aff);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.collection-deck-list {
+  max-height: 280px;
+}
+
+.deck-card-entry {
+  width: 150px;
+}
+
+.deck-banlist-badge {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.copy-count-badge {
+  width: 52px !important;
+  height: auto !important;
+}
+
+.collection-search {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  gap: 0.75rem;
+}
+
+.collection-search .search-input {
+  min-width: 0;
+}
+
+.search-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  background: var(--bg-body, #ffffff);
+  color: var(--fg-body, #1a1a2e);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  overflow: hidden;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.search-dropdown.active {
+  display: block;
+}
+
+.search-loading {
+  display: none;
+  padding: 25px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.search-loading.active {
+  display: flex;
+}
+
+.search-results {
+  display: none;
+}
+
+.search-results.active {
+  display: block;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 16px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s ease;
+}
+
+.search-result-item:hover {
+  background: rgba(109, 74, 255, 0.08);
+}
+
+.search-result-image {
+  width: 50px;
+  height: 73px;
+  object-fit: cover;
+  border: 1px solid var(--primary-fg, #6d4aff);
+  flex-shrink: 0;
+}
+
+.search-result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.search-result-name {
+  font-weight: 700;
+}
+
+.search-result-type {
+  font-size: 0.85rem;
+  color: var(--fg-2, #4a4a6a);
+}
+
+.no-results {
+  padding: 25px;
+  text-align: center;
+  color: var(--fg-2, #4a4a6a);
+  margin: 0;
+}
+
+.toast {
+  position: fixed;
+  inset: auto;
+  bottom: 2rem;
+  left: 50%;
+  margin: 0;
+  width: max-content;
+  max-width: min(90vw, 480px);
+  text-align: center;
+  transform: translateX(-50%) translateY(120%);
+  background: #1e1e1e;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 1090;
+  opacity: 0;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  pointer-events: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast.error {
+  background: #f44336;
+}
+
+/* =========================================================
+   Paginación (paginacion.js) con flechas de carrusel
+   ========================================================= */
+.pagination {
+  --carousel-control-icon-width: 1rem;
+  --carousel-control-prev-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0'/></svg>");
+  --carousel-control-next-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708'/></svg>");
+}
+
+.pagination-sm {
+  --carousel-control-icon-width: 0.875rem;
+}
+
+/* =========================================================
+   Tarjetas flip (cartaFlip.js)
+   ========================================================= */
+.card-flip {
+  width: 202px;
+  perspective: 1200px;
+  cursor: pointer;
+  border-radius: var(--radius-7, 0.5rem);
+  --hover-lift-box-shadow: 0 0.125rem 0.25rem 0 rgba(0, 0, 0, 0.05), 0 0.375rem 0.75rem -0.25rem rgba(0, 0, 0, 0.12), 0 0.75rem 1.125rem -0.375rem rgba(0, 0, 0, 0.1);
+}
+
+.card-flip-inner {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-flip.flipped .card-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-front {
+  position: relative;
+  width: 100%;
+  transform: rotateY(0deg);
+}
+
+.card-front .card-body {
+  width: 100%;
+  color: var(--fg-body, #1a1a2e);
+}
+
+.card-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+}
+
+.card-flip.flipped .card-front {
+  pointer-events: none;
+}
+
+.card-flip:not(.flipped) .card-back {
+  pointer-events: none;
+}
+
+.card-back-title,
+.card-back-attr {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-flip-inner {
+    transition: none;
   }
 }
