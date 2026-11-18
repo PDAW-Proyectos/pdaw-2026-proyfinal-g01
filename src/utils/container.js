@@ -55,6 +55,9 @@ export async function inicializarContenedor() {
   await repositorioImagenes.cargar()
   await repositorioUsuarios.cargar()
 
+  // Garantiza que exista el usuario administrador por defecto
+  await servicioUsuarios.inicializarAdmin()
+
   // Ejecutamos y programamos las descargas semanales necesarias
   await programadorDescargas.iniciar()
 }
