@@ -1,4 +1,3 @@
-import { Combobox } from "../bootstrap/bootstrap.bundle.min.js"
 import {
   renderizarCartasFlip,
   renderizarErrorCartasFlip
@@ -20,12 +19,6 @@ const headerCatalogo = document.getElementById("catalogHeader")
 const inputBusqueda = document.getElementById("catalogSearchInput")
 const comboboxOrden = document.getElementById("catalogSortCombobox")
 
-const ClaseCombobox = Combobox ?? globalThis.bootstrap?.Combobox
-if (comboboxOrden && ClaseCombobox) {
-  ClaseCombobox.getOrCreateInstance(comboboxOrden)
-}
-
-let ordenActual = ""
 let buscador = null
 
 function actualizarEstadoBotonOrden(valor, item) {
@@ -56,7 +49,6 @@ buscador = crearBusquedaCartas({
   contenedor: grid,
   entrada: inputBusqueda,
   obtenerFiltros: () => controladorFiltros?.obtenerFiltrosAplicados() ?? {},
-  obtenerOrden: () => ordenActual || undefined,
   alIniciarCarga: ({ contenedor, paginacionActual }) => {
     if (estado) {
       estado.textContent = "Cargando cartas..."
@@ -85,9 +77,9 @@ buscador = crearBusquedaCartas({
 })
 
 comboboxOrden?.addEventListener("change.bs.combobox", (evento) => {
-  ordenActual = evento.detail?.value ?? ""
-  actualizarEstadoBotonOrden(ordenActual, evento.detail?.item)
-  void buscador?.buscar()
+  const valor = evento.value ?? evento.detail?.value ?? ""
+  const item = evento.item ?? evento.detail?.item
+  actualizarEstadoBotonOrden(valor, item)
 })
 
 inicializarEventosPaginacion(contenedorPaginacion, (pagina) => {
