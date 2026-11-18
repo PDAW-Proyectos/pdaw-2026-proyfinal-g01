@@ -1,6 +1,10 @@
 const callbacksPaginacion = new WeakMap()
 
-function crearBotonPagina(texto, paginaDestino, { deshabilitado = false, ariaLabel = "" } = {}) {
+function crearBotonPagina(
+  claseIcono,
+  paginaDestino,
+  { deshabilitado = false, ariaLabel = "", title = "" } = {}
+) {
   const li = document.createElement("li")
   li.className = "page-item"
   if (deshabilitado) li.classList.add("disabled")
@@ -8,8 +12,13 @@ function crearBotonPagina(texto, paginaDestino, { deshabilitado = false, ariaLab
   const btn = document.createElement("button")
   btn.type = "button"
   btn.className = "page-link"
-  btn.textContent = texto
   if (ariaLabel) btn.setAttribute("aria-label", ariaLabel)
+  if (title) btn.title = title
+
+  const icono = document.createElement("span")
+  icono.className = claseIcono
+  icono.setAttribute("aria-hidden", "true")
+  btn.append(icono)
 
   if (!deshabilitado) {
     btn.dataset.page = String(paginaDestino)
@@ -30,7 +39,8 @@ function crearIndicadorPagina(paginaActual, totalPaginas) {
   const span = document.createElement("span")
   span.className = "page-link"
   span.setAttribute("aria-live", "polite")
-  span.textContent = `Página ${paginaActual} de ${totalPaginas}`
+  span.setAttribute("aria-label", `Página ${paginaActual} de ${totalPaginas}`)
+  span.textContent = `${paginaActual} / ${totalPaginas}`
 
   li.append(span)
   return li
@@ -91,7 +101,7 @@ export function inicializarEventosPaginacion(objetivo, alCambiarPagina) {
 }
 
 /** Renderiza una paginación de Bootstrap 6 (`ul.pagination.theme-primary`) mostrando
- * la página actual y el total de páginas en el centro con botones "Anterior" y "Siguiente" a cada lado.
+ * `x / y` en el centro con flechas `.carousel-icon-prev` y `.carousel-icon-next` a cada lado.
  */
 export function renderizarPaginacion(
   objetivo,
@@ -131,14 +141,16 @@ export function renderizarPaginacion(
   }
 
   lista.append(
-    crearBotonPagina("Anterior", paginacion.paginaActual - 1, {
+    crearBotonPagina("carousel-icon-prev", paginacion.paginaActual - 1, {
       deshabilitado: cargando || !paginacion.tieneAnterior,
-      ariaLabel: "Página anterior"
+      ariaLabel: "Página anterior",
+      title: "Anterior"
     }),
     crearIndicadorPagina(paginacion.paginaActual, totalPaginas),
-    crearBotonPagina("Siguiente", paginacion.paginaActual + 1, {
+    crearBotonPagina("carousel-icon-next", paginacion.paginaActual + 1, {
       deshabilitado: cargando || !paginacion.tieneSiguiente,
-      ariaLabel: "Página siguiente"
+      ariaLabel: "Página siguiente",
+      title: "Siguiente"
     })
   )
 }

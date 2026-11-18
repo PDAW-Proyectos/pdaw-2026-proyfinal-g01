@@ -140,22 +140,49 @@ input[type="password"]:not(:placeholder-shown) {
   border-bottom-right-radius: inherit;
 }
 
-#searchFiltersCollapse.is-open {
+#searchFiltersCollapse.is-open,
+#catalogFiltersCollapse.is-open {
   overflow: visible;
 }
 
 #searchDialog .dialog-header [role="search"],
 #searchFiltersToggleBtn,
 #searchFiltersApplyBtn,
-#searchFiltersClearBtn {
+#searchFiltersClearBtn,
+.catalog-search-box,
+#catalogSortCombobox,
+#catalogFiltersToggleBtn,
+#catalogFiltersApplyBtn,
+#catalogFiltersClearBtn {
   height: 2.75rem;
   min-height: 2.75rem;
+}
+
+.catalog-search-box {
+  background-color: var(--bg-body, #f8f9fa);
+  border-color: var(--primary-border, #c5b6ff);
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.catalog-search-box:hover,
+.catalog-search-box:active,
+.catalog-search-box:focus-within {
+  background-color: var(--bg-2, #f1f2f6);
+  border-color: var(--primary-bg, #6d4aff);
+  box-shadow: 0 0 0 0.2rem rgba(109, 74, 255, 0.2);
+  outline: none;
 }
 
 #searchFiltersForm .form-control,
 #searchFiltersForm .combobox-toggle.show {
   --control-bg: var(--bg-white, #ffffff);
   background-color: var(--bg-white, #ffffff);
+}
+
+#catalogFiltersForm .form-control,
+#catalogFiltersForm .combobox-toggle.show {
+  --control-bg: var(--bg-body, #f8f9fa);
+  background-color: var(--bg-body, #f8f9fa);
 }
 
 /* Make the navbar drawer backdrop match the dark blurred search dialog backdrop */
@@ -672,4 +699,80 @@ input[type="password"]:not(:placeholder-shown) {
 
 .toast.error {
   background: #f44336;
+}
+
+/* =========================================================
+   Paginación (paginacion.js) con flechas de carrusel
+   ========================================================= */
+.pagination {
+  --carousel-control-icon-width: 1rem;
+  --carousel-control-prev-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0'/></svg>");
+  --carousel-control-next-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708'/></svg>");
+}
+
+.pagination-sm {
+  --carousel-control-icon-width: 0.875rem;
+}
+
+/* =========================================================
+   Tarjetas flip (cartaFlip.js)
+   ========================================================= */
+.card-flip {
+  width: 202px;
+  perspective: 1200px;
+  cursor: pointer;
+  border-radius: var(--radius-7, 0.5rem);
+  --hover-lift-box-shadow: 0 0.125rem 0.25rem 0 rgba(0, 0, 0, 0.05), 0 0.375rem 0.75rem -0.25rem rgba(0, 0, 0, 0.12), 0 0.75rem 1.125rem -0.375rem rgba(0, 0, 0, 0.1);
+}
+
+.card-flip-inner {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-flip.flipped .card-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-front {
+  position: relative;
+  width: 100%;
+  transform: rotateY(0deg);
+}
+
+.card-front .card-body {
+  width: 100%;
+  color: var(--fg-body, #1a1a2e);
+}
+
+.card-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+}
+
+.card-flip.flipped .card-front {
+  pointer-events: none;
+}
+
+.card-flip:not(.flipped) .card-back {
+  pointer-events: none;
+}
+
+.card-back-title,
+.card-back-attr {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-flip-inner {
+    transition: none;
+  }
 }

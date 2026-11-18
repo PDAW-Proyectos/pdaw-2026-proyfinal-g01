@@ -126,22 +126,30 @@ export function enlazarFiltrosInmediatos({
 }
 
 /**
- * Inicializa el acordeón de filtros, los Combobox de Bootstrap 6, el clamping numérico
- * y los botones de aplicar/limpiar dentro del diálogo de búsqueda rápida (`#searchDialog`).
+ * Inicializa un acordeón de filtros, sus Combobox de Bootstrap 6, el clamping numérico
+ * y los botones de aplicar/limpiar dentro de cualquier contenedor (diálogo o catálogo).
  * @param {Object} opciones
- * @param {HTMLDialogElement|null} opciones.dialog
+ * @param {ParentNode|null} [opciones.contenedor=document]
+ * @param {string} [opciones.selectorFormulario="#searchFiltersForm"]
+ * @param {string} [opciones.selectorColapsable="#searchFiltersCollapse"]
+ * @param {string} [opciones.selectorBotonToggle="#searchFiltersToggleBtn"]
+ * @param {string} [opciones.selectorBotonLimpiar="#searchFiltersClearBtn"]
  * @param {(filtros: Record<string, string>) => void} [opciones.alCambiarFiltros]
  */
-export function inicializarFiltrosDialogoBusqueda({
-  dialog,
+export function inicializarPanelFiltros({
+  contenedor = document,
+  selectorFormulario = "#searchFiltersForm",
+  selectorColapsable = "#searchFiltersCollapse",
+  selectorBotonToggle = "#searchFiltersToggleBtn",
+  selectorBotonLimpiar = "#searchFiltersClearBtn",
   alCambiarFiltros
 } = {}) {
-  const formularioFiltros = dialog?.querySelector("#searchFiltersForm") ?? null
+  const formularioFiltros = contenedor?.querySelector(selectorFormulario) ?? null
   if (!formularioFiltros) return null
 
-  const colapsableFiltros = dialog?.querySelector("#searchFiltersCollapse") ?? null
-  const botonToggleFiltros = dialog?.querySelector("#searchFiltersToggleBtn") ?? null
-  const botonLimpiarFiltros = dialog?.querySelector("#searchFiltersClearBtn") ?? null
+  const colapsableFiltros = contenedor?.querySelector(selectorColapsable) ?? null
+  const botonToggleFiltros = contenedor?.querySelector(selectorBotonToggle) ?? null
+  const botonLimpiarFiltros = contenedor?.querySelector(selectorBotonLimpiar) ?? null
   const comboboxToggles = Array.from(
     formularioFiltros.querySelectorAll('[data-bs-toggle="combobox"]')
   )
@@ -262,4 +270,21 @@ export function inicializarFiltrosDialogoBusqueda({
     cerrarMenus: cerrarComboboxes,
     cerrarAcordeon: cerrarColapsableFiltros
   }
+}
+
+/**
+ * Inicializa el acordeón de filtros, los Combobox de Bootstrap 6, el clamping numérico
+ * y los botones de aplicar/limpiar dentro del diálogo de búsqueda rápida (`#searchDialog`).
+ * @param {Object} opciones
+ * @param {HTMLDialogElement|null} opciones.dialog
+ * @param {(filtros: Record<string, string>) => void} [opciones.alCambiarFiltros]
+ */
+export function inicializarFiltrosDialogoBusqueda({
+  dialog,
+  alCambiarFiltros
+} = {}) {
+  return inicializarPanelFiltros({
+    contenedor: dialog,
+    alCambiarFiltros
+  })
 }

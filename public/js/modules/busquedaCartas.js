@@ -17,6 +17,7 @@ export function crearBusquedaCartas({
   botonBuscar,
   filtros = {},
   contenedorFiltros,
+  obtenerFiltros,
   selectAlfabetico,
   selectPrecio,
   obtenerOrden,
@@ -55,7 +56,10 @@ export function crearBusquedaCartas({
     contenedor.setAttribute("aria-busy", "true")
     alIniciarCarga?.({ contenedor, paginacionActual })
 
-    const parametros = leerFiltrosCartas(entrada, filtros, contenedorFiltros)
+    const parametros = {
+      ...(obtenerFiltros ? obtenerFiltros() : {}),
+      ...leerFiltrosCartas(entrada, filtros, contenedorFiltros)
+    }
     parametros.page = pagina
     const orden = resolverOrden()
     if (orden) parametros.orden = orden

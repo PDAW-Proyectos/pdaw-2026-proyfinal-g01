@@ -11,6 +11,7 @@ import {
   crearUrlDetalleMazo,
   obtenerCartaPortadaMazo
 } from "../utils/utilidadesMazos.js"
+import { crearTarjetaCarta } from "./carta/cartaTarjeta.js"
 import { renderizarImagenCarta } from "./imagenCarta.js"
 
 const CANTIDAD_HERO = 5
@@ -117,27 +118,15 @@ export function renderCardSlider(cards) {
     const sliderEl = obtenerElemento("popularCardsSlider")
     const inner = obtenerElemento("popular-cards-inner")
     const status = obtenerElemento("popular-cards-status")
-    const template = obtenerElemento("card-slide-template")
     const fragmento = document.createDocumentFragment()
 
     cards.slice(0, 10).forEach((card, index) => {
-      const clone = template.content.cloneNode(true)
-      const item = clone.querySelector(".carousel-item")
+      const item = document.createElement("div")
+      item.className = "carousel-item"
       if (index === 0) item.classList.add("active")
 
-      const img = clone.querySelector(".card-slide-img")
-      img.replaceWith(
-        renderizarImagenCarta(card, {
-          tamano: "small",
-          clasesImagen: "card-slide-img card-img-top"
-        })
-      )
-
-      clone.querySelector(".card-slide-name").textContent = card.name
-      clone.querySelector(".card-slide-type").textContent = obtenerSubtituloCarta(card)
-      clone.querySelector(".card-slide-link").href = crearUrlDetalleCarta(card)
-
-      fragmento.append(clone)
+      item.append(crearTarjetaCarta(card))
+      fragmento.append(item)
     })
 
     inner.replaceChildren(fragmento)
