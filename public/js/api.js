@@ -1,4 +1,4 @@
-/*Este módulo se encarga de hacer todas las peticiones al backend de forma segura 
+/*Este módulo se encarga de hacer todas las peticiones al backend de forma segura
 y atrapará los errores con la clase ApiError */
 
 export class ApiError extends Error { //clase 09
@@ -8,6 +8,7 @@ export class ApiError extends Error { //clase 09
     this.fieldErrors = body?.errores ?? [];
   }
 }
+
 export async function api(url, { method = "GET", body, signal } = {}) {
   let res;
   try {
@@ -22,6 +23,7 @@ export async function api(url, { method = "GET", body, signal } = {}) {
     if (err.name === "AbortError") throw err;
     throw new ApiError(0, { detail: "No se pudo contactar al servidor" });
   }
+
   const data = res.status === 204 ? null : await res.json().catch(() => null);
   if (!res.ok) throw new ApiError(res.status, data);
   return data;

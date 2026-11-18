@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="63.999996"
+   height="63.999996"
+   viewBox="0 0 16.933332 16.933332"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1">
+    <circle
+       style="fill:#000000;fill-opacity:1;stroke-width:1.02525"
+       id="path3"
+       cx="8.4520845"
+       cy="8.4520845"
+       r="8.2020826" />
+    <path
+       id="path1"
+       style="fill:#da0400;fill-opacity:1;stroke-width:0.33852"
+       d="M 8.4593752,-0.01458193 A 8.4593749,8.4666662 0 0 0 0,8.4520846 8.4593749,8.4666662 0 0 0 8.4593752,16.918751 8.4593749,8.4666662 0 0 0 16.918751,8.4520846 8.4593749,8.4666662 0 0 0 8.4593752,-0.01458193 Z m 0,1.32291663 A 7.1375972,7.1437492 0 0 1 15.596973,8.4520846 7.1375972,7.1437492 0 0 1 8.4593752,15.595834 7.1375972,7.1437492 0 0 1 1.3217773,8.4520846 7.1375972,7.1437492 0 0 1 8.4593752,1.3083347 Z" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.5225px;font-family:'Adwaita Sans';-inkscape-font-specification:'Adwaita Sans, @opsz=32,wght=700';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'opsz' 32, 'wght' 700;writing-mode:lr-tb;direction:ltr;fill:#e8cb28;fill-opacity:1;stroke-width:1.29354"
+       x="4.2151852"
+       y="14.681138"
+       id="text4"
+       transform="scale(1.0670725,0.93714344)"><tspan
+         id="tspan4"
+         x="4.2151852"
+         y="14.681138"
+         style="stroke-width:1.29354">1</tspan></text>
+  </g>
+</svg>

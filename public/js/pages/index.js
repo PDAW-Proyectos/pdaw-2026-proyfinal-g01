@@ -1,6 +1,3 @@
-import { obtenerCartasPopulares } from "../services/cartaApi.js"
-import { listarMazosPopulares } from "../services/mazosApi.js"
-import { inicializarBusquedaCartas } from "../modules/busquedaCartas.js"
 import {
   renderCardSlider,
   renderDeckSlider,
@@ -8,13 +5,13 @@ import {
   renderizarErrorCartasPopulares,
   renderizarErrorHero,
   renderizarErrorMazosDestacados
-} from "../components/renderizadorCartas.js"
+} from "../components/carruselInicio.js"
+import { obtenerCartasPopulares } from "../services/servicioCartas.js"
+import { listarMazosPopulares } from "../services/servicioMazos.js"
 
 const CANTIDAD_HERO = 5
 
 async function inicializarInicio() {
-  inicializarBusquedaCartas()
-
   const [resPopulares, resMazos] = await Promise.allSettled([
     obtenerCartasPopulares(),
     listarMazosPopulares()
