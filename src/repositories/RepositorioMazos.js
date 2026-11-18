@@ -145,7 +145,7 @@ export class RepositorioMazos {
   /** Toma los datos dados y los combina con los del Mazo asociado al id dado, crea
    * un Mazo y lo actualiza en el repositorio, despues guarda los mazos.
    * @param {Object} data
-   * @returns {Mazo}
+   * @returns {Promise <Mazo>}
    * @throws NotFoundError si no encuentra el Mazo.
    */
   async actualizar(data) {
