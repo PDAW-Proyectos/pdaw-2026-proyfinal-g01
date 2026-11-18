@@ -1,5 +1,5 @@
 import { renderizarDetalleCarta, renderizarErrorDetalleCarta } from "../components/renderizadorDetalleCarta.js"
-import { obtenerCartaPorId } from "../services/cartaApi.js"
+import { obtenerCartaPorId } from "../services/servicioCartas.js"
 
 async function inicializarDetalleCarta() {
   const id = new URLSearchParams(window.location.search).get("id")

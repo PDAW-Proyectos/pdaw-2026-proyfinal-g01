@@ -141,43 +141,53 @@
     </dialog>
 
     <!-- Detalle de la carta -->
-    <main class="min-vh-100 d-flex flex-column flex-grow-1 align-items-center p-4 bg-body fg-body" id="detail-page" aria-busy="true">
-        <p id="detail-status" role="status" aria-live="polite">Cargando carta...</p>
-        <div id="detail-card" class="max-w-768px h-max d-flex flex-column align-items-center" hidden>
-            <!-- Imagen con hover-lift y disparador de Dialog -->
-            <img
-                id="detail-image"
-                alt="Imagen de la carta"
-                class="detail-card border border-2 border-primary hover-lift"
-                role="button"
-                tabindex="0"
-                data-bs-toggle="dialog"
-                data-bs-target="#cardImageDialog"
-                aria-label="Ver imagen de la carta en grande">
+    <main class="min-vh-100 d-flex flex-column flex-grow-1 align-items-center pt-6 pb-12 mb-12 px-4 bg-body fg-body" id="detail-page" aria-busy="true">
+        <p id="detail-status" class="fg-2 text-center my-6" role="status" aria-live="polite">Cargando carta...</p>
+        <div id="detail-card" class="max-w-768px h-max d-flex flex-column align-items-center gap-4" hidden>
+            <!-- Imagen con hover-lift, ícono de banlist y disparador de Dialog -->
+            <div class="position-relative d-inline-block hover-lift">
+                <img
+                    id="detail-image"
+                    alt="Imagen de la carta"
+                    class="full-card border border-2 border-primary d-block"
+                    role="button"
+                    tabindex="0"
+                    data-bs-toggle="dialog"
+                    data-bs-target="#cardImageDialog"
+                    aria-label="Ver imagen de la carta en grande">
+                <img
+                    id="detail-banlist-icon"
+                    alt=""
+                    class="banlist-badge position-absolute bottom-0 end-0 m-2 pe-none"
+                    hidden>
+            </div>
 
             <!-- Info -->
             <div class="w-100 text-center">
                 <!-- Nombre -->
-                <div class="border-bottom border-2 border-primary p-2">
-                    <h1 id="detail-name"></h1>
-                    <div id="detail-subname"></div>
+                <div class="border-bottom border-2 border-primary py-3 px-2">
+                    <h1 id="detail-name" class="h2 fw-bold mb-1"></h1>
+                    <div id="detail-subname" class="fg-2 fs-sm"></div>
                 </div>
                 <!-- Descripción -->
-                <div class="border-bottom border-2 border-primary p-2">
+                <div class="border-bottom border-2 border-primary py-3 px-2">
                     <p id="detail-description" class="my-2"></p>
                 </div>
                 <!-- Atributos de la carta -->
-                <div class="border-bottom border-2 border-primary p-2">
-                    <h3>Atributos de la carta</h3>
-                    <div id="detail-attributes" class="grid"></div>
+                <div class="border-bottom border-2 border-primary py-4">
+                    <h2 class="h4 fw-bold mb-4">Atributos de la carta</h2>
+                    <div id="detail-attributes" class="grid gap-3"></div>
                 </div>
-                <!-- Precio + acciones -->
-                <div>
-                    <button class="btn">Añadir a colección</button>
+                <!-- Konami ID y Precio -->
+                <div class="d-flex justify-content-around align-items-center flex-wrap gap-4 py-4 px-2">
+                    <div id="detail-konami-id" class="d-flex flex-column align-items-center">
+                        <small class="fs-xs fg-2 text-uppercase fw-semibold">KONAMI ID</small>
+                        <span class="fs-lg fw-bold">Sin ID disponible</span>
+                    </div>
 
-                    <div id="detail-price">
-                        <small>PRECIO</small>
-                        Sin precio disponible
+                    <div id="detail-price" class="d-flex flex-column align-items-center">
+                        <small class="fs-xs fg-2 text-uppercase fw-semibold">PRECIO</small>
+                        <span class="fs-lg fw-bold">Sin precio disponible</span>
                     </div>
                 </div>
             </div>
@@ -220,7 +230,7 @@
 
     <script type="module" src="js/bootstrap/bootstrap.bundle.min.js"></script>
     <script type="module" src="js/pages/carta.js"></script>
-    <script type="module" src="js/components/navbar.js"></script>
+    <script type="module" src="js/modules/navbar.js"></script>
     <script>
         // Sincroniza el src/alt de la carta al abrir el dialog en grande
         document.getElementById('cardImageDialog').addEventListener('show.bs.dialog', () => {

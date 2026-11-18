@@ -1,59 +1,27 @@
-import { obtenerPrecioMaximo, obtenerUrlImagen } from "./renderizadorCartas.js"
-
-const formatoPrecio = new Intl.NumberFormat("es-AR", {
-  style: "currency",
-  currency: "USD"
-})
-
-function obtenerElemento(id) {
-  const elemento = document.getElementById(id)
-  if (!elemento) {
-    throw new Error(`No se encontró el elemento requerido #${id}.`)
-  }
-  return elemento
-}
-
-function obtenerAtributos(carta) {
-  const atributos = [
-    ["Nivel", carta.level],
-    ["ATK", carta.atk],
-    ["DEF", carta.def],
-    ["Atributo", carta.attribute],
-    ["Raza", carta.race],
-    ["Tipo de carta", carta.type],
-    ["Clase", carta.frameType],
-    ["Escala de péndulo", carta.scale],
-    ["Valor de Link", carta.linkval],
-    ["Marcadores de Link", carta.linkmarkers?.join(", ")],
-    ["ID de carta", carta.id]
-  ]
-
-  const lista = Object.entries(carta.banlist_info ?? {})
-    .map(([formato, estado]) => `${formato.toUpperCase()}: ${estado}`)
-    .join(" · ")
-  if (lista) {
-    atributos.push(["Lista de prohibición", lista])
-  }
-
-  return atributos.filter(([, valor]) =>
-    valor !== null && valor !== undefined && valor !== ""
-  )
-}
+import {
+  formatearPrecio,
+  obtenerAtributosCarta,
+  obtenerEstadoBanlist,
+  obtenerSubtituloCarta
+} from "../utils/utilidadesCartas.js"
+import { obtenerElemento } from "../utils/dom.js"
+import { renderizarImagenCarta } from "./imagenCarta.js"
 
 function renderizarAtributos(carta) {
   const grilla = obtenerElemento("detail-attributes")
   const fragmento = document.createDocumentFragment()
 
-  for (const [etiqueta, valor] of obtenerAtributos(carta)) {
+  for (const [etiqueta, valor] of obtenerAtributosCarta(carta, { detallado: true })) {
     const item = document.createElement("div")
-    item.className = "attr-item"
+    item.className =
+      "g-col-6 sm:g-col-4 md:g-col-3 badge theme-primary rounded-1 d-flex flex-column justify-content-center align-items-center p-3 h-100 text-wrap lh-sm"
 
-    const nombre = document.createElement("div")
-    nombre.className = "attr-label"
+    const nombre = document.createElement("span")
+    nombre.className = "fs-xs text-uppercase opacity-75 fw-normal"
     nombre.textContent = etiqueta
 
-    const contenido = document.createElement("div")
-    contenido.className = "attr-value"
+    const contenido = document.createElement("span")
+    contenido.className = "fs-sm fw-bold mt-1"
     contenido.textContent = String(valor)
 
     item.append(nombre, contenido)
@@ -63,29 +31,58 @@ function renderizarAtributos(carta) {
   grilla.replaceChildren(fragmento)
 }
 
+function renderizarDatoInferior(idElemento, etiqueta, valorTexto) {
+  const contenedor = obtenerElemento(idElemento)
+  const etiquetaEl = document.createElement("small")
+  etiquetaEl.className = "fs-xs fg-2 text-uppercase fw-semibold"
+  etiquetaEl.textContent = etiqueta
+
+  const valorEl = document.createElement("span")
+  valorEl.className = "fs-lg fw-bold"
+  valorEl.textContent = valorTexto
+
+  contenedor.replaceChildren(etiquetaEl, valorEl)
+}
+
 /** Presenta los datos de una carta en la plantilla de detalle. */
 export function renderizarDetalleCarta(carta) {
-  const imagen = obtenerElemento("detail-image")
-  imagen.src = obtenerUrlImagen(carta, "full")
-  imagen.alt = carta.name
-  imagen.loading = "eager"
+  const imagenActual = obtenerElemento("detail-image")
+  const contenedorImagen = renderizarImagenCarta(carta, {
+    tamano: "full",
+    estadoBan: obtenerEstadoBanlist(carta),
+    idImagen: "detail-image",
+    clasesContenedor: "hover-lift",
+    clasesImagen: "border border-2 border-primary"
+  })
+
+  const imagen = contenedorImagen.querySelector("#detail-image")
+  imagen.setAttribute("role", "button")
+  imagen.tabIndex = 0
+  imagen.dataset.bsToggle = "dialog"
+  imagen.dataset.bsTarget = "#cardImageDialog"
+  imagen.setAttribute("aria-label", "Ver imagen de la carta en grande")
+
+  imagenActual.parentElement.replaceWith(contenedorImagen)
 
   obtenerElemento("detail-name").textContent = carta.name
-  obtenerElemento("detail-subname").textContent = [carta.race, carta.type]
-    .filter(Boolean)
-    .join(" / ")
+  obtenerElemento("detail-subname").textContent = obtenerSubtituloCarta(carta)
   obtenerElemento("detail-description").textContent =
     carta.desc || "Esta carta no tiene una descripción disponible."
 
-  const precio = obtenerPrecioMaximo(carta)
-  const bloquePrecio = obtenerElemento("detail-price")
-  const etiquetaPrecio = document.createElement("small")
-  etiquetaPrecio.textContent = "PRECIO"
-  bloquePrecio.replaceChildren(
-    etiquetaPrecio,
-    document.createTextNode(
-      precio > 0 ? formatoPrecio.format(precio) : "Sin precio disponible"
-    )
+  const misc = carta.misc_info ?? {}
+  const konamiId = misc.konami_id ?? carta.id
+  renderizarDatoInferior(
+    "detail-konami-id",
+    "KONAMI ID",
+    konamiId !== null && konamiId !== undefined && konamiId !== ""
+      ? String(konamiId)
+      : "Sin ID disponible"
+  )
+
+  renderizarDatoInferior(
+    "detail-price",
+    "PRECIO",
+    formatearPrecio(carta.card_price)
   )
 
   renderizarAtributos(carta)
