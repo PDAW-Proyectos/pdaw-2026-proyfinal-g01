@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YuGiKi! - Colección</title>
+    <title>YuGiKi! - Mazos de la comunidad</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css">
@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="css/custom.css">
 </head>
 
-<body class="d-flex flex-column">
+<body class="d-flex flex-column min-vh-100">
     <!-- Header navbar -->
     <nav class="navbar sticky-top border-bottom border-2 border-primary bg-white">
         <div class="container-fluid position-relative">
@@ -22,6 +22,18 @@
 
             <!-- Controles derechos -->
             <div class="d-flex align-items-center gap-1">
+                <div class="search-trigger-wrapper">
+                    <button
+                        type="button"
+                        class="btn-icon btn-lg fg-primary search-trigger-btn"
+                        data-bs-toggle="dialog"
+                        data-bs-target="#searchDialog"
+                        aria-label="Buscar cartas">
+                        <span class="search-trigger-placeholder">Buscar cartas...</span>
+                        <i class="bi bi-search search-trigger-icon lh-1" aria-hidden="true"></i>
+                    </button>
+                </div>
+
                 <button
                     class="btn-icon btn-lg navbar-toggler fg-primary"
                     type="button"
@@ -79,13 +91,13 @@
                         </summary>
                         <ul class="navbar-nav p-3 border-start border-2 border-primary ms-4 my-1 fs-md">
                             <li class="nav-item w-100">
-                                <a href="coleccionMazos.html" class="nav-link d-flex justify-content-between align-items-center w-100 active" aria-current="page">
+                                <a href="mazosUsuario.html" class="nav-link d-flex justify-content-between align-items-center w-100">
                                     <span>Mis creaciones</span>
                                     <i class="bi bi-person-lines-fill" aria-hidden="true"></i>
                                 </a>
                             </li>
                             <li class="nav-item w-100">
-                                <a href="mazos-comunidad.html" class="nav-link d-flex justify-content-between align-items-center w-100">
+                                <a href="coleccionMazos.html" class="nav-link d-flex justify-content-between align-items-center w-100 active" aria-current="page">
                                     <span>De la comunidad</span>
                                     <i class="bi bi-people" aria-hidden="true"></i>
                                 </a>
@@ -102,8 +114,8 @@
         <div id="nav-auth" class="drawer-footer justify-content-center border-0"></div>
     </dialog>
 
-    <!-- Dialog de Búsqueda para agregar cartas al mazo -->
-    <dialog class="dialog dialog-lg dialog-scrollable dialog-slide-down mt-12 mb-auto" id="searchDialog" aria-label="Buscar cartas para agregar al mazo">
+    <!-- Dialog de Búsqueda (estilo documentación oficial de Bootstrap) -->
+    <dialog class="dialog dialog-lg dialog-scrollable dialog-slide-down mt-12 mb-auto" id="searchDialog" aria-label="Buscar cartas">
         <div class="dialog-header flex-column align-items-stretch gap-0 border-0 pb-0">
             <div class="d-flex align-items-stretch gap-2 w-100 pb-3">
                 <div class="form-control form-adorn border-0 shadow-none py-2 px-4 flex-grow-1 min-w-0" role="search">
@@ -114,8 +126,8 @@
                         type="search"
                         class="form-ghost fs-lg"
                         id="navbarSearchInput"
-                        placeholder="Buscar carta para agregar al mazo..."
-                        aria-label="Buscar carta para agregar al mazo"
+                        placeholder="Buscar cartas..."
+                        aria-label="Buscar cartas"
                         autocomplete="off"
                         autofocus>
                 </div>
@@ -283,147 +295,28 @@
             <div class="border-bottom border-primary border-2"></div>
         </div>
         <div class="dialog-body" id="searchResults">
-            <p class="fg-2 text-center my-4">Escribe para buscar cartas y haz clic en una para agregarla al mazo...</p>
+            <p class="fg-2 text-center my-4">Escribe para comenzar a buscar cartas...</p>
         </div>
         <div class="dialog-footer justify-content-center border-top border-primary border-2 py-2 mx-5 d-none" id="searchResultsFooter">
             <span class="fg-2 fs-sm fw-semibold" id="searchResultsCount"></span>
         </div>
     </dialog>
 
-    <!-- Contenido principal -->
-    <main class="collection-page d-flex flex-column flex-grow-1 py-6 px-4 bg-body fg-body" id="deck-editor" aria-busy="true">
-        <div class="w-100 flex-grow-1 d-flex flex-column lg:flex-row align-items-center lg:justify-content-center lg:align-items-stretch gap-6">
+    <!-- Mazos de la comunidad -->
+    <main class="flex-grow-1 py-6 px-3 md:py-8 md:px-4 bg-body fg-body" id="community-decks-page" aria-busy="true">
+        <div class="max-w-768px mx-auto">
+            <header class="border-bottom border-2 border-primary pb-4 mb-6 text-center">
+                <h1 class="h2 fw-bold mb-2">Mazos de la comunidad</h1>
+                <p class="fg-2 mb-0">Explora los mazos creados por los duelistas de YuGiKi!.</p>
+            </header>
 
-            <!-- Parte 1: Lista scrollable de mazos + acordeón para crear un nuevo mazo -->
-            <aside class="collection-sticky-panel collection-aside-left bg-body" aria-labelledby="deck-list-heading">
-                <div class="collection-aside-sticky p-4">
-                    <h2 id="deck-list-heading" class="h5 fw-bold text-center border-bottom border-2 border-primary pb-3 mb-3">
-                        Mis mazos
-                    </h2>
+            <p class="fg-2 text-center my-6" id="decks-status" role="status" aria-live="polite">Cargando mazos...</p>
 
-                    <div class="overflow-y-auto mb-3 pe-1 collection-deck-list" id="deck-list" aria-label="Mis mazos">
-                        <p class="fg-2 fs-sm text-center py-3 mb-0">Cargando tus mazos...</p>
-                    </div>
+            <div id="community-decks-list" class="w-100" aria-live="polite"></div>
 
-                    <details class="nav-mazos-accordion w-100 border-top border-2 border-primary pt-3" id="create-deck-accordion">
-                        <summary class="btn-solid theme-primary w-100 d-flex justify-content-between align-items-center list-unstyled" style="cursor: pointer;">
-                            <span>+ Nuevo mazo</span>
-                            <i class="bi bi-chevron-down fs-sm" aria-hidden="true"></i>
-                        </summary>
-
-                        <form id="create-deck-form" class="d-flex flex-column gap-2 mt-3">
-                            <label class="fs-xs fg-2 text-uppercase fw-semibold" for="newMazoName">Nombre del mazo</label>
-                            <input
-                                type="text"
-                                id="newMazoName"
-                                class="form-control border border-2 border-primary"
-                                placeholder="Ej. Mazo Dragón"
-                                maxlength="80"
-                                required>
-                            <button type="submit" class="btn-solid theme-primary w-100 mt-1">
-                                Crear mazo
-                            </button>
-                        </form>
-                    </details>
-                </div>
-            </aside>
-
-            <!-- Parte 2: Mazo seleccionado (Título arriba + disparador de diálogo para agregar cartas, Main Deck y Extra Deck) -->
-            <section class="collection-main-section max-w-768px h-max d-flex flex-column align-items-center gap-4" aria-labelledby="deck-title">
-                <!-- Título del mazo y botón para abrir diálogo de búsqueda -->
-                <div class="w-100 border-bottom border-2 border-primary pb-4 px-2 text-center">
-                    <h1 class="h1 fw-bold mb-1" id="deck-title">Mis mazos</h1>
-                    <p class="fg-2 fs-sm mb-3" id="deck-save-status">Los cambios se guardan automáticamente.</p>
-
-                    <div class="max-w-450px mx-auto">
-                        <button
-                            type="button"
-                            id="deck-search-trigger"
-                            class="btn-icon btn-lg fg-primary deck-search-trigger-btn w-100 d-flex align-items-center justify-content-between"
-                            data-bs-toggle="dialog"
-                            data-bs-target="#searchDialog"
-                            aria-label="Buscar carta para agregar al mazo">
-                            <span class="deck-search-trigger-placeholder">Buscar carta para agregar al mazo...</span>
-                            <i class="bi bi-search deck-search-trigger-icon lh-1" aria-hidden="true"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Main Deck -->
-                <div class="w-100 border-bottom border-2 border-primary py-4 px-2">
-                    <h2 class="h4 fw-bold text-center mb-4" id="main-heading">Main Deck (0/60)</h2>
-                    <div class="d-flex flex-wrap justify-content-center gap-4" id="main-cards" aria-live="polite"></div>
-                </div>
-
-                <!-- Extra Deck -->
-                <div class="w-100 py-4 px-2">
-                    <h2 class="h4 fw-bold text-center mb-4" id="extra-heading">Extra Deck (0/15)</h2>
-                    <div class="d-flex flex-wrap justify-content-center gap-4" id="extra-cards" aria-live="polite"></div>
-                </div>
-            </section>
-
-            <!-- Parte 3: Información del mazo seleccionado y botón para eliminarlo -->
-            <aside class="collection-sticky-panel collection-aside-right bg-body" aria-labelledby="deck-info-heading">
-                <div class="collection-aside-sticky p-4">
-                    <h2 id="deck-info-heading" class="h5 fw-bold text-center border-bottom border-2 border-primary pb-3 mb-3">
-                        Información del mazo
-                    </h2>
-
-                    <div class="d-flex flex-column text-center">
-                        <div class="border-bottom border-2 border-primary py-3">
-                            <small class="fs-xs fg-2 text-uppercase fw-semibold d-block">CARTAS TOTALES</small>
-                            <span id="deck-total-cards" class="fs-lg fw-bold d-block mt-1">0 cartas</span>
-                        </div>
-
-                        <div class="border-bottom border-2 border-primary py-3">
-                            <small class="fs-xs fg-2 text-uppercase fw-semibold d-block">ESTADO DEL MAZO</small>
-                            <span id="deck-validity" class="badge theme-secondary rounded-1 mt-2">Sin mazo</span>
-                        </div>
-
-                        <div class="border-bottom border-2 border-primary py-3">
-                            <small class="fs-xs fg-2 text-uppercase fw-semibold d-block">PRECIO TOTAL</small>
-                            <span id="deck-price" class="fs-lg fw-bold d-block mt-1">US$ 0,00</span>
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        id="delete-deck-btn"
-                        class="btn-solid theme-danger w-100 mt-4 d-flex justify-content-center align-items-center gap-2"
-                        data-bs-toggle="dialog"
-                        data-bs-target="#deleteDeckDialog"
-                        disabled>
-                        <i class="bi bi-trash" aria-hidden="true"></i>
-                        <span>Eliminar mazo</span>
-                    </button>
-                </div>
-            </aside>
-
+            <nav id="decks-pagination" class="mt-8" aria-label="Paginación de mazos"></nav>
         </div>
     </main>
-
-    <!-- Dialog para confirmar la eliminación del mazo -->
-    <dialog class="dialog" id="deleteDeckDialog" aria-labelledby="deleteDeckDialogTitle">
-        <div class="dialog-header border-bottom border-2 border-primary">
-            <h5 class="dialog-title fs-lg fw-bold mb-0" id="deleteDeckDialogTitle">Confirmar eliminación</h5>
-            <button type="button" class="btn-solid btn-close-custom theme-primary" data-bs-dismiss="dialog" aria-label="Cerrar">
-                <i class="bi bi-x-lg" aria-hidden="true"></i>
-            </button>
-        </div>
-        <div class="dialog-body py-4 text-center">
-            <p class="mb-0">
-                ¿Estás seguro de que deseas eliminar el mazo <strong id="delete-deck-name"></strong>?
-            </p>
-            <p class="fg-2 fs-sm mt-2 mb-0">Esta acción no se puede deshacer.</p>
-        </div>
-        <div class="dialog-footer border-top border-2 border-primary justify-content-end gap-2">
-            <button type="button" class="btn-outline theme-primary" data-bs-dismiss="dialog">Cancelar</button>
-            <button type="button" class="btn-solid theme-danger" id="confirm-delete-deck">Eliminar mazo</button>
-        </div>
-    </dialog>
-
-    <!-- Toast -->
-    <div class="toast" id="toast" popover="manual" role="status" aria-live="polite"></div>
 
     <!-- Footer -->
     <footer class="bg-dark fg-light p-4">
@@ -455,7 +348,7 @@
 
     <script type="module" src="js/bootstrap/bootstrap.bundle.min.js"></script>
     <script type="module" src="js/pages/navbar.js"></script>
-    <script type="module" src="js/pages/coleccionMazos.js"></script>
+    <script type="module" src="js/pages/mazosComunidad.js"></script>
 </body>
 
 </html>

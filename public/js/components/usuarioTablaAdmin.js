@@ -26,7 +26,9 @@ export function crearFilaUsuario(usuario, { usernameActual } = {}) {
   const tdRol = document.createElement("td")
   const badge = document.createElement("span")
   badge.className =
-    usuario.rol === "admin" ? "badge bg-warning text-dark" : "badge bg-secondary"
+    usuario.rol === "admin"
+      ? "badge theme-warning rounded-1"
+      : "badge theme-secondary rounded-1"
   badge.textContent = usuario.rol
   tdRol.append(badge)
 
@@ -36,7 +38,7 @@ export function crearFilaUsuario(usuario, { usernameActual } = {}) {
   const esMismoUsuario = usuario.username === usernameActual
   const btnEliminar = document.createElement("button")
   btnEliminar.type = "button"
-  btnEliminar.className = "btn btn-sm btn-outline-danger"
+  btnEliminar.className = "btn-outline btn-sm theme-danger"
   btnEliminar.textContent = esMismoUsuario ? "Tu cuenta" : "Eliminar"
   btnEliminar.disabled = esMismoUsuario
 

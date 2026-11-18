@@ -26,6 +26,44 @@ export async function listarMazosPropios() {
 }
 
 /**
+ * Obtiene los mazos creados en la base de datos (`GET /api/mazos?all=true&page=...`).
+ * Si el backend responde 404 en la primera página porque aún no hay mazos, devuelve una lista vacía.
+ * @param {number|{page?: number, all?: boolean}} [paginaOOpciones=1]
+ * @param {{signal?: AbortSignal}} [opciones]
+ * @returns {Promise<{datos: Array<Object>, paginacion: Object}>}
+ */
+export async function listarMazos(paginaOOpciones = 1, { signal } = {}) {
+  const opciones =
+    typeof paginaOOpciones === "object" && paginaOOpciones !== null
+      ? paginaOOpciones
+      : { page: paginaOOpciones }
+
+  const pagina = Math.max(1, Number(opciones.page) || 1)
+  const params = new URLSearchParams({
+    all: String(opciones.all ?? true),
+    page: String(pagina)
+  })
+
+  try {
+    return await api(`/api/mazos?${params.toString()}`, { signal })
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404 && pagina === 1) {
+      return {
+        datos: [],
+        paginacion: {
+          paginaActual: 1,
+          totalPaginas: 0,
+          totalEntradas: 0,
+          tieneAnterior: false,
+          tieneSiguiente: false
+        }
+      }
+    }
+    throw error
+  }
+}
+
+/**
  * Obtiene los mazos competitivos populares (`GET /api/mazos/populares`).
  * @returns {Promise<Array<Object>>}
  */
@@ -107,6 +145,7 @@ export function quitarCartaDelMazo(idMazo, idCarta) {
 export const servicioMazos = {
   verificarSesionMazos,
   listarMazosPropios,
+  listarMazos,
   listarMazosPopulares,
   obtenerMazoPorId,
   obtenerMazoPopularPorId,

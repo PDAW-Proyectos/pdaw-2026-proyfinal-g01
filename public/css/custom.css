@@ -455,7 +455,7 @@ input[type="password"]:not(:placeholder-shown) {
 }
 
 /* =========================================================
-   Colección (coleccionMazos.html) y Mazos (mazoDetallado.html)
+   Colección (mazosUsuario.html) y Mazos (mazoDetallado.html)
    ========================================================= */
 .collection-page {
   min-height: calc(100dvh - 4.25rem);

@@ -114,7 +114,7 @@ export function renderizarImagenCarta(
     const claseBadge = tamano === "full" ? "banlist-badge" : "deck-banlist-badge"
     const clasePosicion = configCopias
       ? "position-absolute top-0 start-0 m-1 pe-none"
-      : `position-absolute bottom-0 end-0 ${tamano === "full" ? "m-2" : "m-1"} pe-none`
+      : `position-absolute bottom-0 start-0 ${tamano === "full" ? "m-2" : "m-1"} pe-none`
 
     iconoBanlist.className = `${claseBadge} ${clasePosicion}`
     contenedor.append(iconoBanlist)

@@ -2,57 +2,45 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YuGiKi! - Panel de Administración</title>
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css">
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="css/custom.css">
-  <link rel="stylesheet" href="css/index.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
-  <!-- Navbar exclusiva de configuración Admin -->
-  <nav class="navbar navbar-custom sticky-top">
-    <div class="container flex-nowrap">
-      <span class="navbar-brand mb-0">
-        YuGiKi <small class="fs-6 opacity-75 d-none d-sm-inline">| Panel de Administración</small>
+  <!-- Header navbar -->
+  <nav class="navbar sticky-top border-bottom border-2 border-primary bg-white">
+    <div class="container-fluid position-relative">
+      <span class="navbar-brand">
+        <span class="fg-primary fw-bolder text-2xl">YuGiKi!</span>
       </span>
 
-      <div id="nav-auth" class="d-flex align-items-center ms-auto">
-        <div class="dropdown">
-          <button type="button"
-            class="btn btn-main rounded-circle d-flex align-items-center justify-content-center p-0 fs-5 fw-bold"
-            style="width: 42px; height: 42px;" data-bs-toggle="dropdown" aria-expanded="false"
-            aria-label="Menú de cuenta">
-            <i class="bi bi-gear-fill" aria-hidden="true"></i>
-          </button>
-
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-            <li>
-              <span id="admin-username" class="dropdown-item-text fw-bold text-dark">Admin</span>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li>
-              <button type="button" id="btn-logout-admin" class="dropdown-item text-danger fw-semibold">
-                Cerrar sesión
-              </button>
-            </li>
-          </ul>
-        </div>
+      <!-- Controles derechos -->
+      <div class="d-flex align-items-center gap-1">
+        <button
+          type="button"
+          id="btn-logout-admin"
+          class="btn-outline theme-danger d-inline-flex align-items-center gap-2"
+          aria-label="Cerrar sesión">
+          <i class="bi bi-box-arrow-right lh-1" aria-hidden="true"></i>
+          <span>Cerrar sesión</span>
+        </button>
       </div>
     </div>
   </nav>
 
   <main class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
       <div>
         <h1 class="h3 mb-1">Gestión de Usuarios</h1>
-        <p class="text-muted mb-0">Administrá las cuentas registradas en la plataforma.</p>
+        <p class="fg-2 mb-0">Administrá las cuentas registradas en la plataforma.</p>
       </div>
-      <span id="contador-usuarios" class="badge bg-dark fs-6 d-none d-sm-inline-block">0 usuarios</span>
+      <span id="contador-usuarios" class="badge theme-primary rounded-1 fs-6 d-none sm:d-inline-block">0 usuarios</span>
     </div>
 
     <!-- Region de alertas de exito o error -->
@@ -60,21 +48,21 @@
 
     <!-- Filtro por username -->
     <div class="row mb-3">
-      <div class="col-12 col-md-5 col-lg-4">
-        <div class="input-group">
-          <span class="input-group-text bg-white">
-            <i class="bi bi-search text-muted" aria-hidden="true"></i>
+      <div class="col-12 md:col-5 lg:col-4">
+        <label class="form-control form-adorn border-subtle-primary bg-white">
+          <span class="form-adorn-icon fg-primary" aria-hidden="true">
+            <i class="bi bi-search"></i>
           </span>
-          <input type="search" id="filtro-username" class="form-control" maxlength="30"
-            placeholder="Buscar por usuario..." aria-label="Buscar por nombre de usuario">
-        </div>
+          <input type="search" id="filtro-username" class="form-ghost" maxlength="30"
+            placeholder="Buscar por usuario..." aria-label="Buscar por nombre de usuario" autocomplete="off">
+        </label>
       </div>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card border border-primary shadow-sm">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-          <thead class="table-dark">
+          <thead class="theme-primary">
             <tr>
               <th scope="col">Nombre</th>
               <th scope="col">Usuario</th>
@@ -84,7 +72,7 @@
           </thead>
           <tbody id="tabla-usuarios">
             <tr>
-              <td colspan="4" class="text-center py-4 text-muted">Cargando usuarios...</td>
+              <td colspan="4" class="text-center py-4 fg-2">Cargando usuarios...</td>
             </tr>
           </tbody>
         </table>
@@ -92,39 +80,37 @@
 
       <!-- Controles de paginacion -->
       <div id="contenedor-paginacion"
-        class="card-footer bg-white d-flex flex-wrap justify-content-between align-items-center gap-2 d-none">
-        <small id="info-paginacion" class="text-muted"></small>
+        class="card-footer bg-white d-flex flex-wrap justify-content-between align-items-center gap-2 d-none"
+        hidden>
+        <small id="info-paginacion" class="fg-2"></small>
         <nav aria-label="Paginación de usuarios">
-          <ul id="lista-paginacion" class="pagination pagination-sm mb-0"></ul>
+          <ul id="lista-paginacion" class="pagination pagination-sm theme-primary mb-0"></ul>
         </nav>
       </div>
     </div>
   </main>
 
-  <!-- Modal de confirmacion de eliminacion -->
-  <div class="modal fade" id="modal-confirmar-eliminacion" tabindex="-1" aria-labelledby="modalEliminarLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title fs-5" id="modalEliminarLabel">Confirmar eliminación</h2>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <p class="mb-2">
-            ¿Estás seguro de eliminar al usuario <strong id="modal-username"></strong>?
-          </p>
-          <p class="text-danger small mb-0">
-            Esta acción es irreversible y también eliminará todos sus mazos asociados.
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger" id="btn-confirmar-eliminar">Eliminar usuario</button>
-        </div>
-      </div>
+  <!-- Dialog de confirmacion de eliminacion -->
+  <dialog class="dialog" id="modal-confirmar-eliminacion" aria-labelledby="modalEliminarLabel">
+    <div class="dialog-header border-bottom border-2 border-primary">
+      <h2 class="dialog-title fs-lg fw-bold mb-0" id="modalEliminarLabel">Confirmar eliminación</h2>
+      <button type="button" class="btn-solid btn-close-custom theme-primary" data-bs-dismiss="dialog" aria-label="Cerrar">
+        <i class="bi bi-x-lg" aria-hidden="true"></i>
+      </button>
     </div>
-  </div>
+    <div class="dialog-body py-4">
+      <p class="mb-2">
+        ¿Estás seguro de eliminar al usuario <strong id="modal-username"></strong>?
+      </p>
+      <p class="fg-danger fs-sm mb-0">
+        Esta acción es irreversible y también eliminará todos sus mazos asociados.
+      </p>
+    </div>
+    <div class="dialog-footer border-top border-2 border-primary justify-content-end gap-2">
+      <button type="button" class="btn-outline theme-primary" data-bs-dismiss="dialog">Cancelar</button>
+      <button type="button" class="btn-solid theme-danger" id="btn-confirmar-eliminar">Eliminar usuario</button>
+    </div>
+  </dialog>
 
   <script type="module" src="js/bootstrap/bootstrap.bundle.min.js"></script>
   <script type="module" src="js/pages/navbar.js"></script>
