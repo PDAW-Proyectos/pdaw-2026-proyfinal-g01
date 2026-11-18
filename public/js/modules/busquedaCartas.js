@@ -1,3 +1,4 @@
+import { Combobox } from "../bootstrap/bootstrap.bundle.min.js"
 import { buscarCartasPaginadas } from "../services/servicioCartas.js"
 import {
   enlazarFiltrosInmediatos,
@@ -18,6 +19,7 @@ export function crearBusquedaCartas({
   filtros = {},
   contenedorFiltros,
   obtenerFiltros,
+  comboboxOrden = document.getElementById("catalogSortCombobox"),
   selectAlfabetico,
   selectPrecio,
   obtenerOrden,
@@ -30,14 +32,43 @@ export function crearBusquedaCartas({
 } = {}) {
   if (!contenedor) return null
 
+  const ClaseCombobox = Combobox ?? globalThis.bootstrap?.Combobox
+  if (comboboxOrden && ClaseCombobox) {
+    ClaseCombobox.getOrCreateInstance(comboboxOrden)
+  }
+
   let paginaActual = 1
   let paginacionActual = null
   let solicitudActual = 0
   let temporizador
   let abortController
 
+  function leerOrdenCombobox() {
+    if (!comboboxOrden) return ""
+
+    const instancia = ClaseCombobox?.getInstance(comboboxOrden)
+    const valorInputOculto =
+      instancia?._hiddenInput?.value ??
+      (comboboxOrden.previousElementSibling?.type === "hidden"
+        ? comboboxOrden.previousElementSibling.value
+        : "")
+    if (valorInputOculto) return valorInputOculto.trim()
+
+    const menu =
+      instancia?._menu ??
+      (comboboxOrden.nextElementSibling?.classList?.contains("menu")
+        ? comboboxOrden.nextElementSibling
+        : null)
+    const itemSeleccionado = menu?.querySelector(".menu-item.selected")
+    return itemSeleccionado?.dataset?.bsValue?.trim() ?? ""
+  }
+
+  let ordenCombobox = leerOrdenCombobox()
+
   function resolverOrden() {
     if (obtenerOrden) return obtenerOrden()
+    const ordenActualCombobox = ordenCombobox || leerOrdenCombobox()
+    if (ordenActualCombobox) return ordenActualCombobox
     if (selectAlfabetico?.value && selectAlfabetico.value !== "none") {
       return selectAlfabetico.value
     }
@@ -104,6 +135,16 @@ export function crearBusquedaCartas({
     filtros,
     contenedorFiltros,
     alCambiar: () => void cargarPagina(1)
+  })
+
+  comboboxOrden?.addEventListener("change.bs.combobox", (evento) => {
+    ordenCombobox = (
+      evento.value ??
+      evento.detail?.value ??
+      leerOrdenCombobox() ??
+      ""
+    ).trim()
+    void cargarPagina(1)
   })
 
   selectAlfabetico?.addEventListener("change", () => {
