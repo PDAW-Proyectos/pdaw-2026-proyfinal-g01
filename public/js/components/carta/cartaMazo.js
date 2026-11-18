@@ -7,8 +7,8 @@ import { crearControlesCartaMazo } from "./controlesCartaMazo.js"
 import { renderizarImagenCarta } from "../imagenCarta.js"
 
 /**
- * Crea una tarjeta de carta para un mazo en tamaño `small` con su cantidad de copias,
- * ícono de banlist y navegación a la página de detalle al hacer clic en la carta.
+ * Crea una tarjeta de carta para un mazo (`list-card` en móvil y `small-card` en desktop)
+ * con su cantidad de copias, ícono de banlist y navegación a la página de detalle al hacer clic.
  * Si `editable` es `true` o se proveen `onAdd`/`onRemove`, agrega `controlesCartaMazo` debajo.
  *
  * @param {{carta: Object, cantidad: number}} entrada
@@ -38,11 +38,11 @@ export function crearCartaMazo(
   tarjeta.className = "d-flex flex-column align-items-center"
 
   const contenedorImagen = renderizarImagenCarta(carta, {
-    tamano: "small",
+    tamano: "list",
     cantidad,
     estadoBan: obtenerEstadoBanlist(carta),
     clasesContenedor: "hover-lift",
-    clasesImagen: "border border-2 border-primary"
+    clasesImagen: "deck-card-img border border-2 border-primary"
   })
   contenedorImagen.title = carta.name
   contenedorImagen.style.cursor = "pointer"

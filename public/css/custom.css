@@ -72,6 +72,11 @@ input[type="password"]:not(:placeholder-shown) {
   width: 100% !important;
 }
 
+.max-w-1368px {
+  max-width: 768px !important;
+  width: 100% !important;
+}
+
 .form-adorn>.btn {
   --bs-btn-min-height: auto;
   line-height: 1;
@@ -107,9 +112,50 @@ input[type="password"]:not(:placeholder-shown) {
   font-weight: 600;
 }
 
-/* Keep search dialog within viewport when results scroll */
-#searchDialog[open] {
+/* Prevent closed dialogs from expanding page height and keep search dialog scrollable within viewport */
+.dialog:not([open]):not(.hiding) {
+  display: none;
+}
+
+.dialog:not([open]).hiding {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+#searchDialog[open]:not(.hiding) {
   max-height: calc(100dvh - 4rem);
+  overflow: visible;
+}
+
+#searchDialog .dialog-body {
+  min-height: 0;
+  overflow-y: auto;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
+#searchDialog .dialog-footer {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
+#searchFiltersCollapse.is-open {
+  overflow: visible;
+}
+
+#searchDialog .dialog-header [role="search"],
+#searchFiltersToggleBtn,
+#searchFiltersApplyBtn,
+#searchFiltersClearBtn {
+  height: 2.75rem;
+  min-height: 2.75rem;
+}
+
+#searchFiltersForm .form-control,
+#searchFiltersForm .combobox-toggle.show {
+  --control-bg: var(--bg-white, #ffffff);
+  background-color: var(--bg-white, #ffffff);
 }
 
 /* Make the navbar drawer backdrop match the dark blurred search dialog backdrop */
@@ -382,8 +428,12 @@ input[type="password"]:not(:placeholder-shown) {
 }
 
 /* =========================================================
-   Colección (coleccion.html)
+   Colección (coleccionMazos.html) y Mazos (mazoDetallado.html)
    ========================================================= */
+.collection-page {
+  min-height: calc(100dvh - 4.25rem);
+}
+
 .collection-sticky-panel {
   width: 100%;
   max-width: 768px;
@@ -396,8 +446,14 @@ input[type="password"]:not(:placeholder-shown) {
     width: 280px;
     max-width: 280px;
     min-width: 200px;
+    align-self: stretch;
+  }
+
+  .collection-aside-sticky {
     position: sticky;
     top: 5.5rem;
+    max-height: calc(100dvh - 6.75rem);
+    overflow-y: auto;
   }
 
   .collection-aside-left {
@@ -412,6 +468,55 @@ input[type="password"]:not(:placeholder-shown) {
     flex: 3 1 768px;
     min-width: 0;
   }
+
+  /* Deck cards scale up from .list-card on mobile to .small-card on desktop */
+  .deck-card-img {
+    width: 200px;
+    height: 292px;
+    object-fit: initial;
+  }
+}
+
+.deck-search-trigger-btn {
+  width: 100% !important;
+  height: 2.5rem !important;
+  min-height: 2.5rem !important;
+  aspect-ratio: auto !important;
+  padding: 0.375rem 0.75rem !important;
+  background-color: var(--bs-body-bg, #f8f9fa);
+  border: 1px solid var(--bs-primary-border-subtle, #c5b6ff);
+  color: var(--bs-secondary-color, #6c757d) !important;
+  font-size: 0.925rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.deck-search-trigger-btn:hover:not(:disabled),
+.deck-search-trigger-btn:focus-visible {
+  background-color: var(--bs-2, #f1f2f6);
+  border-color: var(--bs-primary, #6d4aff);
+  box-shadow: 0 0 0 0.2rem rgba(109, 74, 255, 0.2);
+  outline: none;
+}
+
+.deck-search-trigger-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.deck-search-trigger-placeholder {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deck-search-trigger-icon {
+  font-size: 1rem;
+  color: var(--bs-primary, #6d4aff);
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .collection-deck-list {
@@ -538,8 +643,13 @@ input[type="password"]:not(:placeholder-shown) {
 
 .toast {
   position: fixed;
+  inset: auto;
   bottom: 2rem;
   left: 50%;
+  margin: 0;
+  width: max-content;
+  max-width: min(90vw, 480px);
+  text-align: center;
   transform: translateX(-50%) translateY(120%);
   background: #1e1e1e;
   color: #ffffff;

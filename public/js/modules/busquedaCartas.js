@@ -1,5 +1,9 @@
 import { buscarCartasPaginadas } from "../services/servicioCartas.js"
-import { leerFiltrosCartas } from "../utils/utilidadesCartas.js"
+import {
+  enlazarFiltrosInmediatos,
+  inicializarLimitesFiltrosNumericos,
+  leerFiltrosCartas
+} from "./filtrosBusqueda.js"
 
 const ESPERA_MS = 250
 
@@ -91,11 +95,11 @@ export function crearBusquedaCartas({
 
   botonBuscar?.addEventListener("click", () => void cargarPagina(1))
 
-  for (const control of Object.values(filtros)) {
-    control?.addEventListener("change", () => void cargarPagina(1))
-  }
-  contenedorFiltros?.querySelectorAll("[data-card-filter]").forEach((el) => {
-    el.addEventListener("change", () => void cargarPagina(1))
+  inicializarLimitesFiltrosNumericos(contenedorFiltros)
+  enlazarFiltrosInmediatos({
+    filtros,
+    contenedorFiltros,
+    alCambiar: () => void cargarPagina(1)
   })
 
   selectAlfabetico?.addEventListener("change", () => {

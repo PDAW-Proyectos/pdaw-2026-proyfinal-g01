@@ -42,17 +42,17 @@ export function obtenerUrlImagen(carta, tipo = "small") {
 }
 
 /**
- * Construye la URL hacia la página de detalle de una carta (`carta.html?id=...`).
+ * Construye la URL hacia la página de detalle de una carta (`cartaDetallada.html?id=...`).
  * @param {Object} carta
  * @returns {string}
  */
 export function crearUrlDetalleCarta(carta) {
-  return `carta.html?id=${carta.id}`
+  return `cartaDetallada.html?id=${carta.id}`
 }
 
 /**
  * Vincula un elemento del DOM con la navegación hacia el detalle de una carta
- * (`carta.html?id=...`) mediante clic o tecla Enter.
+ * (`cartaDetallada.html?id=...`) mediante clic o tecla Enter.
  * @param {HTMLElement} elemento
  * @param {Object} carta
  */
@@ -181,38 +181,4 @@ export function obtenerIconoBanlist(cartaOEstado) {
  */
 export function obtenerMaxCopiasCarta(carta) {
   return MAX_COPIAS_BANLIST[carta?.banlist_info?.ban_tcg] ?? 3
-}
-
-/**
- * Lee los filtros de búsqueda de cartas desde un input, un mapa de controles y/o
- * elementos con atributo `[data-card-filter]`.
- * @param {HTMLInputElement|null} entrada
- * @param {Record<string, HTMLInputElement|HTMLSelectElement>} [filtros]
- * @param {HTMLElement|null} [contenedorFiltros]
- * @returns {Record<string, string>}
- */
-export function leerFiltrosCartas(
-  entrada,
-  filtros = {},
-  contenedorFiltros = null
-) {
-  const resultado = {}
-  const nombre = entrada?.value?.trim()
-  if (nombre) resultado.name = nombre
-
-  const controles = { ...filtros }
-  if (contenedorFiltros) {
-    for (const el of contenedorFiltros.querySelectorAll("[data-card-filter]")) {
-      controles[el.dataset.cardFilter] = el
-    }
-  }
-
-  for (const [clave, control] of Object.entries(controles)) {
-    const valor = control?.value?.trim()
-    if (valor && valor !== "all" && valor !== "none") {
-      resultado[clave] = valor
-    }
-  }
-
-  return resultado
 }

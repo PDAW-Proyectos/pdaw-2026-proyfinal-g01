@@ -1,7 +1,8 @@
 import { ApiError } from "../api.js"
 import {
   crearCartaBusquedaRapida,
-  renderizarErrorBusquedaRapida
+  renderizarErrorBusquedaRapida,
+  renderizarMensajeBusquedaRapida
 } from "../components/carta/cartaBusquedaRapida.js"
 import { mostrarSkeletons } from "../components/carta/skeletonCarta.js"
 import { renderizarListaTabla } from "../components/listaTabla.js"
@@ -9,10 +10,7 @@ import {
   renderizarListaMazos,
   renderizarMazoEditable
 } from "../components/mazo/mazoEditable.js"
-import {
-  cerrarDropdownBusqueda,
-  inicializarBusquedaRapidaDropdown
-} from "../modules/busquedaRapida.js"
+import { inicializarBusquedaRapidaDialogo } from "../modules/busquedaRapida.js"
 import {
   agregarCartaAlMazo,
   crearMazo,
@@ -26,6 +24,9 @@ import {
   mostrarToast,
   obtenerElemento
 } from "../utils/utilidadesDominio.js"
+
+const MENSAJE_BUSQUEDA_INICIAL =
+  "Escribe para buscar cartas y haz clic en una para agregarla al mazo..."
 
 const state = {
   mazos: [],
@@ -72,8 +73,10 @@ function seleccionarMazo(mazo) {
 
 function establecerMutacion(mutando) {
   state.mutando = mutando
-  obtenerElemento("search-input").disabled = mutando
-  obtenerElemento("search-button").disabled = mutando
+  const botonBusqueda = document.getElementById("deck-search-trigger")
+  if (botonBusqueda) {
+    botonBusqueda.disabled = mutando
+  }
   obtenerElemento("create-deck-form").querySelector('[type="submit"]').disabled = mutando
   obtenerElemento("confirm-delete-deck").disabled = mutando
   renderizarMazoEditable(state.mazoActivo, {
@@ -120,7 +123,6 @@ async function agregarCarta(carta) {
   if (!carta) return
   const mazo = state.mazoActivo
   if (!mazo) {
-    cerrarDropdownBusqueda()
     mostrarToast("Primero crea o selecciona un mazo.", true)
     return
   }
@@ -128,8 +130,6 @@ async function agregarCarta(carta) {
   await ejecutarMutacion(async () => {
     await agregarCartaAlMazo(mazo.id, carta.id)
     await cargarMazos(mazo.id)
-    cerrarDropdownBusqueda()
-    obtenerElemento("search-input").value = ""
     mostrarToast(`Se agregó «${carta.name}» al mazo.`)
   }, "agregar la carta al mazo")
 }
@@ -164,12 +164,15 @@ function enlazarEventos() {
     .addEventListener("submit", crearMazoDesdeFormulario)
   obtenerElemento("confirm-delete-deck")
     .addEventListener("click", eliminarMazoActivo)
-  inicializarBusquedaRapidaDropdown({
+  inicializarBusquedaRapidaDialogo({
+    alLimpiar: (resultados) =>
+      renderizarMensajeBusquedaRapida(resultados, MENSAJE_BUSQUEDA_INICIAL),
     alIniciarCarga: (resultados) =>
       mostrarSkeletons(resultados, 3, { tamano: "list" }),
     alRecibirResultados: (cartas, resultados) =>
       renderizarListaTabla(resultados, cartas, {
-        crearFila: (carta) => crearCartaBusquedaRapida(carta, { onSelect: agregarCarta }),
+        crearFila: (carta) =>
+          crearCartaBusquedaRapida(carta, { onSelect: agregarCarta }),
         mensajeVacio: "No se encontraron cartas.",
         claseCelda: "p-0 border-0"
       }),

@@ -1,5 +1,10 @@
-import { buscarCartas } from "../services/servicioCartas.js"
-import { leerFiltrosCartas } from "../utils/utilidadesCartas.js"
+import { buscarCartasPaginadas } from "../services/servicioCartas.js"
+import {
+  enlazarFiltrosInmediatos,
+  inicializarFiltrosDialogoBusqueda,
+  inicializarLimitesFiltrosNumericos,
+  leerFiltrosCartas
+} from "./filtrosBusqueda.js"
 
 const ESPERA_MS = 250
 const MIN_CARACTERES = 2
@@ -22,7 +27,7 @@ export function cerrarDropdownBusqueda(
 
 /**
  * Asigna la funcionalidad de búsqueda rápida y filtrado a una barra de búsqueda ya presente
- * en el HTML y devuelve el arreglo de cartas encontradas a `alRecibirResultados(cartas, resultados)`.
+ * en el HTML y devuelve el arreglo de cartas encontradas a `alRecibirResultados(cartas, resultados, paginacion)`.
  */
 export function inicializarBusquedaRapida({
   entrada,
@@ -42,13 +47,37 @@ export function inicializarBusquedaRapida({
   if (!entrada || !resultados || entradasInicializadas.has(entrada)) return null
   entradasInicializadas.add(entrada)
 
-  const raizFiltros = dialog ?? dropdown?.parentElement ?? null
   let temporizador
   let abortController
+
+  const footerResultados = dialog?.querySelector("#searchResultsFooter") ?? null
+  const contadorResultados = dialog?.querySelector("#searchResultsCount") ?? null
+
+  const controladorFiltrosDialogo = inicializarFiltrosDialogoBusqueda({
+    dialog,
+    alCambiarFiltros: () => void buscar()
+  })
+  const raizFiltros = controladorFiltrosDialogo
+    ? null
+    : (dialog ?? dropdown?.parentElement ?? null)
+
+  function ocultarContadorResultados() {
+    if (contadorResultados) {
+      contadorResultados.textContent = ""
+    }
+    footerResultados?.classList.add("d-none")
+  }
+
+  function actualizarContadorResultados(mostradas, total) {
+    if (!footerResultados || !contadorResultados) return
+    contadorResultados.textContent = `Mostrando ${mostradas}/${total}`
+    footerResultados.classList.remove("d-none")
+  }
 
   function limpiarEstado() {
     clearTimeout(temporizador)
     abortController?.abort()
+    ocultarContadorResultados()
     if (dropdown) {
       cerrarDropdownBusqueda(dropdown, resultados)
     } else {
@@ -60,7 +89,13 @@ export function inicializarBusquedaRapida({
     clearTimeout(temporizador)
     abortController?.abort()
 
-    const parametros = leerFiltrosCartas(entrada, filtros, raizFiltros)
+    const parametros = controladorFiltrosDialogo
+      ? {
+          ...(entrada.value?.trim() ? { name: entrada.value.trim() } : {}),
+          ...controladorFiltrosDialogo.obtenerFiltrosAplicados()
+        }
+      : leerFiltrosCartas(entrada, filtros, raizFiltros)
+
     const tieneFiltrosExtra = Object.keys(parametros).some((k) => k !== "name")
     if ((parametros.name?.length ?? 0) < minCaracteres && !tieneFiltrosExtra) {
       limpiarEstado()
@@ -72,18 +107,26 @@ export function inicializarBusquedaRapida({
       dropdown.classList.add("active")
       resultados.classList.add("active")
     }
+    ocultarContadorResultados()
     alIniciarCarga?.(resultados)
 
     try {
-      const cartas = await buscarCartas(parametros, { signal: abortController.signal })
-      if (!Array.isArray(cartas)) {
+      const { datos, paginacion } = await buscarCartasPaginadas(parametros, {
+        signal: abortController.signal
+      })
+      if (!Array.isArray(datos)) {
+        ocultarContadorResultados()
         alOcurrirError?.(resultados)
         return
       }
 
-      alRecibirResultados?.(cartas.slice(0, limite), resultados)
+      const cartasVisibles = datos.slice(0, limite)
+      const totalResultados = paginacion?.totalEntradas ?? datos.length
+      actualizarContadorResultados(cartasVisibles.length, totalResultados)
+      alRecibirResultados?.(cartasVisibles, resultados, paginacion)
     } catch (error) {
       if (error.name === "AbortError") return
+      ocultarContadorResultados()
       alOcurrirError?.(resultados, error)
     }
   }
@@ -104,16 +147,21 @@ export function inicializarBusquedaRapida({
 
   boton?.addEventListener("click", () => void buscar())
 
-  for (const control of Object.values(filtros)) {
-    control?.addEventListener("change", () => void buscar())
+  if (!controladorFiltrosDialogo) {
+    inicializarLimitesFiltrosNumericos(raizFiltros)
+    enlazarFiltrosInmediatos({
+      filtros,
+      contenedorFiltros: raizFiltros,
+      alCambiar: () => void buscar()
+    })
   }
-  raizFiltros?.querySelectorAll("[data-card-filter]").forEach((el) => {
-    el.addEventListener("change", () => void buscar())
-  })
 
   if (dialog) {
     dialog.addEventListener("shown.bs.dialog", () => entrada.focus())
-    dialog.addEventListener("hidden.bs.dialog", () => abortController?.abort())
+    dialog.addEventListener("hidden.bs.dialog", () => {
+      controladorFiltrosDialogo?.cerrarMenus()
+      abortController?.abort()
+    })
   }
 
   if (dropdown) {

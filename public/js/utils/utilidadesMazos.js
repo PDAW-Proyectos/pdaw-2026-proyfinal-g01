@@ -2,14 +2,14 @@ export const LIMITE_MAIN_DECK = 60
 export const LIMITE_EXTRA_DECK = 15
 
 /**
- * Construye la URL hacia la página de detalle de un mazo (`mazo.html?id=...`).
+ * Construye la URL hacia la página de detalle de un mazo (`mazoDetallado.html?id=...`).
  * @param {Object|number|string} mazoOId
  * @param {{popular?: boolean}} [opciones]
  * @returns {string}
  */
 export function crearUrlDetalleMazo(mazoOId, { popular = false } = {}) {
   const id = typeof mazoOId === "object" ? mazoOId.id : mazoOId
-  return `mazo.html?id=${encodeURIComponent(id)}${popular ? "&popular=true" : ""}`
+  return `mazoDetallado.html?id=${encodeURIComponent(id)}${popular ? "&popular=true" : ""}`
 }
 
 /**

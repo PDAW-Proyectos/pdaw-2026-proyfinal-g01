@@ -22,18 +22,6 @@
 
             <!-- Controles derechos -->
             <div class="d-flex align-items-center gap-1">
-                <div class="search-trigger-wrapper">
-                    <button
-                        type="button"
-                        class="btn-icon btn-lg fg-primary search-trigger-btn"
-                        data-bs-toggle="dialog"
-                        data-bs-target="#searchDialog"
-                        aria-label="Buscar cartas">
-                        <span class="search-trigger-placeholder">Buscar cartas...</span>
-                        <i class="bi bi-search search-trigger-icon lh-1" aria-hidden="true"></i>
-                    </button>
-                </div>
-
                 <button
                     class="btn-icon btn-lg navbar-toggler fg-primary"
                     type="button"
@@ -58,7 +46,7 @@
             </button>
         </div>
 
-        <div class="mx-3 border-bottom border-primary"></div>
+        <div class="mx-3 border-bottom border-2 border-primary"></div>
 
         <!-- d-flex flex-column + fs-lg para agrandar fuente y empujar nav-auth al fondo -->
         <div class="drawer-body d-flex flex-column fs-lg">
@@ -73,7 +61,7 @@
 
                 <!-- Cartas -->
                 <li class="nav-item w-100">
-                    <a href="cartas.html" class="nav-link d-flex justify-content-between align-items-center w-100">
+                    <a href="coleccionCartas.html" class="nav-link d-flex justify-content-between align-items-center w-100">
                         <span>Cartas</span>
                         <i class="bi bi-suit-spade" aria-hidden="true"></i>
                     </a>
@@ -108,100 +96,257 @@
             </ul>
         </div>
 
-        <div class="mx-3 border-bottom border-primary"></div>
+        <div class="mx-3 border-bottom border-2 border-primary"></div>
 
         <!-- mt-auto empuja nav-auth al fondo del drawer -->
         <div id="nav-auth" class="drawer-footer justify-content-center border-0"></div>
     </dialog>
 
-    <!-- Dialog de Búsqueda (estilo documentación oficial de Bootstrap) -->
-    <dialog class="dialog dialog-lg dialog-scrollable dialog-slide-down mt-12 mb-auto" id="searchDialog" aria-label="Buscar cartas">
-        <div class="dialog-header border-0">
-            <div class="form-control form-adorn border-0 shadow-none py-2 px-4 me-4" role="search">
-                <div class="form-adorn-icon fg-primary me-2" aria-hidden="true">
-                    <i class="bi bi-search fs-lg"></i>
+    <!-- Dialog de Búsqueda para agregar cartas al mazo -->
+    <dialog class="dialog dialog-lg dialog-scrollable dialog-slide-down mt-12 mb-auto" id="searchDialog" aria-label="Buscar cartas para agregar al mazo">
+        <div class="dialog-header flex-column align-items-stretch gap-0 border-0 pb-0">
+            <div class="d-flex align-items-stretch gap-2 w-100 pb-3">
+                <div class="form-control form-adorn border-0 shadow-none py-2 px-4 flex-grow-1 min-w-0" role="search">
+                    <div class="form-adorn-icon fg-primary me-2" aria-hidden="true">
+                        <i class="bi bi-search fs-lg"></i>
+                    </div>
+                    <input
+                        type="search"
+                        class="form-ghost fs-lg"
+                        id="navbarSearchInput"
+                        placeholder="Buscar carta para agregar al mazo..."
+                        aria-label="Buscar carta para agregar al mazo"
+                        autocomplete="off"
+                        autofocus>
                 </div>
-                <input
-                    type="search"
-                    class="form-ghost fs-lg"
-                    id="navbarSearchInput"
-                    placeholder="Buscar cartas..."
-                    aria-label="Buscar cartas"
-                    autocomplete="off"
-                    autofocus>
+                <button
+                    type="button"
+                    class="btn-outline btn-lg theme-primary d-inline-flex align-items-center gap-2 flex-shrink-0"
+                    id="searchFiltersToggleBtn"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#searchFiltersCollapse"
+                    aria-expanded="false"
+                    aria-controls="searchFiltersCollapse">
+                    <i class="bi bi-funnel" aria-hidden="true"></i>
+                    <span>Filtros</span>
+                </button>
             </div>
-            <button type="button" class="btn-solid btn-close-custom theme-primary ms-2" data-bs-dismiss="dialog" aria-label="Cerrar búsqueda">
-                <i class="bi bi-x-lg"></i>
-            </button>
+            <div class="collapse" id="searchFiltersCollapse">
+                <form id="searchFiltersForm" class="p-3 mb-3" novalidate>
+                    <div class="grid gap-3">
+                        <div class="g-col-6 sm:g-col-3 form-field">
+                            <label for="searchFilterFrameType" class="form-label fs-xs fw-semibold mb-1">Marco</label>
+                            <button
+                                class="form-control form-control-sm combobox-toggle"
+                                type="button"
+                                id="searchFilterFrameType"
+                                data-bs-toggle="combobox"
+                                data-bs-name="frameType"
+                                data-bs-placeholder="Todos">
+                                <span class="combobox-value">Todos</span>
+                                <svg class="combobox-caret" width="10" height="16" viewBox="0 0 10 16" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M0.46967 5.46967C0.762563 5.17678 1.23744 5.17678 1.53033 5.46967L5 8.93934L8.46967 5.46967C8.76256 5.17678 9.23744 5.17678 9.53033 5.46967C9.82322 5.76256 9.82322 6.23744 9.53033 6.53033L5.53033 10.5303C5.23744 10.8232 4.76256 10.8232 4.46967 10.5303L0.46967 6.53033C0.176777 6.23744 0.176777 5.76256 0.46967 5.46967Z" fill="currentcolor"/></svg>
+                            </button>
+                            <div class="menu">
+                                <button class="menu-item" type="button" data-bs-value="">Todos</button>
+                                <button class="menu-item" type="button" data-bs-value="normal">Normal</button>
+                                <button class="menu-item" type="button" data-bs-value="effect">Efecto</button>
+                                <button class="menu-item" type="button" data-bs-value="ritual">Ritual</button>
+                                <button class="menu-item" type="button" data-bs-value="fusion">Fusión</button>
+                                <button class="menu-item" type="button" data-bs-value="synchro">Sincronía</button>
+                                <button class="menu-item" type="button" data-bs-value="xyz">Xyz</button>
+                                <button class="menu-item" type="button" data-bs-value="link">Link</button>
+                                <button class="menu-item" type="button" data-bs-value="normal_pendulum">Péndulo Normal</button>
+                                <button class="menu-item" type="button" data-bs-value="effect_pendulum">Péndulo Efecto</button>
+                                <button class="menu-item" type="button" data-bs-value="ritual_pendulum">Péndulo Ritual</button>
+                                <button class="menu-item" type="button" data-bs-value="fusion_pendulum">Péndulo Fusión</button>
+                                <button class="menu-item" type="button" data-bs-value="synchro_pendulum">Péndulo Sincronía</button>
+                                <button class="menu-item" type="button" data-bs-value="xyz_pendulum">Péndulo Xyz</button>
+                                <button class="menu-item" type="button" data-bs-value="spell">Mágica</button>
+                                <button class="menu-item" type="button" data-bs-value="trap">Trampa</button>
+                                <button class="menu-item" type="button" data-bs-value="token">Ficha (Token)</button>
+                                <button class="menu-item" type="button" data-bs-value="skill">Habilidad (Skill)</button>
+                            </div>
+                        </div>
+                        <div class="g-col-6 sm:g-col-3 form-field">
+                            <label for="searchFilterRace" class="form-label fs-xs fw-semibold mb-1">Raza / Subtipo</label>
+                            <button
+                                class="form-control form-control-sm combobox-toggle"
+                                type="button"
+                                id="searchFilterRace"
+                                data-bs-toggle="combobox"
+                                data-bs-name="race"
+                                data-bs-placeholder="Todas">
+                                <span class="combobox-value">Todas</span>
+                                <svg class="combobox-caret" width="10" height="16" viewBox="0 0 10 16" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M0.46967 5.46967C0.762563 5.17678 1.23744 5.17678 1.53033 5.46967L5 8.93934L8.46967 5.46967C8.76256 5.17678 9.23744 5.17678 9.53033 5.46967C9.82322 5.76256 9.82322 6.23744 9.53033 6.53033L5.53033 10.5303C5.23744 10.8232 4.76256 10.8232 4.46967 10.5303L0.46967 6.53033C0.176777 6.23744 0.176777 5.76256 0.46967 5.46967Z" fill="currentcolor"/></svg>
+                            </button>
+                            <div class="menu">
+                                <button class="menu-item" type="button" data-bs-value="">Todas</button>
+                                <div class="menu-header fg-primary fw-semibold border-bottom border-primary mb-1">Monstruos</div>
+                                <button class="menu-item" type="button" data-bs-value="Aqua">Aqua</button>
+                                <button class="menu-item" type="button" data-bs-value="Beast">Bestia</button>
+                                <button class="menu-item" type="button" data-bs-value="Winged Beast">Bestia Alada</button>
+                                <button class="menu-item" type="button" data-bs-value="Divine-Beast">Bestia Divina</button>
+                                <button class="menu-item" type="button" data-bs-value="Cyberse">Ciberso</button>
+                                <button class="menu-item" type="button" data-bs-value="Fiend">Demonio</button>
+                                <button class="menu-item" type="button" data-bs-value="Dinosaur">Dinosaurio</button>
+                                <button class="menu-item" type="button" data-bs-value="Creator God">Dios Creador</button>
+                                <button class="menu-item" type="button" data-bs-value="Dragon">Dragón</button>
+                                <button class="menu-item" type="button" data-bs-value="Warrior">Guerrero</button>
+                                <button class="menu-item" type="button" data-bs-value="Beast-Warrior">Guerrero-Bestia</button>
+                                <button class="menu-item" type="button" data-bs-value="Fairy">Hada</button>
+                                <button class="menu-item" type="button" data-bs-value="Illusion">Ilusión</button>
+                                <button class="menu-item" type="button" data-bs-value="Insect">Insecto</button>
+                                <button class="menu-item" type="button" data-bs-value="Spellcaster">Lanzador de Conjuros</button>
+                                <button class="menu-item" type="button" data-bs-value="Machine">Máquina</button>
+                                <button class="menu-item" type="button" data-bs-value="Fish">Pez</button>
+                                <button class="menu-item" type="button" data-bs-value="Pyro">Piro</button>
+                                <button class="menu-item" type="button" data-bs-value="Plant">Planta</button>
+                                <button class="menu-item" type="button" data-bs-value="Psychic">Psíquico</button>
+                                <button class="menu-item" type="button" data-bs-value="Reptile">Reptil</button>
+                                <button class="menu-item" type="button" data-bs-value="Rock">Roca</button>
+                                <button class="menu-item" type="button" data-bs-value="Sea Serpent">Serpiente Marina</button>
+                                <button class="menu-item" type="button" data-bs-value="Thunder">Trueno</button>
+                                <button class="menu-item" type="button" data-bs-value="Wyrm">Wyrm</button>
+                                <button class="menu-item" type="button" data-bs-value="Zombie">Zombi</button>
+                                <div class="menu-header fg-primary fw-semibold border-bottom border-primary mb-1">Mágicas / Trampas</div>
+                                <button class="menu-item" type="button" data-bs-value="Normal">Normal</button>
+                                <button class="menu-item" type="button" data-bs-value="Continuous">Continua</button>
+                                <button class="menu-item" type="button" data-bs-value="Quick-Play">Juego Rápido</button>
+                                <button class="menu-item" type="button" data-bs-value="Equip">Equipo</button>
+                                <button class="menu-item" type="button" data-bs-value="Field">Campo</button>
+                                <button class="menu-item" type="button" data-bs-value="Ritual">Ritual</button>
+                                <button class="menu-item" type="button" data-bs-value="Counter">Contraefecto</button>
+                            </div>
+                        </div>
+                        <div class="g-col-6 sm:g-col-3 form-field">
+                            <label for="searchFilterAttribute" class="form-label fs-xs fw-semibold mb-1">Atributo</label>
+                            <button
+                                class="form-control form-control-sm combobox-toggle"
+                                type="button"
+                                id="searchFilterAttribute"
+                                data-bs-toggle="combobox"
+                                data-bs-name="attribute"
+                                data-bs-placeholder="Todos">
+                                <span class="combobox-value">Todos</span>
+                                <svg class="combobox-caret" width="10" height="16" viewBox="0 0 10 16" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M0.46967 5.46967C0.762563 5.17678 1.23744 5.17678 1.53033 5.46967L5 8.93934L8.46967 5.46967C8.76256 5.17678 9.23744 5.17678 9.53033 5.46967C9.82322 5.76256 9.82322 6.23744 9.53033 6.53033L5.53033 10.5303C5.23744 10.8232 4.76256 10.8232 4.46967 10.5303L0.46967 6.53033C0.176777 6.23744 0.176777 5.76256 0.46967 5.46967Z" fill="currentcolor"/></svg>
+                            </button>
+                            <div class="menu">
+                                <button class="menu-item" type="button" data-bs-value="">Todos</button>
+                                <button class="menu-item" type="button" data-bs-value="DARK">Oscuridad (DARK)</button>
+                                <button class="menu-item" type="button" data-bs-value="LIGHT">Luz (LIGHT)</button>
+                                <button class="menu-item" type="button" data-bs-value="EARTH">Tierra (EARTH)</button>
+                                <button class="menu-item" type="button" data-bs-value="WATER">Agua (WATER)</button>
+                                <button class="menu-item" type="button" data-bs-value="FIRE">Fuego (FIRE)</button>
+                                <button class="menu-item" type="button" data-bs-value="WIND">Viento (WIND)</button>
+                                <button class="menu-item" type="button" data-bs-value="DIVINE">Divino (DIVINE)</button>
+                            </div>
+                        </div>
+                        <div class="g-col-6 sm:g-col-3 form-field">
+                            <label for="searchFilterLevel" class="form-label fs-xs fw-semibold mb-1">Nivel / Rango</label>
+                            <input type="number" class="form-control form-control-sm" id="searchFilterLevel" name="level" data-card-filter="level" min="0" max="13" step="1" placeholder="0 - 13">
+                        </div>
+                        <div class="g-col-6 sm:g-col-3 form-field">
+                            <label for="searchFilterAtk" class="form-label fs-xs fw-semibold mb-1">ATK</label>
+                            <input type="number" class="form-control form-control-sm" id="searchFilterAtk" name="atk" data-card-filter="atk" min="-1" step="1" placeholder="Ej: 2500">
+                        </div>
+                        <div class="g-col-6 sm:g-col-3 form-field">
+                            <label for="searchFilterDef" class="form-label fs-xs fw-semibold mb-1">DEF</label>
+                            <input type="number" class="form-control form-control-sm" id="searchFilterDef" name="def" data-card-filter="def" min="-1" step="1" placeholder="Ej: 2100">
+                        </div>
+                        <div class="g-col-6 sm:g-col-3 form-field">
+                            <label for="searchFilterScale" class="form-label fs-xs fw-semibold mb-1">Escala Péndulo</label>
+                            <input type="number" class="form-control form-control-sm" id="searchFilterScale" name="scale" data-card-filter="scale" min="0" max="13" step="1" placeholder="0 - 13">
+                        </div>
+                        <div class="g-col-6 sm:g-col-3 form-field">
+                            <label for="searchFilterLinkval" class="form-label fs-xs fw-semibold mb-1">Valor Link</label>
+                            <input type="number" class="form-control form-control-sm" id="searchFilterLinkval" name="linkval" data-card-filter="linkval" min="1" max="6" step="1" placeholder="1 - 6">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center gap-2 mt-3">
+                        <button type="submit" class="btn-solid btn-lg theme-primary" id="searchFiltersApplyBtn">
+                            Aplicar filtros
+                        </button>
+                        <button
+                            type="button"
+                            class="btn-outline btn-icon btn-lg theme-primary"
+                            id="searchFiltersClearBtn"
+                            aria-label="Limpiar filtros"
+                            title="Limpiar filtros">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                <path d="M14.2 1.8 8.8 7.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                <path d="M6.6 5.4 10.6 9.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                <path d="M6.4 5.9 1.8 9.8l1.2 1.2 1.4-1.4-.8 2 1.2 1.2 2-.8-1.4 1.4 1.2 1.2 3.9-4.6Z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="border-bottom border-primary border-2"></div>
         </div>
-        <div class="border-bottom border-primary border-2 mx-2"></div>
         <div class="dialog-body" id="searchResults">
-            <p class="fg-2 text-center my-4">Escribe para comenzar a buscar cartas...</p>
+            <p class="fg-2 text-center my-4">Escribe para buscar cartas y haz clic en una para agregarla al mazo...</p>
+        </div>
+        <div class="dialog-footer justify-content-center border-top border-primary border-2 py-2 mx-5 d-none" id="searchResultsFooter">
+            <span class="fg-2 fs-sm fw-semibold" id="searchResultsCount"></span>
         </div>
     </dialog>
 
-    <!-- Contenido principal con el estilo de carta.html (flex-grow-1 y min-vh-100 para empujar el footer) -->
-    <main class="min-vh-100 d-flex flex-column flex-grow-1 pt-6 pb-12 mb-12 px-4 bg-body fg-body" id="deck-editor" aria-busy="true">
-        <div class="container-xxl w-100 d-flex flex-column lg:flex-row align-items-center lg:justify-content-center lg:align-items-start gap-6">
+    <!-- Contenido principal -->
+    <main class="collection-page d-flex flex-column flex-grow-1 py-6 px-4 bg-body fg-body" id="deck-editor" aria-busy="true">
+        <div class="w-100 flex-grow-1 d-flex flex-column lg:flex-row align-items-center lg:justify-content-center lg:align-items-stretch gap-6">
 
-            <!-- Parte 1: Lista scrollable de mazos + acordeón para crear un nuevo mazo (sticky en desktop, borde derecho en desktop) -->
-            <aside class="collection-sticky-panel collection-aside-left p-4 bg-body" aria-labelledby="deck-list-heading">
-                <h2 id="deck-list-heading" class="h5 fw-bold text-center border-bottom border-2 border-primary pb-3 mb-3">
-                    Mis mazos
-                </h2>
+            <!-- Parte 1: Lista scrollable de mazos + acordeón para crear un nuevo mazo -->
+            <aside class="collection-sticky-panel collection-aside-left bg-body" aria-labelledby="deck-list-heading">
+                <div class="collection-aside-sticky p-4">
+                    <h2 id="deck-list-heading" class="h5 fw-bold text-center border-bottom border-2 border-primary pb-3 mb-3">
+                        Mis mazos
+                    </h2>
 
-                <div class="overflow-y-auto mb-3 pe-1 collection-deck-list" id="deck-list" aria-label="Mis mazos">
-                    <p class="fg-2 fs-sm text-center py-3 mb-0">Cargando tus mazos...</p>
+                    <div class="overflow-y-auto mb-3 pe-1 collection-deck-list" id="deck-list" aria-label="Mis mazos">
+                        <p class="fg-2 fs-sm text-center py-3 mb-0">Cargando tus mazos...</p>
+                    </div>
+
+                    <details class="nav-mazos-accordion w-100 border-top border-2 border-primary pt-3" id="create-deck-accordion">
+                        <summary class="btn-solid theme-primary w-100 d-flex justify-content-between align-items-center list-unstyled" style="cursor: pointer;">
+                            <span>+ Nuevo mazo</span>
+                            <i class="bi bi-chevron-down fs-sm" aria-hidden="true"></i>
+                        </summary>
+
+                        <form id="create-deck-form" class="d-flex flex-column gap-2 mt-3">
+                            <label class="fs-xs fg-2 text-uppercase fw-semibold" for="newMazoName">Nombre del mazo</label>
+                            <input
+                                type="text"
+                                id="newMazoName"
+                                class="form-control border border-2 border-primary"
+                                placeholder="Ej. Mazo Dragón"
+                                maxlength="80"
+                                required>
+                            <button type="submit" class="btn-solid theme-primary w-100 mt-1">
+                                Crear mazo
+                            </button>
+                        </form>
+                    </details>
                 </div>
-
-                <details class="nav-mazos-accordion w-100 border-top border-2 border-primary pt-3" id="create-deck-accordion">
-                    <summary class="btn-solid theme-primary w-100 d-flex justify-content-between align-items-center list-unstyled" style="cursor: pointer;">
-                        <span>+ Nuevo mazo</span>
-                        <i class="bi bi-chevron-down fs-sm" aria-hidden="true"></i>
-                    </summary>
-
-                    <form id="create-deck-form" class="d-flex flex-column gap-2 mt-3">
-                        <label class="fs-xs fg-2 text-uppercase fw-semibold" for="newMazoName">Nombre del mazo</label>
-                        <input
-                            type="text"
-                            id="newMazoName"
-                            class="form-control border border-2 border-primary"
-                            placeholder="Ej. Mazo Dragón"
-                            maxlength="80"
-                            required>
-                        <button type="submit" class="btn-solid theme-primary w-100 mt-1">
-                            Crear mazo
-                        </button>
-                    </form>
-                </details>
             </aside>
 
-            <!-- Parte 2: Mazo seleccionado (Título arriba + buscador, Main Deck y Extra Deck separados por líneas primarias) -->
+            <!-- Parte 2: Mazo seleccionado (Título arriba + disparador de diálogo para agregar cartas, Main Deck y Extra Deck) -->
             <section class="collection-main-section max-w-768px h-max d-flex flex-column align-items-center gap-4" aria-labelledby="deck-title">
-                <!-- Título del mazo y buscador para agregar cartas -->
+                <!-- Título del mazo y botón para abrir diálogo de búsqueda -->
                 <div class="w-100 border-bottom border-2 border-primary pb-4 px-2 text-center">
                     <h1 class="h1 fw-bold mb-1" id="deck-title">Mis mazos</h1>
                     <p class="fg-2 fs-sm mb-3" id="deck-save-status">Los cambios se guardan automáticamente.</p>
 
-                    <div class="max-w-768px mx-auto">
-                        <div class="collection-search">
-                            <input
-                                type="search"
-                                class="form-control border border-2 border-primary search-input"
-                                id="search-input"
-                                placeholder="Buscar carta para agregar al mazo..."
-                                autocomplete="off"
-                                aria-label="Buscar carta para agregar"
-                                aria-controls="search-results"
-                                aria-expanded="false">
-                            <button class="btn-solid theme-primary flex-shrink-0" id="search-button" type="button">
-                                Buscar
-                            </button>
-                            <div class="search-dropdown border border-2 border-primary" id="search-dropdown">
-                                <div class="search-loading" id="search-loading">Buscando cartas...</div>
-                                <div class="search-results" id="search-results" role="listbox"></div>
-                            </div>
-                        </div>
+                    <div class="max-w-450px mx-auto">
+                        <button
+                            type="button"
+                            id="deck-search-trigger"
+                            class="btn-icon btn-lg fg-primary deck-search-trigger-btn w-100 d-flex align-items-center justify-content-between"
+                            data-bs-toggle="dialog"
+                            data-bs-target="#searchDialog"
+                            aria-label="Buscar carta para agregar al mazo">
+                            <span class="deck-search-trigger-placeholder">Buscar carta para agregar al mazo...</span>
+                            <i class="bi bi-search deck-search-trigger-icon lh-1" aria-hidden="true"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -218,49 +363,41 @@
                 </div>
             </section>
 
-            <!-- Parte 3: Información del mazo seleccionado y botón para eliminarlo (sticky en desktop, borde izquierdo en desktop) -->
-            <aside class="collection-sticky-panel collection-aside-right p-4 bg-body" aria-labelledby="deck-info-heading">
-                <h2 id="deck-info-heading" class="h5 fw-bold text-center border-bottom border-2 border-primary pb-3 mb-3">
-                    Información del mazo
-                </h2>
+            <!-- Parte 3: Información del mazo seleccionado y botón para eliminarlo -->
+            <aside class="collection-sticky-panel collection-aside-right bg-body" aria-labelledby="deck-info-heading">
+                <div class="collection-aside-sticky p-4">
+                    <h2 id="deck-info-heading" class="h5 fw-bold text-center border-bottom border-2 border-primary pb-3 mb-3">
+                        Información del mazo
+                    </h2>
 
-                <div class="d-flex flex-column text-center">
-                    <div class="border-bottom border-2 border-primary py-3">
-                        <small class="fs-xs fg-2 text-uppercase fw-semibold d-block">CARTAS TOTALES</small>
-                        <span id="deck-total-cards" class="fs-lg fw-bold d-block mt-1">0 cartas</span>
+                    <div class="d-flex flex-column text-center">
+                        <div class="border-bottom border-2 border-primary py-3">
+                            <small class="fs-xs fg-2 text-uppercase fw-semibold d-block">CARTAS TOTALES</small>
+                            <span id="deck-total-cards" class="fs-lg fw-bold d-block mt-1">0 cartas</span>
+                        </div>
+
+                        <div class="border-bottom border-2 border-primary py-3">
+                            <small class="fs-xs fg-2 text-uppercase fw-semibold d-block">ESTADO DEL MAZO</small>
+                            <span id="deck-validity" class="badge theme-secondary rounded-1 mt-2">Sin mazo</span>
+                        </div>
+
+                        <div class="border-bottom border-2 border-primary py-3">
+                            <small class="fs-xs fg-2 text-uppercase fw-semibold d-block">PRECIO TOTAL</small>
+                            <span id="deck-price" class="fs-lg fw-bold d-block mt-1">US$ 0,00</span>
+                        </div>
                     </div>
 
-                    <div class="border-bottom border-2 border-primary py-3">
-                        <small class="fs-xs fg-2 text-uppercase fw-semibold d-block">MAIN DECK</small>
-                        <span id="deck-main-count" class="fs-lg fw-bold d-block mt-1">0 cartas</span>
-                    </div>
-
-                    <div class="border-bottom border-2 border-primary py-3">
-                        <small class="fs-xs fg-2 text-uppercase fw-semibold d-block">EXTRA DECK</small>
-                        <span id="deck-extra-count" class="fs-lg fw-bold d-block mt-1">0 cartas</span>
-                    </div>
-
-                    <div class="border-bottom border-2 border-primary py-3">
-                        <small class="fs-xs fg-2 text-uppercase fw-semibold d-block">ESTADO DEL MAZO</small>
-                        <span id="deck-validity" class="badge theme-secondary rounded-1 mt-2">Sin mazo</span>
-                    </div>
-
-                    <div class="border-bottom border-2 border-primary py-3">
-                        <small class="fs-xs fg-2 text-uppercase fw-semibold d-block">PRECIO TOTAL</small>
-                        <span id="deck-price" class="fs-lg fw-bold d-block mt-1">US$ 0,00</span>
-                    </div>
+                    <button
+                        type="button"
+                        id="delete-deck-btn"
+                        class="btn-solid theme-danger w-100 mt-4 d-flex justify-content-center align-items-center gap-2"
+                        data-bs-toggle="dialog"
+                        data-bs-target="#deleteDeckDialog"
+                        disabled>
+                        <i class="bi bi-trash" aria-hidden="true"></i>
+                        <span>Eliminar mazo</span>
+                    </button>
                 </div>
-
-                <button
-                    type="button"
-                    id="delete-deck-btn"
-                    class="btn-solid theme-danger w-100 mt-4 d-flex justify-content-center align-items-center gap-2"
-                    data-bs-toggle="dialog"
-                    data-bs-target="#deleteDeckDialog"
-                    disabled>
-                    <i class="bi bi-trash" aria-hidden="true"></i>
-                    <span>Eliminar mazo</span>
-                </button>
             </aside>
 
         </div>
@@ -287,7 +424,7 @@
     </dialog>
 
     <!-- Toast -->
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="toast" id="toast" popover="manual" role="status" aria-live="polite"></div>
 
     <!-- Footer -->
     <footer class="bg-dark fg-light p-4">
