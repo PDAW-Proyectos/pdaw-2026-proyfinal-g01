@@ -3,6 +3,7 @@
 | ----------- | -------------- | ----------- |
 | Antigravity | gemini 4 | Facundo |
 | Antigravity | gemini 4 | Joaquin |
+| Antigravity | gemini 4 | Franco |
 
 ## Usos
 
@@ -29,7 +30,15 @@ ideación y UX · depuración · pruebas · refactorización · documentación
 
 ideación y UX · depuración · pruebas · refactorización · documentación
 
+### Franco
+| Tarea | Qué se pidió | Qué se adoptó | Cómo se verificó |
+| ------ | ----------- | ------------- | ---------------- |
+| Diseño | Creacion de componentes de las distintas paginas y animaciones | Usar diseño responsive de bootstrap y css | Usando las DevTool y visualizando la pagina |
+| Depuracion | Ayuda para encontrar errores en codigo | Soluciones de problemaa de visualizacion en el navegador | Cambiando el diseño de los componentes y volviendo a preguntar a la ia para la solucion de errores |
+| Modularizacion | Ayuda para modularizar el codigo para los script | Separacion en carpetas para los componentes modulos y paginas | Probando las funciones con el navegador |
+| Generacion codigo(cliente) | Generacion de codigo para usar las API del server | Funciones reutilizables para la parte del cliente | Haciendo pruebas y uso de la consola para lo errores |
 
+diseño · depuración · modularizacion · documentación
 
 ## Compromiso
 Todas las personas del equipo comprendemos el código del repositorio,
