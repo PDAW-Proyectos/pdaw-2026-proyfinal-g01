@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url"
 import { createRequire } from "node:module"
 import { config } from "./config.js"
 import { errorHandler, requestContext } from "./middlewares/errorHandler.middleware.js"
+import { limitadorApi } from "./middlewares/rateLimit.middleware.js"
 import rutasMazos from "./routes/rutasMazos.js"
 import rutasCartas from "./routes/rutasCartas.js"
 import rutasImagenes from "./routes/rutasImagenes.js"
@@ -20,6 +21,30 @@ app.use(requestContext())
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const require = createRequire(import.meta.url)
 const { version } = require("../package.json")
+
+app.use(express.static(path.join(__dirname, "..", "public")))
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
+
+// Detrás del proxy HTTPS en producción: confiar en X-Forwarded-Proto
+if (config.production) app.set("trust proxy", 1)
+
+// Definir la cookie usada por el server
+app.use(session({
+  name: "wiki.sid",
+  secret: config.sessionSecret,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: config.production,
+    maxAge: 60 * 60 * 1000,
+  },
+}))
+
+// Limitador general de solicitudes para toda la API
+app.use("/api", limitadorApi)
 
 app.get("/api/salud", (req, res) => {
   res.json({
@@ -42,27 +67,6 @@ app.use("/test", (req, res, next) => {
 
   next()
 })
-
-app.use(express.static(path.join(__dirname, "..", "public")))
-app.use(express.urlencoded({ extended: false }))
-app.use(express.json())
-
-// Detrás del proxy HTTPS en producción: confiar en X-Forwarded-Proto
-if (config.production) app.set("trust proxy", 1)
-
-// Definir la cookie usada por el server
-app.use(session({
-  name: "wiki.sid",
-  secret: config.sessionSecret,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: config.production,
-    maxAge: 60 * 60 * 1000,
-  },
-}))
 
 // Aca van los routes como normalmente
 app.use("/api/mazos", rutasMazos)
