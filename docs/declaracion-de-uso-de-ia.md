@@ -2,6 +2,7 @@
 | Herramienta | Versión o plan | Integrantes |
 | ----------- | -------------- | ----------- |
 | Antigravity | gemini 4 | Facundo |
+| Antigravity | gemini 4 | Joaquin |
 
 ## Usos
 
@@ -15,9 +16,20 @@
 | Generacion de codigo(server) | Maquetas de clases basadas en clases existentes | Scripts para clases basadas en implementaciones previamentes hechas (ej: genera repositorioImagenes basandote en repositorioCartas) | Se siguio agregando funcionalidad a la clase y depurando todos los errores a mano y con investigacion con ia |
 | Generacion de codigo(frontend) | El estilizado usando bootstrap 6 | Se reescribio casi todo el estilizado del frontend usando ia para generar la idea principal | Visualmente viendo que este bien la pagina y sacando del html todas las cosas que sobraban y encontraba |
 
+ideación y UX · depuración · pruebas · refactorización · documentación
 
+### Joaquín
+| Tarea | Qué se pidió | Qué se adoptó | Cómo se verificó |
+| ------ | ----------- | ------------- | ---------------- |
+| Ideas y UX | Opciones para manejar las sesiones y los errores de login | Usar cookies httpOnly en vez de localStorage y mensajes genéricos si fallan los datos | Probando el login y cierre de sesión en el navegador y mirando la cookie en las DevTools |
+| Depuracion | Ayuda para encontrar por qué fallaban los middlewares de permisos y no se guardaba la sesión a tiempo | Cambié el orden de los middlewares en Express y agregué req.session.save() antes de responder en el login | Haciendo peticiones seguidas y viendo que las rutas protegidas tiraran 401/403 sin sesión |
+| Pruebas | Qué casos raros o bordes tener en cuenta para probar el registro y el login | Una lista con casos como usuarios repetidos o datos mal armados.| Corriendo los tests y probando cada error  desde la página y con el cliente HTTP |
+| Refactorizacion | Cómo separar el encriptado y validación de usuarios para no tener todo mezclado en las rutas | Moví el hasheo con bcrypt y la validación al servicio/modelo, dejando las rutas solo con el esquema | Revisando el código línea por línea y probando que todo siguiera andando igual |
+| Documentacion | Una plantilla base para anotar los endpoints de login, registro y sus errores | El formato de ejemplo de los JSON de ida y vuelta. | Probando cada ruta contra el servidor para ver que coincidiera con lo que anoté |
 
 ideación y UX · depuración · pruebas · refactorización · documentación
+
+
 
 ## Compromiso
 Todas las personas del equipo comprendemos el código del repositorio,
