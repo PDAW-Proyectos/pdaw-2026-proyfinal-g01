@@ -1,7 +1,13 @@
-import { renderizarDetalleCarta, renderizarErrorDetalleCarta } from "../components/carta/cartaDetalle.js"
+import {
+  inicializarDialogoImagenCarta,
+  renderizarDetalleCarta,
+  renderizarErrorDetalleCarta
+} from "../components/carta/cartaDetalle.js"
 import { obtenerCartaPorId } from "../services/servicioCartas.js"
 
 async function inicializarDetalleCarta() {
+  inicializarDialogoImagenCarta()
+
   const id = new URLSearchParams(window.location.search).get("id")
   if (!id) {
     renderizarErrorDetalleCarta("No se indicó qué carta mostrar.")

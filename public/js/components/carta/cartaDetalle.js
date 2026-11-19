@@ -7,6 +7,15 @@ import {
 import { obtenerElemento } from "../../utils/utilidadesDominio.js"
 import { renderizarImagenCarta } from "../imagenCarta.js"
 
+function sincronizarImagenDialogo() {
+  const imagenCarta = document.getElementById("detail-image")
+  const imagenModal = document.getElementById("modal-detail-image")
+  if (!imagenCarta || !imagenModal) return
+
+  imagenModal.src = imagenCarta.currentSrc || imagenCarta.src
+  imagenModal.alt = imagenCarta.alt
+}
+
 function renderizarAtributos(carta) {
   const grilla = obtenerElemento("detail-attributes")
   const fragmento = document.createDocumentFragment()
@@ -44,6 +53,14 @@ function renderizarDatoInferior(idElemento, etiqueta, valorTexto) {
   contenedor.replaceChildren(etiquetaEl, valorEl)
 }
 
+/** Sincroniza el src y alt de la carta al abrir el diálogo de imagen ampliada. */
+export function inicializarDialogoImagenCarta() {
+  const dialogo = document.getElementById("cardImageDialog")
+  if (!dialogo) return
+
+  dialogo.addEventListener("show.bs.dialog", sincronizarImagenDialogo)
+}
+
 /** Presenta los datos de una carta en la plantilla de detalle. */
 export function renderizarDetalleCarta(carta) {
   const imagenActual = obtenerElemento("detail-image")
@@ -61,8 +78,15 @@ export function renderizarDetalleCarta(carta) {
   imagen.dataset.bsToggle = "dialog"
   imagen.dataset.bsTarget = "#cardImageDialog"
   imagen.setAttribute("aria-label", "Ver imagen de la carta en grande")
+  imagen.addEventListener("keydown", (evento) => {
+    if (evento.key === "Enter" || evento.key === " ") {
+      evento.preventDefault()
+      imagen.click()
+    }
+  })
 
   imagenActual.parentElement.replaceWith(contenedorImagen)
+  sincronizarImagenDialogo()
 
   obtenerElemento("detail-name").textContent = carta.name
   obtenerElemento("detail-subname").textContent = obtenerSubtituloCarta(carta)
