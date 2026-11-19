@@ -776,3 +776,11 @@ input[type="password"]:not(:placeholder-shown) {
     transition: none;
   }
 }
+
+/* Ocultar el botón nativo de revelar contraseña en navegadores Edge / Chromium */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}
