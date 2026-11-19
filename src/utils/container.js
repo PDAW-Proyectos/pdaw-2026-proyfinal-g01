@@ -32,7 +32,7 @@ const servicioMazos = new ServicioMazos(repositorioMazos, repositorioCartas)
 const servicioMazosPopulares = new ServicioMazosPopulares(repositorioMazosPopulares, repositorioCartas)
 const servicioCartas = new ServicioCartas(repositorioCartas)
 const servicioImagenes = new ServicioImagenes(repositorioImagenes, repositorioCartas)
-const servicioUsuarios = new ServicioUsuarios(repositorioUsuarios, repositorioMazos)
+export const servicioUsuarios = new ServicioUsuarios(repositorioUsuarios, repositorioMazos)
 
 // Programador de descargas semanales (recibe todos los servicios que descargan datos)
 // Importante: servicioCartas va primero para asegurar que las cartas esten cargadas antes de hidratar los mazos populares

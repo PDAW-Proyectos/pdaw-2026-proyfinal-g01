@@ -1,24 +1,30 @@
 import { AuthenticationError, AuthorizationError } from "../utils/errors.js";
-//Middlewares universales para cualquier ruta, leen informacion de req.session
+import { servicioUsuarios } from "../utils/container.js";
 
-export const requiereAutenticacion = (req, res, next) => {
-  if (!req.session || !req.session.username) {
+export function requiereAutenticacion(req, res, next) {
+  if (!req.session?.username) {
     return next(new AuthenticationError("Es necesario iniciar sesión"));
   }
+  // Consulta a la capa de servicio
+  const usuario = servicioUsuarios.buscarPorUsername(req.session.username);
+  if (!usuario) {
+    return req.session.destroy(() => {
+      res.clearCookie("wiki.sid");
+      return next(new AuthenticationError("La cuenta ya no existe o fue eliminada"));
+    });
+  }
+  req.session.rol = usuario.rol;
   next();
-};
+}
 
-export const requiereRol = (rolRequerido) => {
+export function requiereRol(rolRequerido) {
   return (req, res, next) => {
-    // Se valida que exista la session
-    if (!req.session || !req.session.username) {
-      return next(new AuthenticationError("Es necesario iniciar sesión"));
-    }
-    
-    // verifico que el rol guardado coincida
-    if (req.session.rol !== rolRequerido) {
-      return next(new AuthorizationError("Sin permisos"));
-    }
-    next();
+    requiereAutenticacion(req, res, (err) => {
+      if (err) return next(err);
+      if (req.session.rol !== rolRequerido) {
+        return next(new AuthorizationError("Sin permisos"));
+      }
+      next();
+    });
   };
-};
+}

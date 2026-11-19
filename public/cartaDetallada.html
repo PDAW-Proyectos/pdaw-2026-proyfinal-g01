@@ -393,15 +393,6 @@
     <script type="module" src="js/bootstrap/bootstrap.bundle.min.js"></script>
     <script type="module" src="js/pages/cartaDetallada.js"></script>
     <script type="module" src="js/pages/navbar.js"></script>
-    <script>
-        // Sincroniza el src/alt de la carta al abrir el dialog en grande
-        document.getElementById('cardImageDialog').addEventListener('show.bs.dialog', () => {
-            const cardImg = document.getElementById('detail-image');
-            const modalImg = document.getElementById('modal-detail-image');
-            modalImg.src = cardImg.src;
-            modalImg.alt = cardImg.alt;
-        });
-    </script>
 </body>
 
 </html>

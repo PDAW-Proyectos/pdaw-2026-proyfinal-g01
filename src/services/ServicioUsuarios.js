@@ -107,6 +107,14 @@ export class ServicioUsuarios {
     return true;
   }
 
+    /**
+   * Busca un usuario por su username. Retorna el usuario o null.
+   * @param {string} username
+   */
+  buscarPorUsername(username) {
+    return this.#repositorioUsuarios.buscar(username);
+  }
+
   async obtenerUsuarios({ username = "", pagina = 1, limite = 10 } = {}) {
     const registros = this.#repositorioUsuarios.obtenerTodos();
     //Verifico si u es una instancia de la clase Usuario comprobando que tenga definido el método toDTO.

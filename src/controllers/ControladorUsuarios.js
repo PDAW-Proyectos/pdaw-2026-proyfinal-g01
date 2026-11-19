@@ -57,13 +57,25 @@ export class ControladorUsuarios {
     }
   }
 
-  eliminar = async (req, res, next) => {
+    eliminar = async (req, res, next) => {
     try {
       const usuarioAEliminar = req.params.username
       const usuarioSesionActual = req.session.username
 
-      // le paso a servicio usuarios para que verifique que no sea el mismo usuario admin de la sesion el que se quiere eliminar a si mismo
       await this.#servicioUsuarios.eliminarUsuario(usuarioAEliminar, usuarioSesionActual)
+
+      // Cierra activamente cualquier sesión abierta que tenga ese usuario
+      if (req.sessionStore && typeof req.sessionStore.all === "function") {
+        req.sessionStore.all((err, sessions) => {
+          if (!err && sessions) {
+            for (const [sid, sess] of Object.entries(sessions)) {
+              if (sess.username === usuarioAEliminar) {
+                req.sessionStore.destroy(sid, () => {})
+              }
+            }
+          }
+        })
+      }
 
       res.status(200).json({ mensaje: "Usuario eliminado con éxito" })
     } catch (error) {
